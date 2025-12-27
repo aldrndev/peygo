@@ -128,12 +128,12 @@ export default function LogoUpload({ currentLogoUrl, onLogoChange }: LogoUploadP
   return (
     <div className="w-full">
       <div
-        className={`relative group border-2 border-dashed rounded-[32px] p-8 text-center cursor-pointer transition-all duration-500 overflow-hidden ${
+        className={`relative group border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all overflow-hidden ${
           isDragging 
-            ? "border-orange-500 bg-orange-500/10 scale-[1.02] shadow-2xl shadow-orange-500/20" 
+            ? "border-orange-500 bg-orange-50" 
             : preview 
-              ? "border-emerald-500/30 bg-emerald-500/5 shadow-xl shadow-emerald-500/5" 
-              : "border-slate-200 bg-white/40 backdrop-blur-xl hover:border-orange-500/50 hover:bg-white hover:shadow-2xl hover:shadow-slate-200/50"
+              ? "border-emerald-200 bg-emerald-50" 
+              : "border-slate-200 bg-slate-50 hover:border-orange-300 hover:bg-white"
         }`}
         onClick={() => inputRef.current?.click()}
         onDrop={handleDrop}
@@ -149,24 +149,24 @@ export default function LogoUpload({ currentLogoUrl, onLogoChange }: LogoUploadP
         />
         
         {isCompressing ? (
-          <div className="py-6">
-            <div className="w-12 h-12 border-3 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Optimasi Gambar...</p>
+          <div className="py-4">
+            <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-xs text-slate-400">Optimasi...</p>
           </div>
         ) : preview ? (
-          <div className="flex items-center gap-5">
-            <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-white shadow-2xl ring-4 ring-emerald-500/10">
+          <div className="flex items-center gap-3">
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-white border border-slate-100">
               <Image 
                 src={preview} 
-                alt="Logo Preview" 
+                alt="Logo" 
                 fill 
-                className="object-contain p-2"
+                className="object-contain p-1"
                 unoptimized
               />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-bold text-slate-900 tracking-tight">Logo Terpasang</p>
-              <p className="text-xs font-bold text-emerald-500 uppercase tracking-widest mt-1">Klik untuk Ganti</p>
+              <p className="text-sm font-medium text-slate-900">Logo Terpasang</p>
+              <p className="text-xs text-emerald-500">Klik untuk ganti</p>
             </div>
             <div onClick={(e) => e.stopPropagation()}>
               <Button
@@ -174,28 +174,28 @@ export default function LogoUpload({ currentLogoUrl, onLogoChange }: LogoUploadP
                 size="sm"
                 color="danger"
                 variant="flat"
-                className="bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white transition-all rounded-xl"
+                className="bg-rose-50 text-rose-500 rounded-lg"
                 onPress={handleRemove}
               >
-                <X size={16} />
+                <X size={14} />
               </Button>
             </div>
           </div>
         ) : (
-          <div className="py-6">
-            <div className="w-16 h-16 rounded-[22px] bg-slate-900 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-500 shadow-xl shadow-slate-900/20">
+          <div className="py-4">
+            <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center mx-auto mb-3">
               {isDragging ? (
-                <Upload size={28} className="text-orange-500" />
+                <Upload size={18} className="text-orange-500" />
               ) : (
-                <ImageIcon size={28} className="text-white" />
+                <ImageIcon size={18} className="text-white" />
               )}
             </div>
-            <p className="text-sm font-bold text-slate-900 tracking-tight mb-2">
+            <p className="text-sm font-medium text-slate-900 mb-1">
               <span className="text-orange-500">Pilih Logo</span>
-              {" "}atau seret ke sini
+              {" "}atau seret
             </p>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest max-w-[200px] mx-auto leading-relaxed">
-              Resmi digunakan pada setiap Invoice & Laporan
+            <p className="text-xs text-slate-400">
+              Digunakan pada Invoice
             </p>
           </div>
         )}

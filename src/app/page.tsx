@@ -163,6 +163,17 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // ESC key to close mobile menu
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, [mobileMenuOpen]);
+
   return (
     <div className="min-h-screen bg-slate-50 overflow-x-hidden relative">
       {/* Aurora Background Elements */}
@@ -243,9 +254,11 @@ export default function LandingPage() {
               variant="light" 
               className="md:hidden bg-white/50 backdrop-blur-xl rounded-xl border border-white/50"
               onPress={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
             </Button>
           </nav>
 
@@ -253,10 +266,11 @@ export default function LandingPage() {
           <AnimatePresence>
             {mobileMenuOpen && (
               <motion.div
+                id="mobile-menu"
                 initial={{ height: 0, opacity: 0, y: -20 }}
                 animate={{ height: "auto", opacity: 1, y: 0 }}
                 exit={{ height: 0, opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, ease: "circOut" }}
+                transition={{ duration: 0.2, ease: "circOut" }}
                 className="md:hidden overflow-hidden bg-white/60 backdrop-blur-3xl border-t border-white/20 shadow-2xl mt-4 rounded-3xl"
               >
                 <div className="py-6 px-6 flex flex-col gap-4">
@@ -669,7 +683,7 @@ export default function LandingPage() {
             <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 px-5 py-2 rounded-2xl text-xs font-bold uppercase tracking-widest mb-6">
                 <span>Testimonials</span>
               </div>
-            <h2 className="text-4xl md:text-6xl font-semibold text-slate-900 mb-6 tracking-tighter">
+            <h2 className="text-3xl md:text-5xl font-semibold text-slate-900 mb-6 tracking-tighter">
               Dipercaya Ribuan Bisnis
             </h2>
             <p className="text-slate-500 text-lg font-medium">
@@ -684,11 +698,10 @@ export default function LandingPage() {
               viewport={{ once: true }}
               variants={scaleIn}
             >
-              <Card className="bg-slate-900 border-0 shadow-[0_40px_100px_rgba(0,0,0,0.2)] rounded-[60px] overflow-hidden">
-                <CardBody className="p-10 md:p-20 relative">
+              <Card className="bg-slate-900 border-0 shadow-[0_40px_100px_rgba(0,0,0,0.2)] rounded-[40px] overflow-hidden">
+                <CardBody className="p-10 md:p-16 relative">
                    {/* Decoration */}
-                   <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/20 blur-[100px] pointer-events-none" />
-                   <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[100px] pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[100px] pointer-events-none" />
 
                   <div className="flex justify-center mb-10">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -705,7 +718,7 @@ export default function LandingPage() {
                       transition={{ duration: 0.5 }}
                       className="text-center"
                     >
-                      <p className="text-2xl md:text-4xl text-white font-bold leading-tight tracking-tight mb-12">
+                      <p className="text-xl md:text-2xl text-white font-bold leading-tight tracking-tight mb-12">
                         &ldquo;{testimonials[currentTestimonial].content}&rdquo;
                       </p>
                       <div className="flex items-center justify-center gap-6">
@@ -725,12 +738,16 @@ export default function LandingPage() {
                   </AnimatePresence>
 
                   {/* Dots indicator */}
-                  <div className="flex justify-center gap-3 mt-16">
-                    {testimonials.map((_, index) => (
+                  <div className="flex justify-center gap-3 mt-16" role="tablist" aria-label="Testimonial navigation">
+                    {testimonials.map((testimonial, index) => (
                       <button
                         key={index}
                         onClick={() => setCurrentTestimonial(index)}
-                        className={`transition-all duration-500 rounded-full ${
+                        role="tab"
+                        aria-selected={index === currentTestimonial}
+                        aria-label={`Go to testimonial from ${testimonial.name}`}
+                        type="button"
+                        className={`transition-all duration-200 rounded-full focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 ${
                           index === currentTestimonial 
                             ? "bg-orange-500 w-12 h-2" 
                             : "bg-slate-700 w-2 h-2 hover:bg-slate-600"
@@ -797,15 +814,11 @@ export default function LandingPage() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={scaleIn}
+            className="max-w-5xl mx-auto"
           >
-            <Card className="bg-slate-950 border-0 overflow-hidden relative rounded-[60px] shadow-[0_40px_100px_rgba(0,0,0,0.3)]">
+            <Card className="bg-slate-950 border-0 overflow-hidden relative rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.3)]">
               {/* Animated Background Gradients */}
               <div className="absolute inset-0 opacity-40">
-                <motion.div 
-                   animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
-                   transition={{ duration: 15, repeat: Infinity }}
-                   className="absolute -top-[20%] -right-[20%] w-[80%] h-[80%] bg-orange-500/30 rounded-full blur-[120px]" 
-                />
                 <motion.div 
                    animate={{ scale: [1.2, 1, 1.2], rotate: [0, -90, 0] }}
                    transition={{ duration: 20, repeat: Infinity }}
@@ -813,11 +826,11 @@ export default function LandingPage() {
                 />
               </div>
               
-              <CardBody className="text-center py-20 md:py-32 relative z-10 px-6">
-                <h2 className="text-5xl md:text-8xl font-semibold text-white mb-8 tracking-tighter leading-none">
+              <CardBody className="p-10 md:p-16 relative z-10">
+                <h2 className="text-3xl md:text-5xl font-semibold text-white mb-6 tracking-tighter text-center">
                   Siap Memulai <br/> Masa Depan?
                 </h2>
-                <p className="text-slate-400 text-xl md:text-2xl font-medium mb-12 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-slate-400 text-lg md:text-xl font-medium mb-12 max-w-2xl mx-auto text-center">
                   Bergabung dengan ribuan bisnis yang telah mengefisiensi arus kas mereka dengan PeyGo. <span className="text-white font-bold">Daftar sekarang, gratis.</span>
                 </p>
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
@@ -825,7 +838,7 @@ export default function LandingPage() {
                     as={Link} 
                     href="/daftar"
                     size="lg"
-                    className="bg-orange-500 text-white font-bold text-sm uppercase tracking-widest px-12 h-20 rounded-[32px] shadow-xl hover:scale-105 transition-all w-full sm:w-auto"
+                    className="bg-orange-500 text-white font-bold text-xs uppercase tracking-widest px-10 h-14 rounded-xl shadow-xl hover:scale-105 transition-all w-full sm:w-auto"
                     endContent={<ArrowRight className="w-6 h-6" />}
                   >
                     Daftar Sekarang
@@ -835,7 +848,7 @@ export default function LandingPage() {
                     href="https://wa.me/628123456789"
                     size="lg"
                     variant="bordered"
-                    className="border-white/20 text-white font-bold text-sm uppercase tracking-widest px-12 h-20 rounded-[32px] hover:bg-white/10 hover:scale-105 transition-all w-full sm:w-auto"
+                    className="border-white/20 text-white font-bold text-xs uppercase tracking-widest px-10 h-14 rounded-xl hover:bg-white/10 hover:scale-105 transition-all w-full sm:w-auto"
                     startContent={<MessageCircle className="w-6 h-6" />}
                   >
                     Tanya Ahli Kami

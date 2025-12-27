@@ -69,23 +69,19 @@ export default function AdminDashboardClient({
   };
 
   return (
-    <div className="relative space-y-8 pb-10">
-      {/* Decorative Blur Elements (Minimal) */}
-      <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-400/5 blur-[100px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-orange-400/5 blur-[120px] -z-10 pointer-events-none" />
-
+    <div className="relative space-y-6 md:space-y-8 pb-10">
       {/* Header */}
-      <div className="relative px-1">
-        <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight">
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
           Ringkasan Platform
         </h1>
-        <p className="text-slate-500 mt-1 text-sm md:text-base font-medium">
-          Pantau performa dan aktivitas platform secara real-time.
+        <p className="text-slate-500 mt-1 text-sm">
+          Pantau performa dan aktivitas platform.
         </p>
       </div>
 
       {/* Main Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 relative">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <StatCard
           icon={<Users className="w-5 h-5" />}
           label="Total Pengguna"
@@ -121,10 +117,10 @@ export default function AdminDashboardClient({
       </div>
 
       {/* Breakdown Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 relative">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Status Breakdown */}
-      <Card className="border border-slate-100 bg-white/60 backdrop-blur-xl rounded-[32px] overflow-hidden">
-          <CardBody className="p-8">
+      <Card className="border border-slate-100 bg-white rounded-2xl overflow-hidden">
+          <CardBody className="p-5">
             <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-8">Status Invoice</h3>
             <div className="space-y-6">
               {[
@@ -145,45 +141,45 @@ export default function AdminDashboardClient({
         </Card>
 
         {/* Type Breakdown */}
-      <Card className="border border-slate-100 bg-white/60 backdrop-blur-xl rounded-[32px] overflow-hidden">
-          <CardBody className="p-8">
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-8">Tipe Transaksi</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-5 rounded-3xl bg-orange-50/50 border border-orange-100/50 backdrop-blur-md">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-orange-500 text-white">
-                    <Receipt className="w-5 h-5" />
+      <Card className="border border-slate-100 bg-white rounded-2xl overflow-hidden">
+          <CardBody className="p-5">
+            <h3 className="text-sm font-medium text-slate-500 mb-4">Tipe Transaksi</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 rounded-xl bg-orange-50 border border-orange-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-orange-500 text-white">
+                    <Receipt className="w-4 h-4" />
                   </div>
                   <span className="text-sm font-semibold text-slate-700">Penagihan</span>
                 </div>
-                <span className="text-xl font-semibold text-slate-900">{stats.billingCount.toLocaleString()}</span>
+                <span className="text-base font-semibold text-slate-900">{stats.billingCount.toLocaleString()}</span>
               </div>
-              <div className="flex items-center justify-between p-5 rounded-3xl bg-blue-50/50 border border-blue-100/50 backdrop-blur-md">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-blue-500 text-white">
-                    <CreditCard className="w-5 h-5" />
+              <div className="flex items-center justify-between p-3 rounded-xl bg-blue-50 border border-blue-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-blue-500 text-white">
+                    <CreditCard className="w-4 h-4" />
                   </div>
-                  <span className="text-sm font-semibold text-slate-700">Pembayaran</span>
+                  <span className="text-sm font-medium text-slate-700">Pembayaran</span>
                 </div>
-                <span className="text-xl font-semibold text-slate-900">{stats.paymentCount.toLocaleString()}</span>
+                <span className="text-base font-semibold text-slate-900">{stats.paymentCount.toLocaleString()}</span>
               </div>
             </div>
           </CardBody>
         </Card>
 
         {/* User Breakdown */}
-      <Card className="border border-slate-100 bg-white/60 backdrop-blur-xl rounded-[32px] overflow-hidden">
-          <CardBody className="p-8">
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-8">Populasi Pengguna</h3>
-            <div className="space-y-6">
+      <Card className="border border-slate-100 bg-white rounded-2xl overflow-hidden">
+          <CardBody className="p-5">
+            <h3 className="text-sm font-medium text-slate-500 mb-4">Populasi Pengguna</h3>
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-600">Regular Users</span>
-                <span className="text-xl font-semibold text-slate-900">{stats.userCount.toLocaleString()}</span>
+                <span className="text-sm text-slate-600">Regular Users</span>
+                <span className="text-base font-semibold text-slate-900">{stats.userCount.toLocaleString()}</span>
               </div>
-              <Divider className="bg-slate-200/50" />
+              <Divider className="bg-slate-100" />
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-600">Administrators</span>
-                <span className="text-xl font-semibold text-indigo-600">{stats.adminCount.toLocaleString()}</span>
+                <span className="text-sm text-slate-600">Administrators</span>
+                <span className="text-base font-semibold text-indigo-600">{stats.adminCount.toLocaleString()}</span>
               </div>
             </div>
           </CardBody>
@@ -191,23 +187,24 @@ export default function AdminDashboardClient({
       </div>
 
       {/* Recent Activity */}
-      <Card className="shadow-xl shadow-slate-200/30 border border-white/50 bg-white/60 backdrop-blur-xl rounded-[40px] overflow-hidden relative">
+      <Card className="border border-slate-100 bg-white rounded-2xl overflow-hidden">
         <CardBody className="p-0">
-          <div className="p-8 md:p-10 border-b border-slate-100/50 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-slate-900 rounded-3xl flex items-center justify-center text-white">
-                <Activity className="w-6 h-6" />
+          <div className="p-4 md:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white">
+                <Activity className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-2xl font-semibold text-slate-900 tracking-tight">Aktivitas Terbaru</h3>
-                <p className="text-slate-500 text-sm font-medium">10 transaksi terakhir di platform</p>
+                <h3 className="text-lg font-semibold text-slate-900">Aktivitas Terbaru</h3>
+                <p className="text-slate-500 text-xs">10 transaksi terakhir</p>
               </div>
             </div>
             <Link href="/dashboard/admin/invoices">
               <Button 
                 variant="flat" 
-                endContent={<ChevronRight size={16} />} 
-                className="font-semibold text-sm px-6 h-12 rounded-2xl bg-slate-100/80 backdrop-blur-md border border-slate-200/50"
+                size="sm"
+                endContent={<ChevronRight size={14} />} 
+                className="font-medium text-xs px-3 h-9 rounded-lg bg-slate-100"
               >
                 Lihat Semua
               </Button>
@@ -217,38 +214,38 @@ export default function AdminDashboardClient({
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
-                <tr className="text-slate-400 font-semibold uppercase text-xs tracking-widest border-b border-slate-100/50">
-                  <th className="py-6 px-10">Transaksi</th>
-                  <th className="py-6 px-10 text-right">Nominal</th>
-                  <th className="py-6 px-10 text-center">Status</th>
-                  <th className="py-6 px-10 text-right">Tanggal</th>
+                <tr className="text-slate-500 font-medium text-xs border-b border-slate-100">
+                  <th className="py-3 px-4 md:px-5">Transaksi</th>
+                  <th className="py-3 px-4 md:px-5 text-right">Nominal</th>
+                  <th className="py-3 px-4 md:px-5 text-center hidden md:table-cell">Status</th>
+                  <th className="py-3 px-4 md:px-5 text-right hidden md:table-cell">Tanggal</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50/50 font-medium">
+              <tbody className="divide-y divide-slate-50">
                 {recentInvoices.map((invoice) => (
-                  <tr key={invoice.id} className="hover:bg-slate-50/40 transition-colors group">
-                    <td className="py-8 px-10">
-                      <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border transition-all duration-300 group-hover:scale-110 ${invoice.type === "BILLING" ? "bg-orange-50 text-orange-600 border-orange-100" : "bg-blue-50 text-blue-600 border-blue-100"}`}>
-                          {invoice.type === "BILLING" ? <Receipt size={18} /> : <CreditCard size={18} />}
+                  <tr key={invoice.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="py-3 px-4 md:px-5">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${invoice.type === "BILLING" ? "bg-orange-50 text-orange-600" : "bg-blue-50 text-blue-600"}`}>
+                          {invoice.type === "BILLING" ? <Receipt size={16} /> : <CreditCard size={16} />}
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                          <p className="font-medium text-slate-900 text-sm">
                             {invoice.type === "BILLING" ? "Penagihan" : "Pay-out"}
                           </p>
-                          <p className="text-xs text-slate-400 uppercase font-bold tracking-widest mt-0.5">#{invoice.id.slice(0, 8)}</p>
+                          <p className="text-xs text-slate-400">#{invoice.id.slice(0, 8)}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="py-8 px-10 text-right">
-                      <span className="font-semibold text-lg text-slate-900">
+                    <td className="py-3 px-4 md:px-5 text-right">
+                      <span className="font-semibold text-sm text-slate-900">
                         {formatCurrency(invoice.total_amount || 0)}
                       </span>
                     </td>
-                    <td className="py-8 px-10 text-center">
+                    <td className="py-3 px-4 md:px-5 text-center hidden md:table-cell">
                       <StatusBadge status={invoice.status} />
                     </td>
-                    <td className="py-8 px-10 text-right text-xs text-slate-500 font-semibold uppercase tracking-wider">
+                    <td className="py-3 px-4 md:px-5 text-right text-xs text-slate-500 hidden md:table-cell">
                       {new Date(invoice.created_at).toLocaleDateString("id-ID", {
                         day: "numeric",
                         month: "short",
@@ -284,34 +281,29 @@ function StatCard({
   color: "orange" | "blue" | "emerald" | "indigo";
 }) {
   const bgClasses: Record<string, string> = {
-    orange: "bg-orange-500/10 text-orange-600 border-orange-500/20 group-hover:bg-orange-500 group-hover:text-white",
-    blue: "bg-blue-500/10 text-blue-600 border-blue-500/20 group-hover:bg-blue-500 group-hover:text-white",
-    emerald: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white",
-    indigo: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20 group-hover:bg-indigo-500 group-hover:text-white",
+    orange: "bg-orange-50 text-orange-600",
+    blue: "bg-blue-50 text-blue-600",
+    emerald: "bg-emerald-50 text-emerald-600",
+    indigo: "bg-indigo-50 text-indigo-600",
   };
 
   const cardContent = (
-    <Card shadow="none" className="group h-full shadow-xl shadow-slate-200/30 border border-white/50 bg-white/60 backdrop-blur-xl rounded-[32px] overflow-hidden hover:-translate-y-1 hover:bg-white/80 transition-all duration-500">
-      <CardBody className="p-8">
-        <div className="flex items-start justify-between mb-8">
-          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-all duration-300 ${bgClasses[color]}`}>
+    <Card shadow="none" className="h-full border border-slate-100 bg-white rounded-2xl overflow-hidden">
+      <CardBody className="p-4 md:p-5">
+        <div className="flex items-start justify-between mb-3">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${bgClasses[color]}`}>
             {icon}
           </div>
           {change && (
-            <div className={`flex items-center gap-1 font-bold text-xs uppercase tracking-widest px-3 py-1.5 rounded-full ${positive ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"}`}>
-              {positive ? <ArrowUpRight size={12} strokeWidth={3} /> : <ArrowDownRight size={12} strokeWidth={3} />}
+            <div className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ${positive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}>
+              {positive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
               {change.split(' ')[0]}
             </div>
           )}
         </div>
         <div>
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-[0.15em] mb-2">{label}</p>
-          <p className="text-3xl font-semibold text-slate-900 tracking-tight">{value}</p>
-          {change && (
-            <p className="text-xs text-slate-400 mt-2.5 font-bold uppercase tracking-widest opacity-60">
-              {change.includes('bulan ini') ? 'Vs bulan lalu' : change}
-            </p>
-          )}
+          <p className="text-xs font-medium text-slate-500 mb-1">{label}</p>
+          <p className="text-xl md:text-2xl font-semibold text-slate-900">{value}</p>
         </div>
       </CardBody>
     </Card>

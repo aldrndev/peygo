@@ -95,3 +95,43 @@ input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
 }
+
+/* ===== ACCESSIBILITY UTILITIES ===== */
+
+/* Skip to main content link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary-500);
+  color: white;
+  padding: 8px 16px;
+  z-index: 100;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 0 0 8px 0;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--primary-700);
+  outline-offset: 2px;
+}
+
+/* 
+ * Focus ring is handled per-component with Tailwind's focus-visible:ring classes.
+ * This prevents double focus on nested elements like Link > motion.div.
+ */
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

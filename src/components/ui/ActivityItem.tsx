@@ -55,42 +55,39 @@ export default function ActivityItem({
   };
 
   return (
-    <Link href={href}>
-      <motion.div
-        className="flex items-center gap-4 p-5 bg-white/60 backdrop-blur-xl rounded-[24px] border border-white/50 transition-all duration-500 group outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
-        whileHover={{ x: 4 }}
-        whileTap={{ scale: 0.99 }}
+    <Link href={href} aria-label={`${isBilling ? "Penagihan" : "Pembayaran"} ${recipientName}: ${formatCurrency(amount)}, status ${statusStyle.label}`} className="block outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-xl">
+      <div
+        className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 active:bg-slate-50 transition-colors"
+        tabIndex={-1}
       >
         {/* Icon */}
-        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 shadow-sm ${
-          isBilling ? "bg-orange-100 text-orange-600" : "bg-blue-100 text-blue-600"
+        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 ${
+          isBilling ? "bg-orange-50 text-orange-600" : "bg-blue-50 text-blue-600"
         }`}>
-          {isBilling ? <Receipt size={24} /> : <CreditCard size={24} />}
+          {isBilling ? <Receipt size={20} aria-hidden="true" /> : <CreditCard size={20} aria-hidden="true" />}
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-3">
-            <p className="font-semibold text-slate-900 truncate text-[13px] tracking-tight uppercase leading-none">
+          <div className="flex items-center justify-between gap-2">
+            <p className="font-medium text-slate-900 truncate text-sm">
               {recipientName || "Tanpa Nama"}
             </p>
-            <p className="font-semibold text-slate-900 text-base tracking-tighter leading-none">
+            <p className="font-semibold text-slate-900 text-sm md:text-base whitespace-nowrap">
               {formatCurrency(amount)}
             </p>
           </div>
-          <div className="flex items-center justify-between gap-3 mt-2.5">
-            <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg uppercase tracking-widest ${statusStyle.bg} ${statusStyle.color}`}>
+          <div className="flex items-center justify-between gap-2 mt-1.5">
+            <span className={`text-xs font-medium px-2 py-0.5 rounded ${statusStyle.bg} ${statusStyle.color}`}>
               {statusStyle.label}
             </span>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">{formatDate(date)}</span>
+            <span className="text-xs text-slate-400">{formatDate(date)}</span>
           </div>
         </div>
 
-        {/* Arrow */}
-        <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0">
-          <ChevronRight size={18} className="text-white" />
-        </div>
-      </motion.div>
+        {/* Arrow - hidden on mobile */}
+        <ChevronRight size={16} className="text-slate-300 hidden md:block shrink-0" aria-hidden="true" />
+      </div>
     </Link>
   );
 }

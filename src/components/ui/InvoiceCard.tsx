@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 
 interface InvoiceCardProps {
@@ -15,12 +14,12 @@ interface InvoiceCardProps {
 }
 
 const statusConfig: Record<string, { color: string; bg: string; label: string }> = {
-  PAID: { color: "text-green-700", bg: "bg-green-100", label: "Lunas" },
-  DISBURSED: { color: "text-blue-700", bg: "bg-blue-100", label: "Dicairkan" },
-  SENT: { color: "text-amber-700", bg: "bg-amber-100", label: "Terkirim" },
+  PAID: { color: "text-green-700", bg: "bg-green-50", label: "Lunas" },
+  DISBURSED: { color: "text-blue-700", bg: "bg-blue-50", label: "Dicairkan" },
+  SENT: { color: "text-amber-700", bg: "bg-amber-50", label: "Terkirim" },
   DRAFT: { color: "text-gray-600", bg: "bg-gray-100", label: "Draft" },
-  FAILED: { color: "text-red-700", bg: "bg-red-100", label: "Gagal" },
-  EXPIRED: { color: "text-red-700", bg: "bg-red-100", label: "Kedaluwarsa" },
+  FAILED: { color: "text-red-700", bg: "bg-red-50", label: "Gagal" },
+  EXPIRED: { color: "text-red-700", bg: "bg-red-50", label: "Kedaluwarsa" },
 };
 
 export default function InvoiceCard({
@@ -51,39 +50,36 @@ export default function InvoiceCard({
   };
 
   return (
-    <Link href={href}>
-      <motion.div
-        className="bg-white rounded-2xl border border-gray-100 p-4 hover:border-orange-200 hover:shadow-sm transition-all"
-        whileTap={{ scale: 0.99 }}
-      >
-        <div className="flex items-start justify-between gap-3">
+    <Link href={href} aria-label={`Invoice ${recipientName}: ${formatCurrency(amount)}, status ${statusStyle.label}`} className="block outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-xl">
+      <div className="bg-white rounded-xl border border-slate-100 p-4 active:bg-slate-50 transition-colors">
+        <div className="flex items-center justify-between gap-3">
           {/* Left Content */}
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-gray-900 truncate">
+            <p className="font-medium text-slate-900 text-sm truncate">
               {recipientName || "Tanpa Nama"}
             </p>
             {invoiceNumber && (
-              <p className="text-xs text-gray-400 mt-0.5">#{invoiceNumber}</p>
+              <p className="text-xs text-slate-400 mt-0.5">#{invoiceNumber}</p>
             )}
-            <p className="text-lg font-bold text-gray-900 mt-2">
-              {formatCurrency(amount)}
-            </p>
           </div>
 
           {/* Right Content */}
-          <div className="flex flex-col items-end gap-2">
-            <span className={`text-xs font-semibold px-2 py-1 rounded-full uppercase ${statusStyle.bg} ${statusStyle.color}`}>
-              {statusStyle.label}
-            </span>
-            <span className="text-xs text-gray-400">{formatDate(date)}</span>
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <p className="font-semibold text-slate-900 text-sm md:text-base">
+                {formatCurrency(amount)}
+              </p>
+              <div className="flex items-center gap-2 mt-1 justify-end">
+                <span className={`text-xs font-medium px-2 py-0.5 rounded ${statusStyle.bg} ${statusStyle.color}`}>
+                  {statusStyle.label}
+                </span>
+                <span className="text-xs text-slate-400 hidden md:inline">{formatDate(date)}</span>
+              </div>
+            </div>
+            <ChevronRight size={16} className="text-slate-300 shrink-0 hidden md:block" aria-hidden="true" />
           </div>
         </div>
-
-        {/* Mobile hint arrow */}
-        <div className="flex justify-end mt-2 md:hidden">
-          <ChevronRight size={16} className="text-gray-300" />
-        </div>
-      </motion.div>
+      </div>
     </Link>
   );
 }

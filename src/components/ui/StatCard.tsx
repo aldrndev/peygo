@@ -65,23 +65,14 @@ export default function StatCard({
   const isPrimary = variant === "primary";
 
   return (
-    <motion.div
-      className={`${styles.bg} backdrop-blur-xl rounded-[32px] p-6 min-w-[200px] border ${styles.border} relative overflow-hidden group outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 hover:border-orange-200 transition-all duration-500 ${className}`}
-      tabIndex={0}
-      role="article"
-      aria-label={`Statistik ${title}: ${value}`}
-      whileHover={{ y: -5 }}
-      whileTap={{ scale: 0.98 }}
+    <div
+      className={`${styles.bg} rounded-2xl p-5 min-w-[180px] border ${styles.border} relative overflow-hidden ${className}`}
+      aria-label={`${title}: ${value}`}
     >
-      {/* Background Decorative element */}
-      <div className={`absolute -right-4 -top-4 w-24 h-24 rounded-full blur-3xl opacity-20 transition-all group-hover:scale-150 ${
-        isPrimary ? "bg-orange-500" : "bg-orange-300"
-      }`} />
-
       <div className="relative z-10">
         {/* Icon */}
-        <div className={`w-12 h-12 rounded-2xl ${styles.iconBg} flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform`}>
-          <Icon size={24} className={styles.iconColor} />
+        <div className={`w-10 h-10 rounded-xl ${styles.iconBg} flex items-center justify-center mb-3`}>
+          <Icon size={20} className={styles.iconColor} aria-hidden="true" />
         </div>
 
         {/* Title */}
@@ -90,7 +81,7 @@ export default function StatCard({
         </p>
 
         {/* Value */}
-        <p className={`text-3xl font-semibold tracking-tighter ${styles.valueColor}`}>
+        <p className={`text-2xl md:text-3xl font-semibold tracking-tight ${styles.valueColor}`}>
           {value}
         </p>
 
@@ -108,6 +99,6 @@ export default function StatCard({
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

@@ -54,75 +54,48 @@ export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
 
   return (
     <>
-      <div className="space-y-10 pb-20">
-        {/* Header - Desktop & Tablet */}
-        <div className="hidden md:flex justify-between items-center relative">
-          <div className="flex items-center gap-6">
-            <div className="w-12 h-12 rounded-2xl bg-white/40 backdrop-blur-xl border border-white/60 flex items-center justify-center text-orange-500">
-              <Building2 size={24} />
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold text-slate-900 tracking-tighter leading-none">Supplier</h1>
-              <p className="text-slate-500 text-lg font-medium mt-2">Kelola rekan bisnis dan informasi pembayaran</p>
-            </div>
+      <div className="space-y-6 md:space-y-8 pb-20">
+        {/* Header - Desktop */}
+        <div className="hidden md:flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">Supplier</h1>
+            <p className="text-slate-500 text-sm mt-1">Kelola rekan bisnis dan informasi pembayaran</p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="bg-white/40 backdrop-blur-xl border border-white/60 px-5 py-2.5 rounded-2xl shadow-sm">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-0.5">Kapasitas Supplier</p>
-              <div className="flex items-center gap-2">
-                <div className="h-1.5 w-24 bg-slate-100 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full rounded-full transition-all duration-1000 ${suppliers.length >= 5 ? 'bg-orange-500' : 'bg-slate-900'}`}
-                    style={{ width: `${(suppliers.length / 5) * 100}%` }}
-                  />
-                </div>
-                <span className="text-xs font-bold text-slate-900">{suppliers.length}/5</span>
-              </div>
+          <div className="flex items-center gap-2">
+            <div className="px-3 py-1.5 rounded-lg bg-slate-100 text-xs font-medium text-slate-600">
+              {suppliers.length}/5 slot
             </div>
             <Button 
               color="primary" 
-              className="font-bold px-8 h-12 rounded-2xl uppercase tracking-widest text-xs outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
-              startContent={<Plus size={20} />}
+              size="sm"
+              className="font-medium text-xs h-9 rounded-lg"
+              startContent={<Plus size={16} />}
               onPress={handleCreate}
               isDisabled={suppliers.length >= 5}
             >
-              TAMBAH SUPPLIER
+              Tambah
             </Button>
           </div>
         </div>
 
         {/* Mobile Header */}
-        <div className="md:hidden flex justify-between items-center mb-8">
+        <div className="md:hidden flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tighter">Supplier</h1>
-            <p className="text-xs font-bold text-orange-600 uppercase tracking-[0.2em] mt-1">{suppliers.length}/5 SLOT TERPAKAI</p>
+            <h1 className="text-2xl font-semibold text-slate-900">Supplier</h1>
+            <p className="text-xs text-slate-500 mt-0.5">{suppliers.length}/5 slot terpakai</p>
           </div>
-          <Button 
-            isIconOnly 
-            color="primary" 
-            className="rounded-2xl h-12 w-12 outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
-            onPress={handleCreate}
-            isDisabled={suppliers.length >= 5}
-          >
-            <Plus size={24} />
-          </Button>
         </div>
 
-        {/* Search Bar & Filters */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 mb-4">
-             <h2 className="text-xs font-bold text-slate-400 uppercase tracking-[0.3em] whitespace-nowrap">Cari Supplier</h2>
-             <div className="h-px flex-1 bg-slate-200/50" />
-          </div>
-          
+        {/* Search */}
+        <div>
           <Input
             {...register("search")}
-            placeholder="Ketik nama supplier atau nama bank..."
-            startContent={<Search size={22} className="text-slate-400" />}
+            placeholder="Cari supplier..."
+            startContent={<Search size={16} className="text-slate-400" />}
             className="w-full"
             classNames={{
-              inputWrapper: "bg-white/40 backdrop-blur-xl border-white/60 border hover:bg-white focus-within:bg-white transition-all rounded-2xl h-14 px-4",
-              input: "font-medium text-slate-900 placeholder:text-slate-400 text-lg",
+              inputWrapper: "bg-white border-slate-100 border rounded-lg h-10",
+              input: "text-sm placeholder:text-slate-400",
             }}
           />
         </div>
@@ -191,80 +164,63 @@ function SupplierCard({
   onDelete: () => void;
 }) {
   return (
-    <div className="bg-white/40 backdrop-blur-xl border border-white/60 rounded-[32px] p-6 transition-all group relative overflow-hidden h-full flex flex-col outline-none focus-visible:ring-2 focus-visible:ring-orange-500">
-      {/* Decorative background element */}
-      <div className="absolute -top-12 -right-12 w-32 h-32 bg-orange-500/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-3xl" />
-      
-      <div className="flex items-start gap-5 flex-1 mb-8 relative z-10">
-        <div className="relative">
-          <Avatar 
-            name={supplier.name} 
-            size="lg"
-            className="w-16 h-16 text-2xl font-bold bg-slate-900 text-white rounded-2xl"
-          />
-          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-100">
-             <User size={12} className="text-slate-400" />
-          </div>
-        </div>
+    <div className="bg-white border border-slate-100 rounded-xl p-4 h-full flex flex-col">
+      <div className="flex items-start gap-3 flex-1 mb-4">
+        <Avatar 
+          name={supplier.name} 
+          size="md"
+          className="w-10 h-10 text-base font-semibold bg-slate-900 text-white rounded-xl"
+        />
 
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-slate-900 truncate text-xl tracking-tighter leading-none mb-2">{supplier.name}</h3>
-          <div className="flex items-center gap-2 bg-white/60 backdrop-blur-md px-3 py-1 rounded-xl border border-white/80 w-fit shadow-sm">
-            <Building2 size={14} className="text-orange-500" />
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-500">
-              {supplier.bank_name}
-            </span>
-          </div>
+          <h3 className="font-semibold text-slate-900 truncate text-sm mb-1">{supplier.name}</h3>
+          <span className="text-xs text-slate-500">{supplier.bank_name}</span>
         </div>
       </div>
 
       {/* Bank Account Section */}
-      <div className="bg-white/60 backdrop-blur-md rounded-[24px] p-5 border border-white/80 mb-8 shadow-sm relative z-10">
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.3em] mb-3">Instruksi Pembayaran</p>
-        <div className="space-y-1">
-          <p className="font-bold text-slate-900 tracking-widest text-xl leading-none">{supplier.bank_account_number}</p>
-          <p className="text-xs font-bold text-orange-500 uppercase tracking-tight">A/N: {supplier.bank_account_name}</p>
-        </div>
+      <div className="bg-slate-50 rounded-lg p-3 mb-3">
+        <p className="text-xs text-slate-500 mb-1">Rekening</p>
+        <p className="font-semibold text-slate-900 text-sm">{supplier.bank_account_number}</p>
+        <p className="text-xs text-orange-500">A/N: {supplier.bank_account_name}</p>
       </div>
       
       {/* Contact Section */}
-      <div className="space-y-3 mb-8 relative z-10">
+      <div className="space-y-2 mb-4 text-xs text-slate-500">
         {supplier.email && (
-          <div className="flex items-center gap-3 text-xs font-bold text-slate-500">
-            <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-900 shadow-sm border border-white">
-               <Mail size={14} />
-            </div>
+          <div className="flex items-center gap-2">
+            <Mail size={12} />
             <span className="truncate">{supplier.email}</span>
           </div>
         )}
         {supplier.phone && (
-          <div className="flex items-center gap-3 text-xs font-bold text-slate-500">
-            <div className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-900 shadow-sm border border-white">
-               <Phone size={14} />
-            </div>
+          <div className="flex items-center gap-2">
+            <Phone size={12} />
             <span>{supplier.phone}</span>
           </div>
         )}
       </div>
 
       {/* Card Actions */}
-      <div className="flex items-center gap-3 mt-auto pt-6 border-t border-slate-100/50 relative z-10">
+      <div className="flex items-center gap-2 mt-auto pt-3 border-t border-slate-100">
         <Button
           fullWidth
+          size="sm"
           variant="flat"
-          className="font-bold text-xs uppercase tracking-widest bg-slate-900 text-white hover:bg-slate-800 rounded-2xl h-12 transition-all outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
-          startContent={<Edit2 size={16} />}
+          className="font-medium text-xs bg-slate-900 text-white rounded-lg h-9"
+          startContent={<Edit2 size={14} />}
           onPress={onEdit}
         >
-          EDIT DETAIL
+          Edit
         </Button>
         <Button
           isIconOnly
+          size="sm"
           variant="light"
-          className="text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-2xl w-12 h-12 transition-all"
+          className="text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg w-9 h-9"
           onPress={onDelete}
         >
-          <Trash2 size={20} />
+          <Trash2 size={16} />
         </Button>
       </div>
     </div>

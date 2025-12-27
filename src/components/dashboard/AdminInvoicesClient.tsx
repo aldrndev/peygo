@@ -61,74 +61,55 @@ export default function AdminInvoicesClient({ invoices }: AdminInvoicesClientPro
   };
 
   return (
-    <div className="relative space-y-8 pb-10">
-      {/* Decorative Blur Elements */}
-      <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-blue-400/5 blur-[120px] -z-10 pointer-events-none" />
-
+    <div className="relative space-y-6 md:space-y-8 pb-10">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 px-1">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 shadow-md text-white text-xs font-bold uppercase tracking-widest mb-4">
-             <FileText size={12} />
-             <span>Document Management</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
             Semua Invoice
           </h1>
-          <p className="text-slate-500 mt-2 font-medium">Kelola dan pantau seluruh transaksi di ekosistem PeyGo.</p>
+          <p className="text-slate-500 text-sm mt-1">Kelola dan pantau seluruh transaksi.</p>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
             <Button 
                 variant="flat" 
-                startContent={<RotateCcw size={16} />}
+                size="sm"
+                startContent={<RotateCcw size={14} />}
                 onPress={() => { setFilterStatus("ALL"); setSearchQuery(""); }}
-                className="font-semibold text-sm bg-white/60 backdrop-blur-xl border border-white/50 h-12 rounded-2xl"
+                className="font-medium text-xs bg-white border border-slate-100 h-9 rounded-lg"
             >
                 Reset
-            </Button>
-            <Button 
-                color="primary" 
-                startContent={<Filter size={16} />}
-                className="font-semibold text-sm h-12 rounded-2xl shadow-lg"
-            >
-                Filter Lanjut
             </Button>
         </div>
       </div>
 
-      {/* Filters Hub */}
-      <Card className="shadow-lg shadow-slate-200/20 border border-white/50 bg-white/60 backdrop-blur-xl rounded-[32px] overflow-hidden">
-        <CardBody className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {/* Filters */}
+      <Card className="border border-slate-100 bg-white rounded-xl overflow-hidden">
+        <CardBody className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-2">
               <Input
-                label="Cari Transaksi"
-                placeholder="Nomor invoice atau nama pengguna..."
-                labelPlacement="outside"
-                startContent={<Search className="text-slate-400" size={18} />}
+                placeholder="Cari invoice..."
+                startContent={<Search className="text-slate-400" size={16} />}
                 value={searchQuery}
                 onValueChange={setQuery => { setSearchQuery(setQuery); setPage(1); }}
-                variant="bordered"
                 classNames={{
-                  label: "text-slate-700 font-semibold text-xs uppercase tracking-wider mb-2",
-                  inputWrapper: "bg-white/80 border-slate-200 shadow-sm rounded-2xl h-12 hover:border-blue-400 transition-colors",
+                  inputWrapper: "bg-white border-slate-100 border rounded-lg h-10",
+                  input: "text-sm",
                 }}
               />
             </div>
             <div>
               <Select
-                label="Status Pembayaran"
-                labelPlacement="outside"
+                placeholder="Status"
                 selectedKeys={[filterStatus]}
                 onSelectionChange={(keys) => { setFilterStatus(Array.from(keys)[0] as string); setPage(1); }}
-                variant="bordered"
                 classNames={{
-                   label: "text-slate-700 font-semibold text-xs uppercase tracking-wider mb-2",
-                   trigger: "bg-white/80 border-slate-200 shadow-sm rounded-2xl h-12",
+                   trigger: "bg-white border-slate-100 border rounded-lg h-10",
                 }}
               >
-                <SelectItem key="ALL">Semua Status</SelectItem>
+                <SelectItem key="ALL">Semua</SelectItem>
                 <SelectItem key="PAID">Lunas</SelectItem>
                 <SelectItem key="SENT">Terkirim</SelectItem>
                 <SelectItem key="DISBURSED">Dicairkan</SelectItem>
@@ -136,34 +117,28 @@ export default function AdminInvoicesClient({ invoices }: AdminInvoicesClientPro
                 <SelectItem key="FAILED">Gagal</SelectItem>
               </Select>
             </div>
-            <div className="flex items-end">
-                <div className="w-full p-4 rounded-2xl bg-slate-900 text-white flex items-center justify-between">
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Sesuai Filter</p>
-                        <p className="text-lg font-semibold tracking-tight">{filteredInvoices.length} Dokumen</p>
-                    </div>
-                    <FileText className="text-slate-700" size={24} />
-                </div>
+            <div className="flex items-center justify-center p-3 rounded-lg bg-slate-900 text-white">
+              <p className="text-sm font-medium">{filteredInvoices.length} Dokumen</p>
             </div>
           </div>
         </CardBody>
       </Card>
 
-      {/* Table Section */}
-      <Card className="shadow-lg shadow-slate-200/20 border border-white/50 bg-white/60 backdrop-blur-xl rounded-[40px] overflow-hidden">
+      {/* Table */}
+      <Card className="border border-slate-100 bg-white rounded-xl overflow-hidden">
         <CardBody className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
-                <tr className="text-slate-400 font-semibold uppercase text-xs tracking-widest border-b border-slate-100/50">
-                  <th className="py-6 px-10">Informasi Invoice</th>
-                  <th className="py-6 px-10">Pemilik</th>
-                  <th className="py-6 px-10 text-right">Nominal</th>
-                  <th className="py-6 px-10 text-center">Status</th>
-                  <th className="py-6 px-10 text-right">Aksi</th>
+                <tr className="text-slate-500 font-medium text-xs border-b border-slate-100">
+                  <th className="py-3 px-4 md:px-5">Invoice</th>
+                  <th className="py-3 px-4 md:px-5 hidden md:table-cell">Pemilik</th>
+                  <th className="py-3 px-4 md:px-5 text-right">Nominal</th>
+                  <th className="py-3 px-4 md:px-5 text-center hidden md:table-cell">Status</th>
+                  <th className="py-3 px-4 md:px-5 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50/50 font-medium">
+              <tbody className="divide-y divide-slate-50">
                 <AnimatePresence mode="popLayout">
                   {items.map((inv) => (
                     <motion.tr 

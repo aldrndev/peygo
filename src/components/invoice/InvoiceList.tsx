@@ -87,18 +87,14 @@ export default function InvoiceList({ invoices, type }: InvoiceListProps) {
   };
 
   return (
-    <div className="relative space-y-10 pb-20">
-      {/* Decorative Blur Elements (Admin Style) */}
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-400/5 blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-40 left-0 w-[500px] h-[500px] bg-orange-400/5 blur-[150px] -z-10 pointer-events-none" />
-
+    <div className="relative space-y-6 md:space-y-8 pb-20">
       {/* Header - Desktop only */}
-      <div className="hidden md:flex justify-between items-center relative">
+      <div className="hidden md:flex justify-between items-center">
         <div>
-          <h1 className="text-4xl font-semibold text-slate-900 tracking-tighter leading-none">
+          <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
             {title}
           </h1>
-          <p className="text-slate-500 text-lg font-medium mt-2">
+          <p className="text-slate-500 text-sm mt-1">
             {isBilling ? "Kelola daftar tagihan bisnis Anda." : "Kelola permintaan pembayaran supplier."}
           </p>
         </div>
@@ -106,21 +102,22 @@ export default function InvoiceList({ invoices, type }: InvoiceListProps) {
           as={Link} 
           href={createLink}
           color="primary"
-          startContent={<Plus size={20} />}
-          className="font-semibold px-8 rounded-2xl h-12"
+          size="sm"
+          startContent={<Plus size={16} />}
+          className="font-medium px-4 rounded-lg h-9"
           aria-label={`Buat ${title} Baru`}
         >
-          BUAT {title.toUpperCase()}
+          Buat {title}
         </Button>
       </div>
 
       {/* Mobile Title */}
-      <div className="md:hidden flex justify-between items-center">
-        <h1 className="text-3xl font-semibold text-slate-900 tracking-tighter">{title}</h1>
+      <div className="md:hidden">
+        <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
         <StatCard 
           title={`Total ${title}`} 
           value={formatCurrencyShort(totalAmount)} 
@@ -142,32 +139,29 @@ export default function InvoiceList({ invoices, type }: InvoiceListProps) {
       </div>
 
       {/* Search & Filter */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3 mb-4">
-           <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-[0.3em] whitespace-nowrap">Filter & Pencarian</h2>
-           <div className="h-px flex-1 bg-slate-200/50" />
-        </div>
+      <div className="space-y-3">
+        <h2 className="text-sm font-medium text-slate-500">Filter & Pencarian</h2>
         
-        <div className="flex flex-col md:flex-row gap-4 items-center">
+        <div className="flex flex-col md:flex-row gap-3 items-center">
           <Input
             {...register("search")}
-            placeholder={`Cari berdasarkan nama atau nomor ${title.toLowerCase()}...`}
-            startContent={<Search size={20} className="text-slate-500" />}
+            placeholder={`Cari ${title.toLowerCase()}...`}
+            startContent={<Search size={18} className="text-slate-400" />}
             className="flex-1"
             aria-label={`Cari ${title}`}
             classNames={{
-              inputWrapper: "bg-white/60 backdrop-blur-xl border-white/50 border hover:bg-white focus-within:bg-orange-50/50 focus-within:border-orange-500 transition-all rounded-2xl h-14 px-4",
-              input: "font-medium text-slate-900 placeholder:text-slate-500",
+              inputWrapper: "bg-white border-slate-100 border hover:border-slate-200 focus-within:border-orange-500 transition-all rounded-xl h-10 px-3",
+              input: "text-sm text-slate-900 placeholder:text-slate-400",
             }}
           />
           
-          <div className="flex gap-2 min-w-max p-1 bg-slate-100 rounded-[18px] self-stretch md:self-auto">
+          <div className="flex gap-1.5 p-1 bg-slate-100 rounded-lg self-stretch md:self-auto">
             {filters.map(f => (
               <button
                 key={f.key}
                 type="button"
                 onClick={() => setValue("filter", f.key)}
-                className={`px-6 py-2.5 rounded-2xl text-xs uppercase font-semibold tracking-widest transition-all focus-visible:ring-2 focus-visible:ring-orange-500 outline-none ${
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all focus-visible:ring-2 focus-visible:ring-orange-500 outline-none ${
                   filter === f.key 
                     ? "bg-white text-slate-900 shadow-sm" 
                     : "text-slate-600 hover:text-slate-900"
@@ -183,14 +177,14 @@ export default function InvoiceList({ invoices, type }: InvoiceListProps) {
 
       {/* Invoice List */}
       {filteredInvoices.length === 0 ? (
-        <div className="bg-white/60 backdrop-blur-xl border border-white/50 rounded-[32px] p-12">
+        <div className="bg-white border border-slate-100 rounded-xl p-8">
           <EmptyState
             variant="billing"
-            title={search || filter !== "all" ? "Pencarian tidak ditemukan" : `Belum ada ${title.toLowerCase()}`}
+            title={search || filter !== "all" ? "Tidak ditemukan" : `Belum ada ${title.toLowerCase()}`}
             description={
               search || filter !== "all"
-                ? "Coba gunakan kata kunci lain atau ubah filter status."
-                : `Klik tombol 'Buat ${title}' untuk memulai record pertama Anda.`
+                ? "Coba kata kunci lain atau ubah filter."
+                : `Buat ${title.toLowerCase()} pertama Anda.`
             }
             action={
               !search && filter === "all"
@@ -200,22 +194,11 @@ export default function InvoiceList({ invoices, type }: InvoiceListProps) {
           />
         </div>
       ) : (
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          {filteredInvoices.map((invoice, index) => (
-            <motion.div
-              key={invoice.id}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-            >
-              <InvoiceItem invoice={invoice} />
-            </motion.div>
+        <div className="space-y-3">
+          {filteredInvoices.map((invoice) => (
+            <InvoiceItem key={invoice.id} invoice={invoice} />
           ))}
-        </motion.div>
+        </div>
       )}
 
       {/* Mobile FAB */}
@@ -244,45 +227,40 @@ function InvoiceItem({ invoice }: { invoice: Invoice }) {
   };
 
   return (
-    <Link href={`/dashboard/invoice/${invoice.id}`} aria-label={`Detail ${invoice.recipient_name || "Tanpa Nama"}, Total ${formatCurrency(invoice.total_amount)}`}>
-      <motion.div
-        className="bg-white/60 backdrop-blur-xl border border-white/50 rounded-3xl p-6 transition-all duration-500 group relative overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
-        whileTap={{ scale: 0.99 }}
-      >
-        <div className="flex items-center gap-6 relative z-10">
+    <Link href={`/dashboard/invoice/${invoice.id}`} aria-label={`Detail ${invoice.recipient_name || "Tanpa Nama"}, Total ${formatCurrency(invoice.total_amount)}`} className="block outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-xl">
+      <div className="bg-white border border-slate-100 rounded-xl p-4 active:bg-slate-50 transition-colors">
+        <div className="flex items-center gap-3">
           {/* Icon */}
-          <div className={`w-14 h-14 rounded-2xl ${statusStyle.bg} flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 duration-500 shadow-sm`}>
-            <StatusIcon size={26} className={statusStyle.iconColor} />
+          <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${statusStyle.bg} flex items-center justify-center shrink-0`}>
+            <StatusIcon size={20} className={statusStyle.iconColor} />
           </div>
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-3 mb-1">
-              <p className="font-semibold text-slate-900 truncate text-[13px] tracking-tight uppercase leading-none">
+            <div className="flex items-center justify-between gap-2">
+              <p className="font-medium text-slate-900 truncate text-sm">
                 {invoice.recipient_name || "Tanpa Nama"}
               </p>
-              <p className="font-semibold text-slate-900 text-lg tracking-tighter leading-none shrink-0">
+              <p className="font-semibold text-slate-900 text-sm md:text-base shrink-0">
                 {formatCurrency(invoice.total_amount)}
               </p>
             </div>
             
-            <div className="flex items-center justify-between gap-3 mt-3">
-              <div className="flex items-center gap-3">
-                <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg uppercase tracking-widest ${statusStyle.bg} ${statusStyle.color}`}>
+            <div className="flex items-center justify-between gap-2 mt-1.5">
+              <div className="flex items-center gap-2">
+                <span className={`text-xs font-medium px-2 py-0.5 rounded ${statusStyle.bg} ${statusStyle.color}`}>
                   {statusStyle.label}
                 </span>
-                <span className="text-xs font-semibold text-slate-500 tracking-widest uppercase">#{invoice.invoice_number}</span>
+                <span className="text-xs text-slate-400 hidden md:inline">#{invoice.invoice_number}</span>
               </div>
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-widest text-right">{formatDate(invoice.created_at)}</span>
+              <span className="text-xs text-slate-400 hidden md:inline">{formatDate(invoice.created_at)}</span>
             </div>
           </div>
 
-          {/* Arrow */}
-          <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0 shrink-0">
-            <ChevronRight size={18} />
-          </div>
+          {/* Arrow - hidden on mobile */}
+          <ChevronRight size={16} className="text-slate-300 shrink-0 hidden md:block" />
         </div>
-      </motion.div>
+      </div>
     </Link>
   );
 }

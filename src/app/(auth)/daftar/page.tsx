@@ -75,7 +75,7 @@ export default function RegisterPage() {
         variants={itemVariants}
       >
         <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
-          <Sparkles className="w-3 h-3" />
+          <Sparkles className="w-3 h-3" aria-hidden="true" />
           <span>Gratis Selamanya</span>
         </div>
         <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-2 tracking-tighter">
@@ -99,7 +99,7 @@ export default function RegisterPage() {
                 variant="flat"
                 size="lg"
                 labelPlacement="outside"
-                startContent={<User className="text-slate-400 w-5 h-5" />}
+                startContent={<User className="text-slate-400 w-5 h-5" aria-hidden="true" />}
                 classNames={{
                    input: "font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-medium",
                    inputWrapper: "h-16 bg-white border border-slate-200 shadow-sm rounded-2xl group-data-[hover=true]:border-slate-300 group-data-[focus=true]:border-orange-500 group-data-[focus=true]:ring-4 group-data-[focus=true]:ring-orange-500/10 transition-all",
@@ -116,7 +116,7 @@ export default function RegisterPage() {
                 variant="flat"
                 size="lg"
                 labelPlacement="outside"
-                startContent={<Mail className="text-slate-400 w-5 h-5" />}
+                startContent={<Mail className="text-slate-400 w-5 h-5" aria-hidden="true" />}
                 classNames={{
                    input: "font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-medium",
                    inputWrapper: "h-16 bg-white border border-slate-200 shadow-sm rounded-2xl group-data-[hover=true]:border-slate-300 group-data-[focus=true]:border-orange-500 group-data-[focus=true]:ring-4 group-data-[focus=true]:ring-orange-500/10 transition-all",
@@ -133,7 +133,7 @@ export default function RegisterPage() {
                 variant="flat"
                 size="lg"
                 labelPlacement="outside"
-                startContent={<Lock className="text-slate-400 w-5 h-5" />}
+                startContent={<Lock className="text-slate-400 w-5 h-5" aria-hidden="true" />}
                 classNames={{
                    input: "font-semibold text-slate-900 placeholder:text-slate-400",
                    inputWrapper: "h-16 bg-white border border-slate-200 shadow-sm rounded-2xl group-data-[hover=true]:border-slate-300 group-data-[focus=true]:border-orange-500 group-data-[focus=true]:ring-4 group-data-[focus=true]:ring-orange-500/10 transition-all",
@@ -148,8 +148,9 @@ export default function RegisterPage() {
                   className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-xs font-bold text-center flex items-center justify-center gap-2"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
+                  role="alert"
                 >
-                  <AlertCircle className="w-4 h-4" />
+                  <AlertCircle className="w-4 h-4" aria-hidden="true" />
                   {serverError}
                 </motion.div>
               )}
@@ -161,7 +162,7 @@ export default function RegisterPage() {
                 size="lg"
                 className="bg-orange-500 text-white font-bold text-sm uppercase tracking-widest h-16 rounded-2xl shadow-xl shadow-orange-500/30 hover:scale-[1.02] transition-all"
                 isLoading={isPending}
-                endContent={!isPending && <ArrowRight className="w-5 h-5" />}
+                endContent={!isPending && <ArrowRight className="w-5 h-5" aria-hidden="true" />}
               >
                 {isPending ? "Memproses..." : "Buat Akun Gratis"}
               </Button>

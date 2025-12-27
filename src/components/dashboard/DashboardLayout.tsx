@@ -118,26 +118,15 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-slate-50 overflow-hidden relative">
-      {/* Subtle Aurora Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-40">
-        <motion.div 
-          animate={{
-            scale: [1, 1.1, 1],
-            x: [0, 30, 0],
-            y: [0, 20, 0],
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full bg-orange-200/20 blur-[100px]"
-        />
-        <motion.div 
-          animate={{
-            scale: [1.1, 1, 1.1],
-            x: [0, -20, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-200/10 blur-[100px]"
-        />
+      {/* Skip to main content link for keyboard users */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+
+      {/* Static subtle background decoration - no animation */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-30">
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-orange-100 blur-3xl" />
+        <div className="absolute bottom-[10%] -right-[10%] w-[30%] h-[30%] rounded-full bg-blue-50 blur-3xl" />
       </div>
 
       {/* Desktop Sidebar */}
@@ -145,6 +134,7 @@ export default function DashboardLayout({
         className={`hidden md:flex fixed inset-y-0 left-0 z-40 flex-col bg-white border-r border-slate-200 transition-all duration-300 ${
           sidebarCollapsed ? "w-20" : "w-64"
         }`}
+        aria-label="Main navigation"
       >
         {/* Logo Section */}
         <div className={`flex items-center h-20 px-4 border-b border-slate-100 transition-all duration-300 ${sidebarCollapsed ? "justify-center" : ""}`}>
@@ -195,7 +185,7 @@ export default function DashboardLayout({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 py-6 overflow-y-auto">
+        <nav className="flex-1 py-6 overflow-y-auto" aria-label="Dashboard navigation">
           <div className="space-y-1.5 px-3">
             {navItems.map((item) => {
               const active = isActive(item.href, item.exact);
@@ -203,6 +193,7 @@ export default function DashboardLayout({
                 <div key={item.href} className="px-1">
                   <Link
                     href={item.href}
+                    aria-current={active ? "page" : undefined}
                     className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group relative ${
                       active 
                         ? "bg-orange-50 text-orange-600" 
@@ -302,8 +293,8 @@ export default function DashboardLayout({
         </Link>
 
         <div className="flex items-center gap-3">
-          <Button isIconOnly variant="light" size="sm" className="text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-all">
-            <Bell size={20} />
+          <Button isIconOnly variant="light" size="sm" className="text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-all" aria-label="Notifications">
+            <Bell size={20} aria-hidden="true" />
           </Button>
           
           {isMounted ? (
@@ -355,12 +346,14 @@ export default function DashboardLayout({
 
         {/* Global Search Bar */}
         <div className="hidden lg:flex items-center flex-1 max-w-md mx-12">
-          <form onSubmit={handleSubmit(onSearchSubmit)} className="relative w-full group">
+          <form onSubmit={handleSubmit(onSearchSubmit)} className="relative w-full group" role="search">
+            <label htmlFor="search-input" className="sr-only">Cari transaksi</label>
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-orange-500 transition-colors">
-              <Search size={18} />
+              <Search size={18} aria-hidden="true" />
             </div>
             <input 
               {...register("search")}
+              id="search-input"
               type="text"
               placeholder="Cari transaksi..."
               className="w-full bg-white border border-slate-200 text-sm font-semibold rounded-2xl py-3.5 pl-12 pr-16 focus:bg-white focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 outline-none transition-all placeholder:text-slate-400 placeholder:font-medium"
@@ -374,10 +367,10 @@ export default function DashboardLayout({
         {/* Right Actions */}
         <div className="flex items-center gap-5">
           {/* Notification */}
-          <Button isIconOnly variant="flat" size="lg" className="bg-white/40 border border-white/60 text-slate-400 hover:text-orange-500 hover:bg-white rounded-2xl transition-all h-12 w-12 shadow-sm">
+          <Button isIconOnly variant="flat" size="lg" className="bg-white/40 border border-white/60 text-slate-400 hover:text-orange-500 hover:bg-white rounded-2xl transition-all h-12 w-12 shadow-sm" aria-label="Notifications">
             <div className="relative">
-              <Bell size={20} />
-              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-orange-500 border-2 border-white rounded-full shadow-sm" />
+              <Bell size={20} aria-hidden="true" />
+              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-orange-500 border-2 border-white rounded-full shadow-sm" aria-hidden="true" />
             </div>
           </Button>
 
@@ -427,6 +420,7 @@ export default function DashboardLayout({
 
       {/* Main Content */}
       <main 
+        id="main-content"
         className={`min-h-screen pt-20 pb-40 md:pt-20 md:pb-0 transition-all duration-300 relative z-10 ${
           sidebarCollapsed ? "md:ml-20" : "md:ml-64"
         }`}
@@ -443,7 +437,7 @@ export default function DashboardLayout({
       </main>
 
       {/* Mobile Bottom Tab Bar */}
-      <nav className="md:hidden fixed bottom-6 inset-x-6 z-50 bg-slate-900/90 backdrop-blur-xl border border-white/10 shadow-2xl rounded-[24px]">
+      <nav className="md:hidden fixed bottom-6 inset-x-6 z-50 bg-slate-900/90 backdrop-blur-xl border border-white/10 shadow-2xl rounded-[24px]" aria-label="Mobile navigation">
         <div className="flex items-center justify-between h-16 w-full px-6">
           {/* Left items */}
           {mobileNavItems.slice(0, 2).map((item) => (
@@ -460,6 +454,7 @@ export default function DashboardLayout({
           <Link 
             href="/dashboard/profil"
             className="relative -mt-8"
+            aria-label="Go to profile"
           >
             <motion.div 
               className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl bg-gradient-to-br from-orange-500 to-orange-600 ring-4 ring-slate-900"
@@ -502,6 +497,7 @@ function MobileTabItem({
   return (
     <Link 
       href={href}
+      aria-current={active ? "page" : undefined}
       className="flex flex-col items-center justify-center min-w-[56px] py-1"
     >
       <motion.div

@@ -49,81 +49,63 @@ export default function AdminUsersClient({ users, userInvoiceCounts }: AdminUser
   const items = filteredUsers.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   return (
-    <div className="relative space-y-8 pb-10">
-      {/* Decorative Blurs */}
-      <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-orange-400/5 blur-[120px] -z-10 pointer-events-none" />
-
+    <div className="relative space-y-6 md:space-y-8 pb-10">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 px-1">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold uppercase tracking-widest mb-4">
-             <Shield size={12} />
-             <span>User Security & Identity</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
             Manajemen Pengguna
           </h1>
-          <p className="text-slate-500 mt-2 font-medium">Verifikasi, kontrol akses, dan audit aktivitas pengguna platform.</p>
+          <p className="text-slate-500 text-sm mt-1">Verifikasi dan kontrol akses pengguna.</p>
         </div>
         
-        <div className="flex items-center gap-3">
-            <Button 
-                color="primary" 
-                startContent={<UserPlus size={18} />}
-                className="font-bold text-sm h-12 rounded-2xl shadow-lg"
-            >
-                Tambah Admin
-            </Button>
-        </div>
+        <Button 
+          color="primary" 
+          size="sm"
+          startContent={<UserPlus size={16} />}
+          className="font-medium text-xs h-9 rounded-lg"
+        >
+          Tambah Admin
+        </Button>
       </div>
 
       {/* Control Hub */}
-      <Card className="shadow-lg shadow-slate-200/20 border border-white/50 bg-white/60 backdrop-blur-xl rounded-[32px] overflow-hidden">
-        <CardBody className="p-8">
-           <div className="flex flex-col md:flex-row gap-6">
+      <Card className="border border-slate-100 bg-white rounded-xl overflow-hidden">
+        <CardBody className="p-4">
+           <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                     <Input
-                        label="Cari Database"
-                        placeholder="Nama lengkap atau nomor telepon..."
-                        labelPlacement="outside"
-                        startContent={<Search className="text-slate-400" size={18} />}
+                        placeholder="Cari nama atau nomor telepon..."
+                        startContent={<Search className="text-slate-400" size={16} />}
                         value={searchQuery}
                         onValueChange={setQuery => { setSearchQuery(setQuery); setPage(1); }}
-                        variant="bordered"
                         classNames={{
-                            label: "text-slate-700 font-bold text-xs uppercase tracking-widest mb-3",
-                            inputWrapper: "bg-white/80 border-slate-200 shadow-sm rounded-2xl h-12 hover:border-blue-400 transition-colors",
+                            inputWrapper: "bg-white border-slate-100 border rounded-lg h-10",
+                            input: "text-sm",
                         }}
                     />
                 </div>
-                <div className="flex items-end gap-3">
-                    <Button variant="flat" startContent={<Filter size={16} />} className="h-12 rounded-2xl bg-white/60 backdrop-blur-xl border border-white/50 font-semibold px-6">
-                        Sortir
-                    </Button>
-                    <div className="px-6 py-3 rounded-2xl bg-slate-900 text-white flex items-center gap-4">
-                        <div className="text-right">
-                             <p className="text-xs font-bold text-white/50 uppercase tracking-widest">Database</p>
-                             <p className="text-sm font-bold">{users.length} Users</p>
-                        </div>
-                        <Shield className="text-blue-500" size={20} />
+                <div className="flex items-center gap-2">
+                    <div className="px-4 py-2 rounded-lg bg-slate-900 text-white flex items-center gap-2">
+                         <span className="text-sm font-medium">{users.length} Users</span>
                     </div>
                 </div>
            </div>
         </CardBody>
       </Card>
 
-      {/* Users Grid/List */}
-      <Card className="shadow-lg shadow-slate-200/20 border border-white/50 bg-white/60 backdrop-blur-xl rounded-[40px] overflow-hidden">
+      {/* Users Table */}
+      <Card className="border border-slate-100 bg-white rounded-xl overflow-hidden">
         <CardBody className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
-                <tr className="text-slate-400 font-bold uppercase text-xs tracking-widest border-b border-slate-100/50">
-                  <th className="py-6 px-10">Identitas Pengguna</th>
-                  <th className="py-6 px-10">Kontak</th>
-                  <th className="py-6 px-10 text-center">Status Role</th>
-                  <th className="py-6 px-10 text-center">Transaksi</th>
-                  <th className="py-6 px-10 text-right">Aksi</th>
+                <tr className="text-slate-500 font-medium text-xs border-b border-slate-100">
+                  <th className="py-3 px-4 md:px-5">Pengguna</th>
+                  <th className="py-3 px-4 md:px-5 hidden md:table-cell">Kontak</th>
+                  <th className="py-3 px-4 md:px-5 text-center hidden md:table-cell">Role</th>
+                  <th className="py-3 px-4 md:px-5 text-center">Transaksi</th>
+                  <th className="py-3 px-4 md:px-5 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50/50 font-medium">

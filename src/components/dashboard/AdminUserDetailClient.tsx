@@ -54,53 +54,51 @@ export default function AdminUserDetailClient({ profile, invoices }: AdminUserDe
   const totalTransactionalValue = invoices.reduce((acc, inv) => acc + (inv.total_amount || 0), 0);
 
   return (
-    <div className="relative space-y-8 pb-10">
-      {/* Decorative Blurs */}
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-400/5 blur-[120px] -z-10 pointer-events-none" />
-
-      {/* Header & Navigation */}
-      <div className="px-1">
+    <div className="relative space-y-6 md:space-y-8 pb-10">
+      {/* Navigation */}
+      <div>
         <Button 
           variant="flat" 
+          size="sm"
           onPress={() => router.back()}
-          className="mb-8 font-bold text-xs uppercase tracking-[0.2em] bg-white/60 backdrop-blur-md border border-white/50 h-10 px-4 rounded-xl shadow-sm hover:bg-slate-900 hover:text-white transition-all"
+          className="mb-4 font-medium text-xs bg-white border border-slate-100 h-9 px-3 rounded-lg"
         >
-          <ArrowLeft className="w-3 h-3 mr-2" />
-          Back to list
+          <ArrowLeft className="w-3 h-3 mr-1" />
+          Kembali
         </Button>
 
-        <div className="flex flex-col md:flex-row md:items-center gap-8">
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
           <Avatar 
              name={profile.name?.charAt(0) || "U"} 
-             className={`w-20 h-20 rounded-[28px] text-2xl font-bold shadow-2xl shadow-slate-200 border-4 border-white ${
+             className={`w-14 h-14 rounded-xl text-xl font-semibold ${
                 profile.role === "admin" ? "bg-slate-900 text-white" : "bg-blue-500 text-white"
              }`}
           />
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight">
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
                 {profile.name || "User Detail"}
               </h1>
               <Chip 
                 size="sm"
                 variant="flat" 
                 color={profile.role === "admin" ? "primary" : "default"}
-                className={`font-bold text-xs uppercase tracking-widest h-7 px-3 border border-white/50 backdrop-blur-md ${profile.role === "admin" ? "bg-blue-500/10" : "bg-slate-500/10"}`}
+                className="text-xs"
               >
                 {profile.role}
               </Chip>
             </div>
-            <p className="text-slate-500 text-sm font-semibold flex items-center gap-2 mt-2 uppercase tracking-wide opacity-80">
-              <Calendar className="w-4 h-4 text-blue-500" />
-              Member Since {new Date(profile.created_at).toLocaleDateString("id-ID", {
-                month: 'long', year: 'numeric'
+            <p className="text-slate-500 text-xs mt-1 flex items-center gap-1">
+              <Calendar className="w-3 h-3" />
+              Member sejak {new Date(profile.created_at).toLocaleDateString("id-ID", {
+                month: 'short', year: 'numeric'
               })}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
         {/* Left Column: Personal Info */}
         <div className="lg:col-span-4 space-y-6">
           <Card className="shadow-2xl shadow-slate-200/40 border border-white/50 bg-white/60 backdrop-blur-xl rounded-[32px] overflow-hidden">

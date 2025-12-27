@@ -201,7 +201,7 @@ export default function CreatePembayaranPage() {
             variant="flat" 
             color="secondary" 
             className="hidden sm:flex font-bold px-8 rounded-2xl h-12 uppercase tracking-widest text-xs" 
-            startContent={<Eye size={18} />} 
+            startContent={<Eye size={20} />} 
             onPress={onOpen}
         >
             PRATINJAU
@@ -230,12 +230,12 @@ export default function CreatePembayaranPage() {
             <div key={idx} className="relative z-10 flex flex-col items-center gap-4 group">
               <div 
                 className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 ${
-                  isActive ? "bg-orange-500 text-white" : "bg-white text-slate-300 border-2 border-slate-100 group-hover:border-slate-200"
+                  isActive ? "bg-slate-900 text-white shadow-xl shadow-slate-900/10" : "bg-white/60 backdrop-blur-xl border border-white/60 text-slate-300"
                 }`}
               >
-                <Icon size={24} className={isCurrent ? "animate-pulse" : ""} />
+                <Icon size={isCurrent ? 24 : 20} className="transition-all duration-300" />
               </div>
-              <span className={`text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 ${isActive ? "text-slate-900" : "text-slate-400 opacity-50"}`}>
+              <span className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300 ${isActive ? "text-slate-900" : "text-slate-400 opacity-50"}`}>
                 {step.label}
               </span>
             </div>
@@ -266,17 +266,17 @@ export default function CreatePembayaranPage() {
             {/* STEP 1: Supplier & Details */}
             {currentStep === 1 && (
               <div className="space-y-8">
-                <Card className="bg-white/40 backdrop-blur-xl border border-white/60 shadow-2xl shadow-slate-200/50 rounded-[32px] overflow-hidden relative">
+                <Card className="bg-white/40 backdrop-blur-xl border border-white/60 shadow-sm rounded-[40px] overflow-hidden relative">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -mr-16 -mt-16 blur-2xl" />
-                  <CardBody className="gap-8 p-8 md:p-12 relative z-10">
+                  <CardBody className="gap-8 p-10 md:p-16 relative z-10">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-orange-500 flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
+                        <div className="w-12 h-12 rounded-2xl bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-900/10">
                            <Building2 size={24} />
                         </div>
                         <div>
-                           <h3 className="font-bold text-xl text-slate-900 tracking-tight">Detail Supplier</h3>
-                           <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-0.5">Pilih pihak yang akan dibayar</p>
+                           <h3 className="font-semibold text-xl text-slate-900 tracking-tight">Detail Supplier</h3>
+                           <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Pilih pihak yang akan dibayar</p>
                         </div>
                       </div>
                       <Button as={Link} href="/dashboard/supplier" size="sm" variant="light" color="primary" className="font-bold uppercase tracking-widest text-xs">Kelola Supplier</Button>
@@ -285,10 +285,10 @@ export default function CreatePembayaranPage() {
                     <Select 
                       label="Cari Supplier" 
                       placeholder={suppliers.length === 0 ? "Belum ada supplier" : "Pilih supplier dari daftar..."}
-                      variant="flat"
-                      className="font-bold"
+                      variant="bordered"
+                      className="font-medium"
                       classNames={{
-                        trigger: "bg-white/50 border border-slate-100 h-16 rounded-[20px] px-6",
+                        trigger: "bg-white/40 border-white/60 h-16 rounded-2xl px-6 focus-within:border-slate-400",
                         label: "font-bold text-slate-400 uppercase tracking-widest text-xs",
                       }}
                       selectedKeys={selectedSupplierId ? [selectedSupplierId] : []}
@@ -311,35 +311,35 @@ export default function CreatePembayaranPage() {
                       <motion.div 
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-900 text-white p-8 rounded-[28px] relative overflow-hidden"
+                        className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-950 text-white p-10 rounded-[40px] relative overflow-hidden"
                       >
                          <div className="absolute top-0 right-0 w-48 h-48 bg-orange-500/10 rounded-full -mr-24 -mt-24 blur-3xl" />
                          <div className="relative z-10">
-                             <p className="text-xs font-bold text-slate-500 uppercase tracking-[0.3em] mb-3">Bank Tujuan</p>
-                             <p className="font-bold text-lg tracking-tight">{bankName || "-"}</p>
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mb-4">Bank Tujuan</p>
+                             <p className="font-semibold text-lg tracking-tight">{bankName || "-"}</p>
                          </div>
-                         <div className="relative z-10 md:border-x md:border-slate-800 md:px-6">
-                             <p className="text-xs font-bold text-slate-500 uppercase tracking-[0.3em] mb-3">Nomor Rekening</p>
+                         <div className="relative z-10 md:border-l md:border-white/10 md:pl-8">
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mb-4">Nomor Rekening</p>
                              <p className="font-bold text-2xl tracking-tighter text-orange-400">{accountNumber || "-"}</p>
                          </div>
-                         <div className="relative z-10">
-                             <p className="text-xs font-bold text-slate-500 uppercase tracking-[0.3em] mb-3">Atas Nama</p>
-                             <p className="font-bold text-lg tracking-tight uppercase">{accountName || "-"}</p>
+                         <div className="relative z-10 md:border-l md:border-white/10 md:pl-8">
+                             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mb-4">Atas Nama</p>
+                             <p className="font-semibold text-lg tracking-tight uppercase">{accountName || "-"}</p>
                          </div>
                       </motion.div>
                     )}
                   </CardBody>
                 </Card>
 
-                <Card className="bg-white/40 backdrop-blur-xl border border-white/60 shadow-2xl shadow-slate-200/50 rounded-[32px] overflow-hidden">
-                  <CardBody className="gap-8 p-8 md:p-12">
+                <Card className="bg-white/40 backdrop-blur-xl border border-white/60 shadow-sm rounded-[40px] overflow-hidden">
+                  <CardBody className="gap-8 p-10 md:p-16">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
                          <ReceiptText size={24} />
                       </div>
                       <div>
-                         <h3 className="font-bold text-xl text-slate-900 tracking-tight">Informasi Tambahan</h3>
-                         <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-0.5">Detail pembayaran dan catatan</p>
+                         <h3 className="font-semibold text-xl text-slate-900 tracking-tight">Informasi Tambahan</h3>
+                         <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Detail pembayaran dan catatan</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -347,13 +347,13 @@ export default function CreatePembayaranPage() {
                         {...register("due_date")}
                         type="date" 
                         label="Tanggal Jatuh Tempo" 
-                        variant="flat"
-                        className="font-bold"
+                        variant="bordered"
+                        className="font-medium"
                         isRequired 
                         min={new Date().toISOString().split('T')[0]}
                         startContent={<Calendar size={20} className="text-slate-400" />}
                         classNames={{
-                          inputWrapper: "bg-white/50 border border-slate-100 h-16 rounded-[20px] px-6",
+                          inputWrapper: "bg-white/40 border-white/60 h-16 rounded-2xl px-6 focus-within:border-slate-400",
                           label: "font-bold text-slate-400 uppercase tracking-widest text-xs",
                           errorMessage: "font-bold text-xs uppercase tracking-wider",
                         }}
@@ -365,10 +365,10 @@ export default function CreatePembayaranPage() {
                       {...register("description")}
                       label="Deskripsi Transaksi" 
                       placeholder="Contoh: Pelunasan Invoice #8829 atau Pembelian Stok..." 
-                      variant="flat"
-                      className="font-bold"
+                      variant="bordered"
+                      className="font-medium"
                       classNames={{
-                        inputWrapper: "bg-white/50 border border-slate-100 rounded-[20px] p-6",
+                        inputWrapper: "bg-white/40 border-white/60 rounded-2xl p-6 focus-within:border-slate-400",
                         label: "font-bold text-slate-400 uppercase tracking-widest text-xs",
                         errorMessage: "font-bold text-xs uppercase tracking-wider",
                       }}
@@ -626,7 +626,7 @@ export default function CreatePembayaranPage() {
             isDisabled={currentStep === 1}
             className="font-bold px-10 rounded-2xl h-14 uppercase tracking-widest text-xs"
           >
-            Kembali
+            KEMBALI
           </Button>
           
           <div className="flex gap-4">
@@ -634,10 +634,10 @@ export default function CreatePembayaranPage() {
                <Button 
                  color="primary" 
                  onPress={nextStep} 
-                 className="font-bold px-14 rounded-2xl h-14 uppercase tracking-widest text-xs shadow-2xl shadow-orange-500/20"
+                 className="font-bold px-14 rounded-2xl h-14 uppercase tracking-widest text-xs shadow-2xl shadow-slate-900/10"
                  endContent={<ChevronRight size={18} />}
                >
-                 Lanjut
+                 LANJUTKAN
                </Button>
              ) : (
                 <Button 
@@ -654,9 +654,9 @@ export default function CreatePembayaranPage() {
         </div>
 
         {/* Mobile Sticky Action Bar */}
-        <div className="md:hidden fixed bottom-16 inset-x-0 z-40 bg-white/80 backdrop-blur-2xl border-t border-slate-100 p-6 flex items-center justify-between gap-6 shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
+        <div className="md:hidden fixed bottom-16 inset-x-0 z-40 bg-white/60 backdrop-blur-2xl border-t border-white/40 p-6 flex items-center justify-between gap-6 shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
            <div className="flex flex-col gap-1">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Total</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</span>
               <span className="text-2xl font-bold text-orange-500 tracking-tighter tabular-nums leading-none">{formatCurrency(totalAmount)}</span>
            </div>
            
@@ -666,19 +666,19 @@ export default function CreatePembayaranPage() {
                variant="flat" 
                onPress={prevStep} 
                isDisabled={currentStep === 1}
-               className="rounded-2xl h-14 w-14 bg-slate-50"
+               className="rounded-2xl h-14 w-14 bg-white/40 border border-white/60"
              >
-               <ArrowLeft size={20} />
+               <ArrowLeft size={20} className="text-slate-600" />
              </Button>
              
              {currentStep < 3 ? (
                <Button 
                  color="primary" 
                  onPress={nextStep} 
-                 className="font-bold px-10 rounded-2xl h-14 uppercase tracking-widest text-xs shadow-2xl shadow-orange-500/20"
+                 className="font-bold px-10 rounded-2xl h-14 uppercase tracking-widest text-xs shadow-2xl shadow-slate-900/10"
                  endContent={<ChevronRight size={18} />}
                >
-                 Lanjut
+                 LANJUT
                </Button>
              ) : (
                 <Button 
@@ -687,7 +687,7 @@ export default function CreatePembayaranPage() {
                   className="font-bold px-10 rounded-2xl h-14 uppercase tracking-widest text-xs"
                   isLoading={isPending}
                 >
-                  Simpan
+                  SIMPAN
                 </Button>
              )}
            </div>
@@ -711,22 +711,22 @@ export default function CreatePembayaranPage() {
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-2">
-                           <h3 className="text-2xl font-bold text-slate-900 tracking-tighter">Pratinjau Permintaan</h3>
+                           <h3 className="text-2xl font-semibold text-slate-900 tracking-tighter">Pratinjau Permintaan</h3>
                            <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em]">Dokumen Pembayaran (Draft)</p>
                         </ModalHeader>
                         <ModalBody>
                             <div className="p-8 md:p-12">
-                                <Card className="bg-white rounded-[48px] shadow-2xl shadow-slate-200/50 border-none overflow-hidden relative">
+                                <Card className="bg-white rounded-[40px] shadow-2xl shadow-slate-200/50 border-none overflow-hidden relative">
                                     <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full -mr-32 -mt-32" />
                                     <CardBody className="p-10 md:p-16 relative z-10">
                                         <div className="flex justify-between items-start mb-16">
                                             <div className="space-y-6">
-                                                <div className="inline-flex items-center gap-3 bg-slate-900 text-white px-5 py-2 rounded-2xl shadow-xl shadow-slate-900/20">
+                                                <div className="inline-flex items-center gap-3 bg-slate-900 text-white px-5 py-2 rounded-2xl shadow-xl shadow-slate-900/10">
                                                     <ReceiptText size={20} />
                                                     <span className="text-xs font-bold uppercase tracking-[0.2em]">PAYMENT REQUEST</span>
                                                 </div>
                                                 <div>
-                                                    <h2 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tighter leading-none mb-3">#DRAFT</h2>
+                                                    <h2 className="text-4xl md:text-5xl font-semibold text-slate-900 tracking-tighter leading-none mb-3">#DRAFT</h2>
                                                     <div className="flex items-center gap-3">
                                                         <span className="text-xs font-bold px-3 py-1.5 rounded-lg uppercase tracking-widest bg-amber-500/10 text-amber-600">
                                                             MENUNGGU DATA

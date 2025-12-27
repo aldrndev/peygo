@@ -74,34 +74,25 @@ export default function UserDashboardClient({
 
   return (
     <motion.div 
-      className="relative space-y-16 pb-20"
+      className="relative space-y-8 md:space-y-12 pb-20"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      {/* Decorative Blur Elements (Admin Style) */}
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-400/5 blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-40 left-0 w-[500px] h-[500px] bg-orange-400/5 blur-[150px] -z-10 pointer-events-none" />
-
       {/* Greeting Section */}
-      <motion.section variants={itemVariants} className="relative">
-        <h1 className="text-4xl md:text-5xl font-semibold text-slate-900 tracking-tighter leading-tight mb-4">
-          Halo, 
-          <br className="md:hidden" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-500"> {userName}</span> 
+      <motion.section variants={itemVariants}>
+        <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 mb-2">
+          Halo, {userName}
         </h1>
-        <p className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl">
-          {companyName ? `Selamat datang kembali di ${companyName}.` : "Selamat datang kembali di workspace Anda. Semua sistem berjalan normal."}
+        <p className="text-slate-500 text-sm md:text-base">
+          {companyName ? `Selamat datang kembali di ${companyName}.` : "Selamat datang kembali."}
         </p>
       </motion.section>
 
       {/* Stats Section */}
       <motion.section variants={itemVariants}>
-        <div className="flex items-center gap-3 mb-8">
-           <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-[0.3em]">Ikhtisar Keuangan</h2>
-           <div className="h-px flex-1 bg-slate-200/50" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <h2 className="text-sm font-medium text-slate-500 mb-4">Ikhtisar Keuangan</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
           <StatCard
             title="Total Penagihan"
             value={formatCompact(stats.totalPembayaran)}
@@ -123,14 +114,11 @@ export default function UserDashboardClient({
         </div>
       </motion.section>
 
-      {/* Quick Actions & Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         {/* Left: Recent Activity */}
         <motion.section variants={itemVariants} className="lg:col-span-7 flex flex-col h-full">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-               <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-[0.3em]">Aktivitas Terbaru</h2>
-            </div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-medium text-slate-500">Aktivitas Terbaru</h2>
             <Link 
               href="/dashboard/pembayaran" 
               className="group flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-orange-500 p-1 rounded-lg"

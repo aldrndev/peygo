@@ -176,7 +176,7 @@ export default function CreatePenagihanPage() {
         <Button 
           variant="flat" 
           color="secondary" 
-          className="hidden sm:flex font-semibold rounded-2xl px-8 h-12 shadow-sm uppercase tracking-widest text-xs" 
+          className="hidden sm:flex font-bold rounded-2xl px-8 h-12 uppercase tracking-widest text-xs" 
           startContent={<Eye size={20} />} 
           onPress={onOpen}
         >
@@ -236,9 +236,8 @@ export default function CreatePenagihanPage() {
             {/* STEP 1: Details */}
             {currentStep === 1 && (
               <div className="space-y-8">
-                <Card className="bg-white/40 backdrop-blur-xl border border-white/60 shadow-sm overflow-hidden rounded-[32px]">
-                  <div className="h-1.5 bg-orange-500" />
-                  <CardBody className="gap-8 p-6 md:p-10">
+                <Card className="bg-white/40 backdrop-blur-xl border border-white/60 shadow-sm overflow-hidden rounded-[40px]">
+                  <CardBody className="gap-8 p-10 md:p-16">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600">
                         <ReceiptText size={20} />
@@ -256,9 +255,9 @@ export default function CreatePenagihanPage() {
                         min={new Date().toISOString().split('T')[0]}
                         startContent={<Calendar size={18} className="text-slate-400" />}
                         classNames={{
-                          inputWrapper: "rounded-2xl border-slate-200 focus-within:border-orange-500 transition-colors h-14",
-                          label: "font-semibold text-xs uppercase tracking-widest text-slate-400",
-                          errorMessage: "font-semibold text-xs uppercase tracking-wider",
+                          inputWrapper: "rounded-2xl border-white/40 bg-white/40 focus-within:border-orange-500 transition-colors h-14",
+                          label: "font-bold text-xs uppercase tracking-widest text-slate-400",
+                          errorMessage: "font-bold text-xs uppercase tracking-wider",
                         }}
                         isInvalid={!!errors.due_date}
                         errorMessage={errors.due_date?.message}
@@ -271,9 +270,9 @@ export default function CreatePenagihanPage() {
                         isRequired
                         startContent={<User size={18} className="text-slate-400" />}
                         classNames={{
-                          inputWrapper: "rounded-2xl border-slate-200 focus-within:border-orange-500 transition-colors h-14",
-                          label: "font-semibold text-xs uppercase tracking-widest text-slate-400",
-                          errorMessage: "font-semibold text-xs uppercase tracking-wider",
+                          inputWrapper: "rounded-2xl border-white/40 bg-white/40 focus-within:border-orange-500 transition-colors h-14",
+                          label: "font-bold text-xs uppercase tracking-widest text-slate-400",
+                          errorMessage: "font-bold text-xs uppercase tracking-wider",
                         }}
                         isInvalid={!!errors.recipient_name}
                         errorMessage={errors.recipient_name?.message}
@@ -287,9 +286,9 @@ export default function CreatePenagihanPage() {
                       minRows={2} 
                       isRequired
                       classNames={{
-                        inputWrapper: "rounded-2xl border-slate-200 focus-within:border-orange-500 transition-colors p-4",
-                        label: "font-semibold text-xs uppercase tracking-widest text-slate-400",
-                        errorMessage: "font-semibold text-xs uppercase tracking-wider",
+                        inputWrapper: "rounded-2xl border-white/40 bg-white/40 focus-within:border-orange-500 transition-colors p-4",
+                        label: "font-bold text-xs uppercase tracking-widest text-slate-400",
+                        errorMessage: "font-bold text-xs uppercase tracking-wider",
                       }}
                       isInvalid={!!errors.description}
                       errorMessage={errors.description?.message}
@@ -297,11 +296,10 @@ export default function CreatePenagihanPage() {
                   </CardBody>
                 </Card>
 
-                <Card className="bg-white/40 backdrop-blur-xl border border-white/60 shadow-sm overflow-hidden rounded-[32px]">
-                  <div className="h-1.5 bg-slate-200" />
-                  <CardBody className="gap-8 p-6 md:p-10">
+                <Card className="bg-white/40 backdrop-blur-xl border border-white/60 shadow-sm overflow-hidden rounded-[40px]">
+                  <CardBody className="gap-8 p-10 md:p-16">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 border border-white/60">
                         <Plus size={20} className="text-blue-500" />
                       </div>
                       <h3 className="font-semibold text-xl text-slate-900 tracking-tight">Detail Kontak Penerima</h3>
@@ -314,9 +312,9 @@ export default function CreatePenagihanPage() {
                       minRows={2}
                       isRequired
                       classNames={{
-                        inputWrapper: "rounded-2xl border-slate-200 focus-within:border-blue-500 transition-colors p-4",
-                        label: "font-semibold text-xs uppercase tracking-widest text-slate-400",
-                        errorMessage: "font-semibold text-xs uppercase tracking-wider",
+                        inputWrapper: "rounded-2xl border-white/40 bg-white/40 focus-within:border-blue-500 transition-colors p-4",
+                        label: "font-bold text-xs uppercase tracking-widest text-slate-400",
+                        errorMessage: "font-bold text-xs uppercase tracking-wider",
                       }}
                       isInvalid={!!errors.recipient_address}
                       errorMessage={errors.recipient_address?.message}
@@ -330,7 +328,7 @@ export default function CreatePenagihanPage() {
                         variant="bordered"
                         isRequired
                         classNames={{
-                          inputWrapper: "rounded-2xl border-slate-200 focus-within:border-blue-500 transition-colors h-14",
+                          inputWrapper: "rounded-2xl border-white/40 bg-white/40 focus-within:border-blue-500 transition-colors h-14",
                           label: "font-bold text-xs uppercase tracking-widest text-slate-400",
                           errorMessage: "font-bold text-xs uppercase tracking-wider",
                         }}
@@ -345,9 +343,9 @@ export default function CreatePenagihanPage() {
                         variant="bordered"
                         isRequired
                         classNames={{
-                          inputWrapper: "rounded-2xl border-slate-200 focus-within:border-blue-500 transition-colors h-14",
-                          label: "font-semibold text-xs uppercase tracking-widest text-slate-400",
-                          errorMessage: "font-semibold text-xs uppercase tracking-wider",
+                          inputWrapper: "rounded-2xl border-white/40 bg-white/40 focus-within:border-blue-500 transition-colors h-14",
+                          label: "font-bold text-xs uppercase tracking-widest text-slate-400",
+                          errorMessage: "font-bold text-xs uppercase tracking-wider",
                         }}
                         isInvalid={!!errors.recipient_phone}
                         errorMessage={errors.recipient_phone?.message}
@@ -375,22 +373,22 @@ export default function CreatePenagihanPage() {
                       key={field.id}
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-6 bg-white/40 backdrop-blur-xl border border-white/60 rounded-[32px] shadow-sm hover:border-orange-200 transition-all flex flex-col gap-6"
+                      className="p-8 md:p-10 bg-white/40 backdrop-blur-xl border border-white/60 rounded-[40px] shadow-sm hover:border-orange-200 transition-all flex flex-col gap-8"
                     >
                       <div className="flex justify-between items-start gap-4">
-                        <Input 
-                          {...register(`items.${index}.description`)}
-                          placeholder="Nama item atau jasa..." 
-                          variant="flat"
-                          className="flex-1"
-                          classNames={{ 
-                            inputWrapper: "bg-slate-50/50 rounded-2xl h-14 px-4 border border-transparent focus-within:border-orange-100",
-                            input: "font-semibold text-slate-900",
-                            errorMessage: "font-semibold text-xs uppercase tracking-wider",
-                          }}
-                          isInvalid={!!errors.items?.[index]?.description}
-                          errorMessage={errors.items?.[index]?.description?.message}
-                        />
+                          <Input 
+                            {...register(`items.${index}.description`)}
+                            placeholder="Nama item atau jasa..." 
+                            variant="flat"
+                            className="flex-1"
+                            classNames={{ 
+                              inputWrapper: "bg-white/50 border border-white/40 rounded-2xl h-14 px-6 focus-within:border-orange-500",
+                              input: "font-semibold text-slate-900",
+                              errorMessage: "font-bold text-xs uppercase tracking-wider",
+                            }}
+                            isInvalid={!!errors.items?.[index]?.description}
+                            errorMessage={errors.items?.[index]?.description?.message}
+                          />
                         <Button isIconOnly size="sm" color="danger" variant="light" onPress={() => remove(index)} className="rounded-xl w-14 h-14 shrink-0">
                           <Trash size={20} />
                         </Button>
@@ -402,7 +400,7 @@ export default function CreatePenagihanPage() {
                           label="Jumlah (Qty)" 
                           variant="bordered"
                           classNames={{
-                            inputWrapper: "rounded-2xl border-slate-200 h-14",
+                            inputWrapper: "rounded-2xl border-white/40 bg-white/40 h-14 focus-within:border-orange-500",
                             label: "font-bold text-xs uppercase tracking-widest text-slate-400",
                             errorMessage: "font-bold text-xs uppercase tracking-wider",
                           }}
@@ -417,7 +415,7 @@ export default function CreatePenagihanPage() {
                           className="md:col-span-2"
                           startContent={<span className="text-slate-400 font-bold text-sm">Rp</span>}
                           classNames={{
-                            inputWrapper: "rounded-2xl border-slate-200 h-14",
+                            inputWrapper: "rounded-2xl border-white/40 bg-white/40 h-14 focus-within:border-orange-500",
                             label: "font-bold text-xs uppercase tracking-widest text-slate-400",
                             errorMessage: "font-bold text-xs uppercase tracking-wider",
                           }}
@@ -429,8 +427,8 @@ export default function CreatePenagihanPage() {
                   ))}
                 </div>
 
-                <Card className="bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden mt-12 rounded-[32px]">
-                  <CardBody className="p-8 md:p-10 gap-8 relative overflow-hidden">
+                <Card className="bg-slate-900 border border-slate-800 shadow-2xl overflow-hidden mt-12 rounded-[40px]">
+                  <CardBody className="p-10 md:p-12 gap-8 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/10 blur-[80px] rounded-full -mr-20 -mt-20" />
                     <div className="flex justify-between items-center relative z-10">
                       <div className="flex items-center gap-3">
@@ -600,7 +598,7 @@ export default function CreatePenagihanPage() {
             variant="light" 
             onPress={prevStep} 
             isDisabled={currentStep === 1}
-            className="font-bold px-10 rounded-2xl h-14 text-slate-500 hover:text-slate-900 transition-colors"
+            className="font-bold px-10 rounded-2xl h-14 text-slate-500 hover:text-slate-900 transition-colors uppercase tracking-widest text-xs"
           >
             KEMBALI
           </Button>
@@ -610,10 +608,10 @@ export default function CreatePenagihanPage() {
                <Button 
                  color="primary" 
                  onPress={nextStep} 
-                 className="font-semibold px-12 rounded-2xl h-14 uppercase tracking-widest text-xs"
+                 className="font-bold px-12 rounded-2xl h-14 uppercase tracking-widest text-xs shadow-xl shadow-orange-500/20"
                  endContent={<ChevronRight size={20} />}
                >
-                 Langkah Berikutnya
+                 LANJUTKAN
                </Button>
              ) : (
                 <Button 
@@ -630,9 +628,9 @@ export default function CreatePenagihanPage() {
         </div>
 
         {/* Mobile Sticky Action Bar */}
-        <div className="md:hidden fixed bottom-[72px] inset-x-0 z-40 bg-white/60 backdrop-blur-2xl border-t border-white/40 p-5 flex items-center justify-between gap-6 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
+        <div className="md:hidden fixed bottom-[72px] inset-x-0 z-40 bg-white/60 backdrop-blur-2xl border-t border-white/40 p-6 flex items-center justify-between gap-6 shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
            <div className="flex flex-col">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Tagihan</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Tagihan</span>
               <span className="text-xl font-bold text-orange-600 leading-none tracking-tighter mt-1">{formatCurrency(totalAmount)}</span>
            </div>
            
@@ -642,9 +640,9 @@ export default function CreatePenagihanPage() {
                variant="flat" 
                onPress={prevStep} 
                isDisabled={currentStep === 1}
-               className="rounded-2xl h-14 w-14 bg-slate-100 flex items-center justify-center shrink-0"
+               className="rounded-2xl h-14 w-14 bg-white/40 border border-white/60 flex items-center justify-center shrink-0"
              >
-               <ArrowLeft size={20} />
+               <ArrowLeft size={20} className="text-slate-600" />
              </Button>
              
              {currentStep < 3 ? (
@@ -654,7 +652,7 @@ export default function CreatePenagihanPage() {
                  className="font-bold px-10 rounded-2xl h-14 shadow-lg shadow-orange-500/20 uppercase tracking-widest text-xs"
                  endContent={<ChevronRight size={18} />}
                >
-                 Lanjut
+                 LANJUT
                </Button>
              ) : (
                 <Button 
@@ -663,10 +661,10 @@ export default function CreatePenagihanPage() {
                   className="font-bold px-10 rounded-2xl h-14 shadow-lg shadow-orange-500/20 uppercase tracking-widest text-xs"
                   isLoading={isPending}
                 >
-                  Simpan
+                  SIMPAN
                 </Button>
              )}
-           </div>
+          </div>
         </div>
 
         {/* Preview Modal */}
@@ -686,12 +684,12 @@ export default function CreatePenagihanPage() {
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-2">
-                           <h3 className="text-2xl font-bold text-slate-900 tracking-tighter">Pratinjau Dokumen</h3>
+                           <h3 className="text-2xl font-semibold text-slate-900 tracking-tighter">Pratinjau Dokumen</h3>
                            <p className="text-slate-500 text-sm font-medium">Tampilan invoice yang akan diterima oleh pelanggan.</p>
                         </ModalHeader>
                         <ModalBody>
                             <div className="p-8 md:p-12">
-                              <div className="bg-white rounded-[32px] p-10 md:p-16 shadow-2xl shadow-slate-200/50 border border-white relative overflow-hidden">
+                              <div className="bg-white rounded-[40px] p-10 md:p-16 shadow-2xl shadow-slate-200/50 border border-white relative overflow-hidden">
                                   {/* Decorative Element */}
                                   <div className="absolute top-0 right-0 w-64 h-64 bg-slate-50 rounded-full -mr-32 -mt-32" />
                                   

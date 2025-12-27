@@ -5,7 +5,7 @@ export const invoiceSchema = z.object({
     message: "Tipe invoice tidak valid"
   }),
   recipient_name: z.string().min(1, "Nama penerima wajib diisi"),
-  recipient_email: z.email("Format email tidak valid"),
+  recipient_email: z.email({ message: "Format email tidak valid" }),
   recipient_phone: z.string().min(1, "Nomor telepon wajib diisi"),
   recipient_address: z.string().optional().or(z.literal("")),
   

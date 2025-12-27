@@ -67,48 +67,36 @@ export default function AdminReportsClient({
   };
 
   return (
-    <div className="relative space-y-8 pb-10">
-      {/* Decorative Blurs */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-500/5 blur-[120px] -z-10 pointer-events-none" />
-
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 px-1">
+    <div className="relative space-y-6 md:space-y-8 pb-10">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold uppercase tracking-widest mb-4">
-             <Activity size={12} />
-             <span>Real-time Analytics</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
             Laporan Analitik
           </h1>
-          <p className="text-slate-500 mt-2 font-medium">
-            Pantau pertumbuhan, performa finansial, dan keterlibatan pengguna.
+          <p className="text-slate-500 text-sm mt-1">
+            Pantau pertumbuhan dan performa finansial.
           </p>
         </div>
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <Button variant="flat" isIconOnly className="h-12 w-12 rounded-2xl bg-white/60 backdrop-blur-xl border border-white/50">
-            <Filter size={18} />
-          </Button>
-          <div className="flex-1 md:w-64">
-            <Select 
-                placeholder="6 Bulan Terakhir" 
-                variant="bordered"
-                startContent={<Calendar className="w-4 h-4 text-slate-400" />}
-                classNames={{
-                trigger: "bg-white/60 backdrop-blur-xl border-white/50 shadow-sm rounded-2xl h-12",
-                }}
-            >
-                <SelectItem key="1month" className="font-semibold">1 Bulan Terakhir</SelectItem>
-                <SelectItem key="3months" className="font-semibold">3 Bulan Terakhir</SelectItem>
-                <SelectItem key="6months" className="font-semibold">6 Bulan Terakhir</SelectItem>
-                <SelectItem key="1year" className="font-semibold">1 Tahun Terakhir</SelectItem>
-            </Select>
-          </div>
+        <div className="w-full md:w-48">
+          <Select 
+            placeholder="6 Bulan Terakhir" 
+            size="sm"
+            startContent={<Calendar className="w-3 h-3 text-slate-400" />}
+            classNames={{
+              trigger: "bg-white border-slate-100 border rounded-lg h-9 text-xs",
+            }}
+          >
+            <SelectItem key="1month">1 Bulan</SelectItem>
+            <SelectItem key="3months">3 Bulan</SelectItem>
+            <SelectItem key="6months">6 Bulan</SelectItem>
+            <SelectItem key="1year">1 Tahun</SelectItem>
+          </Select>
         </div>
       </div>
 
       {/* Primary Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 relative">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <ReportCard
           icon={<DollarSign className="w-5 h-5" />}
           label="Volume Transaksi"

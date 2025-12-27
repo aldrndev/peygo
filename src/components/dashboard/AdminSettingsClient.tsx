@@ -16,25 +16,18 @@ import {
 
 export default function AdminSettingsClient() {
   return (
-    <div className="relative space-y-8 pb-10">
-      {/* Decorative Blur */}
-      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-400/5 blur-[120px] -z-10 pointer-events-none" />
-
-      {/* Header Section */}
-      <div className="px-1">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-bold uppercase tracking-widest mb-4">
-             <SettingsIcon size={12} />
-             <span>System Preferences</span>
-        </div>
-        <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight">
+    <div className="relative space-y-6 md:space-y-8 pb-10">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
           Pengaturan Sistem
         </h1>
-        <p className="text-slate-500 mt-2 font-medium">
-          Kelola parameter operasional, kebijakan biaya, dan keamanan platform.
+        <p className="text-slate-500 text-sm mt-1">
+          Kelola parameter operasional dan keamanan platform.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
         {/* Left Column: Core Settings */}
         <div className="lg:col-span-7 space-y-6">
           {/* General Settings */}

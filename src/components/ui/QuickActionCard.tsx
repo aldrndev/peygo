@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { LucideIcon, ArrowRight } from "lucide-react";
+import { LucideIcon, ChevronRight } from "lucide-react";
 
 interface QuickActionCardProps {
   href: string;
@@ -45,27 +44,24 @@ export default function QuickActionCard({
   const styles = colorStyles[color];
 
   return (
-    <Link href={href}>
-      <motion.div
-        className="bg-white/60 backdrop-blur-xl border-white/50 border rounded-[32px] p-6 transition-all duration-500 group relative overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
-        whileHover={{ x: 5 }}
-        whileTap={{ scale: 0.98 }}
+    <Link href={href} className="block outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-xl">
+      <div
+        className="bg-white border border-slate-100 rounded-xl p-4 active:bg-slate-50 transition-colors"
+        tabIndex={-1}
       >
-        <div className="flex items-center gap-6 relative z-10">
-          <div className={`w-14 h-14 rounded-2xl ${styles.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm`}>
-            <Icon size={28} className={styles.iconColor} />
+        <div className="flex items-center gap-4">
+          <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${styles.iconBg} flex items-center justify-center shrink-0`}>
+            <Icon size={20} className={styles.iconColor} aria-hidden="true" />
           </div>
-          <div className="flex-1">
-            <p className="font-semibold text-slate-900 text-lg tracking-tight leading-tight">{label}</p>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-slate-900 text-sm md:text-base">{label}</p>
             {description && (
-              <p className="text-xs font-semibold text-slate-500 mt-1 uppercase tracking-widest">{description}</p>
+              <p className="text-xs text-slate-500 mt-0.5 truncate">{description}</p>
             )}
           </div>
-          <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0">
-             <ArrowRight size={18} />
-          </div>
+          <ChevronRight size={16} className="text-slate-300 shrink-0" aria-hidden="true" />
         </div>
-      </motion.div>
+      </div>
     </Link>
   );
 }
