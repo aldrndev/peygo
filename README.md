@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Peygo 🚀
 
-## Getting Started
+**Peygo** adalah platform SaaS manajemen invoice dan pembayaran digital modern yang dirancang untuk Freelancer, UMKM, Startup, dan Agensi di Indonesia. Dengan fokus pada kecepatan, keamanan, dan estetika premium, Peygo mempermudah pengelolaan operasional keuangan bisnis Anda.
 
-First, run the development server:
+## ✨ Fitur Utama
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+-   **Dashboard Real-time**: Pantau arus kas dan statistik transaksi melalui visualisasi data yang elegan.
+-   **Manajemen Penagihan (Invoicing)**: Buat, kelola, dan kirim invoice profesional dengan wizard multi-step yang intuitif.
+-   **Manajemen Pembayaran (Pay-out)**: Kelola pembayaran ke supplier dengan verifikasi bank otomatis dan pelacakan status.
+-   **Identitas Bisnis & Brand**: Personalisasi profil bisnis Anda dengan logo dan informasi resmi untuk meningkatkan kredibilitas.
+-   **Keamanan Level Enterprise**: Autentikasi aman melalui Supabase Auth dengan perlindungan data tingkat tinggi.
+-   **Desain Modern & Responsif**: Antarmuka berbasis *glassmorphism* yang dioptimalkan untuk perangkat mobile dan desktop.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Peygo dibangun menggunakan teknologi terkini untuk memastikan performa maksimal:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+-   **Framework**: [Next.js 15+](https://nextjs.org/) (App Router, Server Actions)
+-   **Bahasa**: [TypeScript](https://www.typescriptlang.org/) (Strict mode)
+-   **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+-   **UI Library**: [HeroUI](https://heroui.com/) (React UI Library)
+-   **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) (Client-side) & [React Query](https://tanstack.com/query) (Server-state)
+-   **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL, Auth, Storage)
+-   **Form Handling**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+-   **Animasi**: [Framer Motion](https://www.framer.com/motion/)
 
-## Learn More
+## 🚀 Memulai (Local Setup)
 
-To learn more about Next.js, take a look at the following resources:
+### Prasyarat
+-   Node.js 18+ 
+-   PNPM (Rekomendasi) atau NPM
+-   Akun Supabase
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Instalasi
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1.  **Clone repository**
+    ```bash
+    git clone https://github.com/username/peygo.git
+    cd peygo
+    ```
 
-## Deploy on Vercel
+2.  **Instal dependensi**
+    ```bash
+    pnpm install
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3.  **Konfigurasi Environment Variable**
+    Salin `.env.example` menjadi `.env.local` dan isi kredensial Supabase Anda:
+    ```bash
+    cp .env.example .env.local
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4.  **Jalankan aplikasi**
+    ```bash
+    pnpm dev
+    ```
+    Buka [http://localhost:3000](http://localhost:3000) pada browser Anda.
+
+## 📝 Script Tersedia
+
+-   `pnpm dev`: Jalankan server pengembangan.
+-   `pnpm build`: Buat aplikasi versi produksi.
+-   `pnpm start`: Jalankan aplikasi versi produksi yang sudah di-build.
+-   `pnpm lint`: Jalankan audit kode dengan ESLint.
+
+---
+
+Dibuat dengan ❤️ oleh [Digitesia](https://digitesia.com)

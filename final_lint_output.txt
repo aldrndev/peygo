@@ -1,0 +1,90 @@
+
+> peygo@0.1.0 lint /Users/aldrnmrsd/Documents/Documents/Coding/peygo
+> eslint
+
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/app/(dashboard)/dashboard/pembayaran/buat/page.tsx
+  19:3   warning  'Chip' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  98:24  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/app/(dashboard)/dashboard/pembayaran/buat/page.tsx:98:24
+   96 |
+   97 |   // Watch values
+>  98 |   const watchedItems = watch("items");
+      |                        ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+   99 |   const taxEnabled = watch("tax_enabled");
+  100 |   const taxRate = watch("tax_rate") || 11;
+  101 |   const discountType = watch("discount_type");  react-hooks/incompatible-library
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/app/(dashboard)/dashboard/penagihan/buat/page.tsx
+  86:24  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/app/(dashboard)/dashboard/penagihan/buat/page.tsx:86:24
+  84 |
+  85 |   // Watch values for calculations
+> 86 |   const watchedItems = watch("items");
+     |                        ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  87 |   const taxEnabled = watch("tax_enabled");
+  88 |   const taxRate = watch("tax_rate") || 11;
+  89 |   const discountType = watch("discount_type");  react-hooks/incompatible-library
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/app/page.tsx
+   24:3   warning  'ChevronRight' is defined but never used        @typescript-eslint/no-unused-vars
+  902:10  warning  'isHovered' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/components/dashboard/ProfilePage.tsx
+  3:37  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+  4:18  warning  'Card' is defined but never used       @typescript-eslint/no-unused-vars
+  4:24  warning  'CardBody' is defined but never used   @typescript-eslint/no-unused-vars
+  4:41  warning  'Divider' is defined but never used    @typescript-eslint/no-unused-vars
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/components/dashboard/UserDashboardClient.tsx
+  6:3  warning  'Receipt' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/components/invoice/InvoiceDetail.tsx
+   3:34  warning  'Chip' is defined but never used                  @typescript-eslint/no-unused-vars
+   3:46  warning  'Tooltip' is defined but never used               @typescript-eslint/no-unused-vars
+   9:18  warning  'AnimatePresence' is defined but never used       @typescript-eslint/no-unused-vars
+  11:8   warning  'NextImage' is defined but never used             @typescript-eslint/no-unused-vars
+  22:12  warning  'isArchiving' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/components/invoice/InvoiceList.tsx
+   6:25  warning  'Chip' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   6:31  warning  'Card' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   6:37  warning  'CardBody' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   6:47  warning  'Tooltip' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   7:98  warning  'ArrowRight' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   8:19  warning  'useWatch' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  42:18  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/components/invoice/InvoiceList.tsx:42:18
+  40 |   });
+  41 |
+> 42 |   const search = watch("search");
+     |                  ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  43 |   const filter = watch("filter");
+  44 |   
+  45 |   // Update search field if query param changes  react-hooks/incompatible-library
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/components/supplier/SupplierList.tsx
+  29:18  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/aldrnmrsd/Documents/Documents/Coding/peygo/src/components/supplier/SupplierList.tsx:29:18
+  27 |   });
+  28 |
+> 29 |   const search = watch("search");
+     |                  ^^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  30 |
+  31 |   const handleCreate = () => {
+  32 |     setSelectedSupplier(null);  react-hooks/incompatible-library
+
+✖ 23 problems (0 errors, 23 warnings)
+

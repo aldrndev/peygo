@@ -1,0 +1,140 @@
+"use server";
+
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+export const supplierSchema = z.object({
+  name: z.string().min(2, "Nama minimal 2 karakter"),
+  email: z.email("Format email tidak valid").optional().or(z.literal("")),
+  phone: z.string().optional().or(z.literal("")),
+  address: z.string().optional().or(z.literal("")),
+  bank_name: z.string().min(2, "Nama bank wajib diisi"),
+  bank_account_number: z.string().min(5, "Nomor rekening wajib diisi"),
+  bank_account_name: z.string().min(2, "Atas nama rekening wajib diisi"),
+});
+
+export async function getSuppliers() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) return [];
+
+  const { data } = await supabase
+    .from("suppliers")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  return data || [];
+}
+
+export async function createSupplier(
+  prevState: { error: string; success?: boolean } | null,
+  formData: FormData
+) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Tidak terautentikasi" };
+  }
+
+  // Check limits (Free tier: max 5 suppliers)
+  const { count } = await supabase
+    .from("suppliers")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  if (count && count >= 5) {
+    return { error: "Batas maksimal 5 supplier tercapai. Hubungi admin untuk upgrade." };
+  }
+
+  const rawData = {
+    name: formData.get("name"),
+    email: formData.get("email") || "",
+    phone: formData.get("phone") || "",
+    address: formData.get("address") || "",
+    bank_name: formData.get("bank_name") || null,
+    bank_account_number: formData.get("bank_account_number") || null,
+    bank_account_name: formData.get("bank_account_name") || null,
+  };
+
+  const parsed = supplierSchema.safeParse(rawData);
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  const { error } = await supabase
+    .from("suppliers")
+    .insert({
+      user_id: user.id,
+      ...parsed.data,
+    });
+
+  if (error) {
+    return { error: "Gagal menyimpan supplier" };
+  }
+
+  revalidatePath("/dashboard/supplier");
+  return { error: "", success: true };
+}
+
+export async function updateSupplier(
+  id: string,
+  prevState: { error: string; success?: boolean } | null,
+  formData: FormData
+) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+
+  const rawData = {
+    name: formData.get("name"),
+    email: formData.get("email") || "",
+    phone: formData.get("phone") || "",
+    address: formData.get("address") || "",
+    bank_name: formData.get("bank_name") || null,
+    bank_account_number: formData.get("bank_account_number") || null,
+    bank_account_name: formData.get("bank_account_name") || null,
+  };
+
+  const parsed = supplierSchema.safeParse(rawData);
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  const { error } = await supabase
+    .from("suppliers")
+    .update({
+      ...parsed.data,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: "Gagal mengupdate supplier" };
+  }
+
+  revalidatePath("/dashboard/supplier");
+  return { error: "", success: true };
+}
+
+export async function deleteSupplier(id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("suppliers")
+    .delete()
+    .eq("id", id);
+    
+  if (error) return { error: error.message };
+  
+  revalidatePath("/dashboard/supplier");
+  return { success: true };
+}

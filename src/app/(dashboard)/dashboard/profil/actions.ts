@@ -1,0 +1,81 @@
+"use server";
+
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { z } from "zod";
+
+const PROFILE_COMPLETE_COOKIE = "peygo_profile_complete";
+
+export const profileSchema = z.object({
+  name: z.string().min(2, "Nama minimal 2 karakter"),
+  phone: z.string().min(10, "No. telepon minimal 10 digit"),
+  company_name: z.string().optional().or(z.literal("")),
+  company_address: z.string().optional().or(z.literal("")),
+  logo_url: z.string().optional().or(z.literal("")),
+});
+
+export async function updateProfile(
+  prevState: { error: string; success?: boolean } | null, 
+  formData: FormData
+) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Unauthorized" };
+  }
+
+  const rawData = {
+    name: formData.get("name"),
+    phone: formData.get("phone"),
+    company_name: formData.get("company_name") || null,
+    company_address: formData.get("company_address") || null,
+    logo_url: formData.get("logo_url") || null,
+  };
+
+  const parsed = profileSchema.safeParse(rawData);
+  
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .upsert({
+      id: user.id,
+      ...parsed.data,
+      updated_at: new Date().toISOString(),
+    });
+
+  if (error) {
+    return { error: "Gagal menyimpan profil. Silakan periksa koneksi Anda dan coba lagi." };
+  }
+
+  // Set profile complete cookie for middleware caching
+  const cookieStore = await cookies();
+  cookieStore.set(PROFILE_COMPLETE_COOKIE, "true", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30, // 30 days
+  });
+
+  revalidatePath("/dashboard");
+  return { error: "", success: true };
+}
+
+export async function completeOnboarding(
+  prevState: { error: string } | null, 
+  formData: FormData
+) {
+  const result = await updateProfile(prevState, formData);
+  
+  if (result.success) {
+    redirect("/dashboard/penagihan");
+  }
+  
+  return result;
+}
+
