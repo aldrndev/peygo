@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardBody, Divider, Button } from "@heroui/react";
 import Link from "next/link";
 import {
   Users,
@@ -14,6 +13,10 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 interface AdminStats {
   totalUsers: number;
@@ -72,10 +75,10 @@ export default function AdminDashboardClient({
     <div className="relative space-y-6 md:space-y-8 pb-10">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
+        <h1 className="text-2xl md:text-3xl font-semibold text-foreground">
           Ringkasan Platform
         </h1>
-        <p className="text-slate-500 mt-1 text-sm">
+        <p className="text-muted-foreground mt-1 text-sm">
           Pantau performa dan aktivitas platform.
         </p>
       </div>
@@ -119,133 +122,132 @@ export default function AdminDashboardClient({
       {/* Breakdown Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Status Breakdown */}
-      <Card className="border border-slate-100 bg-white rounded-2xl overflow-hidden">
-          <CardBody className="p-5">
-            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-8">Status Invoice</h3>
+        <Card>
+          <CardContent className="p-5">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-8">Status Invoice</h3>
             <div className="space-y-6">
               {[
-                { label: "Lunas", value: stats.paidInvoices, color: "bg-emerald-500", text: "text-emerald-500" },
-                { label: "Menunggu", value: stats.pendingInvoices, color: "bg-orange-500", text: "text-orange-500" },
-                { label: "Gagal / Lainnya", value: stats.totalInvoices - stats.paidInvoices - stats.pendingInvoices, color: "bg-slate-300", text: "text-slate-400" },
+                { label: "Lunas", value: stats.paidInvoices, color: "bg-success", text: "text-success" },
+                { label: "Menunggu", value: stats.pendingInvoices, color: "bg-warning", text: "text-warning" },
+                { label: "Gagal / Lainnya", value: stats.totalInvoices - stats.paidInvoices - stats.pendingInvoices, color: "bg-muted-foreground", text: "text-muted-foreground" },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${item.color}`} />
-                    <span className="font-semibold text-slate-600">{item.label}</span>
+                    <div className={cn("w-2 h-2 rounded-full", item.color)} />
+                    <span className="font-medium text-muted-foreground">{item.label}</span>
                   </div>
-                  <span className={`font-semibold text-lg ${item.text}`}>{item.value.toLocaleString()}</span>
+                  <span className={cn("font-semibold text-lg", item.text)}>{item.value.toLocaleString()}</span>
                 </div>
               ))}
             </div>
-          </CardBody>
+          </CardContent>
         </Card>
 
         {/* Type Breakdown */}
-      <Card className="border border-slate-100 bg-white rounded-2xl overflow-hidden">
-          <CardBody className="p-5">
-            <h3 className="text-sm font-medium text-slate-500 mb-4">Tipe Transaksi</h3>
+        <Card>
+          <CardContent className="p-5">
+            <h3 className="text-sm font-medium text-muted-foreground mb-4">Tipe Transaksi</h3>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 rounded-xl bg-orange-50 border border-orange-100">
+              <div className="flex items-center justify-between p-3 rounded-xl bg-primary/10 border border-primary/20">
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-orange-500 text-white">
+                  <div className="p-1.5 rounded-lg bg-primary text-primary-foreground">
                     <Receipt className="w-4 h-4" />
                   </div>
-                  <span className="text-sm font-semibold text-slate-700">Penagihan</span>
+                  <span className="text-sm font-semibold text-foreground">Penjualan</span>
                 </div>
-                <span className="text-base font-semibold text-slate-900">{stats.billingCount.toLocaleString()}</span>
+                <span className="text-base font-semibold text-foreground">{stats.billingCount.toLocaleString()}</span>
               </div>
               <div className="flex items-center justify-between p-3 rounded-xl bg-blue-50 border border-blue-100">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 rounded-lg bg-blue-500 text-white">
                     <CreditCard className="w-4 h-4" />
                   </div>
-                  <span className="text-sm font-medium text-slate-700">Pembayaran</span>
+                  <span className="text-sm font-medium text-foreground">Pembayaran</span>
                 </div>
-                <span className="text-base font-semibold text-slate-900">{stats.paymentCount.toLocaleString()}</span>
+                <span className="text-base font-semibold text-foreground">{stats.paymentCount.toLocaleString()}</span>
               </div>
             </div>
-          </CardBody>
+          </CardContent>
         </Card>
 
         {/* User Breakdown */}
-      <Card className="border border-slate-100 bg-white rounded-2xl overflow-hidden">
-          <CardBody className="p-5">
-            <h3 className="text-sm font-medium text-slate-500 mb-4">Populasi Pengguna</h3>
+        <Card>
+          <CardContent className="p-5">
+            <h3 className="text-sm font-medium text-muted-foreground mb-4">Populasi Pengguna</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600">Regular Users</span>
-                <span className="text-base font-semibold text-slate-900">{stats.userCount.toLocaleString()}</span>
+                <span className="text-sm text-muted-foreground">Regular Users</span>
+                <span className="text-base font-semibold text-foreground">{stats.userCount.toLocaleString()}</span>
               </div>
-              <Divider className="bg-slate-100" />
+              <Separator />
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-600">Administrators</span>
-                <span className="text-base font-semibold text-indigo-600">{stats.adminCount.toLocaleString()}</span>
+                <span className="text-sm text-muted-foreground">Administrators</span>
+                <span className="text-base font-semibold text-primary">{stats.adminCount.toLocaleString()}</span>
               </div>
             </div>
-          </CardBody>
+          </CardContent>
         </Card>
       </div>
 
       {/* Recent Activity */}
-      <Card className="border border-slate-100 bg-white rounded-2xl overflow-hidden">
-        <CardBody className="p-0">
-          <div className="p-4 md:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <Card>
+        <CardContent className="p-0">
+          <div className="p-4 md:p-5 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white">
+              <div className="w-10 h-10 bg-foreground rounded-xl flex items-center justify-center text-background">
                 <Activity className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-slate-900">Aktivitas Terbaru</h3>
-                <p className="text-slate-500 text-xs">10 transaksi terakhir</p>
+                <h3 className="text-lg font-semibold text-foreground">Aktivitas Terbaru</h3>
+                <p className="text-muted-foreground text-xs">10 transaksi terakhir</p>
               </div>
             </div>
-            <Link href="/dashboard/admin/invoices">
-              <Button 
-                variant="flat" 
-                size="sm"
-                endContent={<ChevronRight size={14} />} 
-                className="font-medium text-xs px-3 h-9 rounded-lg bg-slate-100"
-              >
+            <Button variant="secondary" size="sm" asChild>
+              <Link href="/dashboard/admin/invoices">
                 Lihat Semua
-              </Button>
-            </Link>
+                <ChevronRight size={14} className="ml-2" />
+              </Link>
+            </Button>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
-                <tr className="text-slate-500 font-medium text-xs border-b border-slate-100">
+                <tr className="text-muted-foreground font-medium text-xs border-b border-border">
                   <th className="py-3 px-4 md:px-5">Transaksi</th>
                   <th className="py-3 px-4 md:px-5 text-right">Nominal</th>
                   <th className="py-3 px-4 md:px-5 text-center hidden md:table-cell">Status</th>
                   <th className="py-3 px-4 md:px-5 text-right hidden md:table-cell">Tanggal</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-border">
                 {recentInvoices.map((invoice) => (
-                  <tr key={invoice.id} className="hover:bg-slate-50 transition-colors">
+                  <tr key={invoice.id} className="hover:bg-accent/50 transition-colors">
                     <td className="py-3 px-4 md:px-5">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${invoice.type === "BILLING" ? "bg-orange-50 text-orange-600" : "bg-blue-50 text-blue-600"}`}>
+                        <div className={cn(
+                          "w-8 h-8 rounded-lg flex items-center justify-center",
+                          invoice.type === "BILLING" ? "bg-primary/10 text-primary" : "bg-blue-50 text-blue-600"
+                        )}>
                           {invoice.type === "BILLING" ? <Receipt size={16} /> : <CreditCard size={16} />}
                         </div>
                         <div>
-                          <p className="font-medium text-slate-900 text-sm">
-                            {invoice.type === "BILLING" ? "Penagihan" : "Pay-out"}
+                          <p className="font-medium text-foreground text-sm">
+                            {invoice.type === "BILLING" ? "Penjualan" : "Pay-out"}
                           </p>
-                          <p className="text-xs text-slate-400">#{invoice.id.slice(0, 8)}</p>
+                          <p className="text-xs text-muted-foreground">#{invoice.id.slice(0, 8)}</p>
                         </div>
                       </div>
                     </td>
                     <td className="py-3 px-4 md:px-5 text-right">
-                      <span className="font-semibold text-sm text-slate-900">
+                      <span className="font-semibold text-sm text-foreground tabular-nums">
                         {formatCurrency(invoice.total_amount || 0)}
                       </span>
                     </td>
                     <td className="py-3 px-4 md:px-5 text-center hidden md:table-cell">
                       <StatusBadge status={invoice.status} />
                     </td>
-                    <td className="py-3 px-4 md:px-5 text-right text-xs text-slate-500 hidden md:table-cell">
+                    <td className="py-3 px-4 md:px-5 text-right text-xs text-muted-foreground hidden md:table-cell">
                       {new Date(invoice.created_at).toLocaleDateString("id-ID", {
                         day: "numeric",
                         month: "short",
@@ -257,7 +259,7 @@ export default function AdminDashboardClient({
               </tbody>
             </table>
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
     </div>
   );
@@ -281,31 +283,34 @@ function StatCard({
   color: "orange" | "blue" | "emerald" | "indigo";
 }) {
   const bgClasses: Record<string, string> = {
-    orange: "bg-orange-50 text-orange-600",
+    orange: "bg-primary/10 text-primary",
     blue: "bg-blue-50 text-blue-600",
-    emerald: "bg-emerald-50 text-emerald-600",
+    emerald: "bg-success/10 text-success",
     indigo: "bg-indigo-50 text-indigo-600",
   };
 
   const cardContent = (
-    <Card shadow="none" className="h-full border border-slate-100 bg-white rounded-2xl overflow-hidden">
-      <CardBody className="p-4 md:p-5">
+    <Card className="h-full">
+      <CardContent className="p-4 md:p-5">
         <div className="flex items-start justify-between mb-3">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${bgClasses[color]}`}>
+          <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", bgClasses[color])}>
             {icon}
           </div>
           {change && (
-            <div className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ${positive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"}`}>
+            <div className={cn(
+              "flex items-center gap-1 text-xs px-2 py-1 rounded-full",
+              positive ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+            )}>
               {positive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
               {change.split(' ')[0]}
             </div>
           )}
         </div>
         <div>
-          <p className="text-xs font-medium text-slate-500 mb-1">{label}</p>
-          <p className="text-xl md:text-2xl font-semibold text-slate-900">{value}</p>
+          <p className="text-xs font-medium text-muted-foreground mb-1">{label}</p>
+          <p className="text-xl md:text-2xl font-semibold text-foreground tabular-nums">{value}</p>
         </div>
-      </CardBody>
+      </CardContent>
     </Card>
   );
 
@@ -314,19 +319,19 @@ function StatCard({
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { bg: string; text: string; label: string; dot: string }> = {
-    DRAFT: { bg: "bg-slate-500/10", text: "text-slate-600", label: "Draft", dot: "bg-slate-400" },
-    SENT: { bg: "bg-orange-500/10", text: "text-orange-600", label: "Terkirim", dot: "bg-orange-400" },
-    PAID: { bg: "bg-emerald-500/10", text: "text-emerald-700", label: "Lunas", dot: "bg-emerald-500" },
-    DISBURSED: { bg: "bg-blue-500/10", text: "text-blue-700", label: "Dicairkan", dot: "bg-blue-500" },
-    FAILED: { bg: "bg-rose-500/10", text: "text-rose-600", label: "Gagal", dot: "bg-rose-500" },
-    EXPIRED: { bg: "bg-rose-500/10", text: "text-rose-600", label: "Expired", dot: "bg-rose-500" },
+    DRAFT: { bg: "bg-muted", text: "text-muted-foreground", label: "Draft", dot: "bg-muted-foreground" },
+    SENT: { bg: "bg-warning/10", text: "text-warning", label: "Terkirim", dot: "bg-warning" },
+    PAID: { bg: "bg-success/10", text: "text-success", label: "Lunas", dot: "bg-success" },
+    DISBURSED: { bg: "bg-blue-50", text: "text-blue-600", label: "Dicairkan", dot: "bg-blue-500" },
+    FAILED: { bg: "bg-destructive/10", text: "text-destructive", label: "Gagal", dot: "bg-destructive" },
+    EXPIRED: { bg: "bg-destructive/10", text: "text-destructive", label: "Expired", dot: "bg-destructive" },
   };
 
   const { bg, text, label, dot } = config[status] || config.DRAFT;
 
   return (
-    <span className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest ${bg} ${text} border border-white/50 backdrop-blur-sm`}>
-      <div className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+    <span className={cn("inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium", bg, text)}>
+      <div className={cn("w-1.5 h-1.5 rounded-full", dot)} />
       {label}
     </span>
   );

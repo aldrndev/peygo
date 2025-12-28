@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface StatCardProps {
   title: string;
@@ -17,39 +17,39 @@ interface StatCardProps {
 
 const variantStyles = {
   default: {
-    bg: "bg-white/60",
-    iconBg: "bg-slate-100/50",
-    iconColor: "text-slate-600",
-    valueColor: "text-slate-900",
-    border: "border-white/50",
+    bg: "bg-card",
+    iconBg: "bg-muted",
+    iconColor: "text-muted-foreground",
+    valueColor: "text-foreground",
+    border: "border-border",
   },
   primary: {
-    bg: "bg-slate-900",
-    iconBg: "bg-orange-500",
-    iconColor: "text-white",
-    valueColor: "text-white",
-    border: "border-slate-800",
+    bg: "bg-foreground",
+    iconBg: "bg-primary",
+    iconColor: "text-primary-foreground",
+    valueColor: "text-background",
+    border: "border-transparent",
   },
   success: {
-    bg: "bg-white/60",
-    iconBg: "bg-emerald-50",
-    iconColor: "text-emerald-600",
-    valueColor: "text-slate-900",
-    border: "border-white/50",
+    bg: "bg-card",
+    iconBg: "bg-success/10",
+    iconColor: "text-success",
+    valueColor: "text-foreground",
+    border: "border-border",
   },
   warning: {
-    bg: "bg-white/60",
-    iconBg: "bg-orange-50",
-    iconColor: "text-orange-600",
-    valueColor: "text-slate-900",
-    border: "border-white/50",
+    bg: "bg-card",
+    iconBg: "bg-warning/10",
+    iconColor: "text-warning",
+    valueColor: "text-foreground",
+    border: "border-border",
   },
   danger: {
-    bg: "bg-white/60",
-    iconBg: "bg-rose-50",
-    iconColor: "text-rose-600",
-    valueColor: "text-slate-900",
-    border: "border-white/50",
+    bg: "bg-card",
+    iconBg: "bg-destructive/10",
+    iconColor: "text-destructive",
+    valueColor: "text-foreground",
+    border: "border-border",
   },
 };
 
@@ -66,36 +66,46 @@ export default function StatCard({
 
   return (
     <div
-      className={`${styles.bg} rounded-2xl p-5 min-w-[180px] border ${styles.border} relative overflow-hidden ${className}`}
+      className={cn(
+        "rounded-xl p-5 min-w-[180px] border relative overflow-hidden",
+        styles.bg,
+        styles.border,
+        className
+      )}
       aria-label={`${title}: ${value}`}
     >
       <div className="relative z-10">
         {/* Icon */}
-        <div className={`w-10 h-10 rounded-xl ${styles.iconBg} flex items-center justify-center mb-3`}>
+        <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center mb-3", styles.iconBg)}>
           <Icon size={20} className={styles.iconColor} aria-hidden="true" />
         </div>
 
         {/* Title */}
-        <p className={`text-xs font-semibold uppercase tracking-[0.2em] mb-2 ${isPrimary ? "text-slate-400" : "text-slate-500"}`}>
+        <p className={cn(
+          "text-xs font-medium uppercase tracking-wide mb-2",
+          isPrimary ? "text-background/50" : "text-muted-foreground"
+        )}>
           {title}
         </p>
 
         {/* Value */}
-        <p className={`text-2xl md:text-3xl font-semibold tracking-tight ${styles.valueColor}`}>
+        <p className={cn("text-2xl md:text-3xl font-semibold tracking-tight tabular-nums", styles.valueColor)}>
           {value}
         </p>
 
         {/* Trend */}
         {trend && (
-          <div className={`mt-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest ${
-            trend.value >= 0 
-              ? "text-emerald-500" 
-              : "text-rose-500"
-          }`}>
-            <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full ${trend.value >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"}`}>
+          <div className={cn(
+            "mt-3 flex items-center gap-2 text-xs font-medium",
+            trend.value >= 0 ? "text-success" : "text-destructive"
+          )}>
+            <span className={cn(
+              "flex items-center gap-1 px-2 py-0.5 rounded-full",
+              trend.value >= 0 ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+            )}>
               {trend.value >= 0 ? "↑" : "↓"} {Math.abs(trend.value)}%
             </span>
-            <span className="text-slate-500">{trend.label}</span>
+            <span className="text-muted-foreground">{trend.label}</span>
           </div>
         )}
       </div>

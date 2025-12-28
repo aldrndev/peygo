@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function InvoicePage() {
-  redirect("/dashboard/penagihan");
+  redirect("/dashboard/penjualan");
 }

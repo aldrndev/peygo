@@ -1,13 +1,17 @@
 "use client";
 
 import { startTransition, useState } from "react";
-import { Button, Card, CardBody, Input, Link, Divider } from "@heroui/react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { login } from "../actions";
 import { Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
-import { motion } from "framer-motion";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { FormField } from "@/components/core/form-field";
 
 const loginSchema = z.object({
   email: z.email("Format email tidak valid"),
@@ -15,21 +19,6 @@ const loginSchema = z.object({
 });
 
 type LoginSchema = z.infer<typeof loginSchema>;
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
 
 export default function LoginPage() {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -61,124 +50,100 @@ export default function LoginPage() {
   };
 
   return (
-    <motion.div 
-      className="space-y-8"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
+    <div className="space-y-8">
       {/* Header */}
-      <motion.div 
-        className="text-center lg:text-left"
-        variants={itemVariants}
-      >
-        <div className="inline-flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
-          <span>Access Portal</span>
+      <div className="text-center lg:text-left">
+        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide mb-4">
+          <span>Selamat Datang Kembali</span>
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-2 tracking-tighter">
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight">
           Selamat Datang
         </h1>
-        <p className="text-slate-500 font-medium text-lg">
-          Masuk untuk akses kontrol dashboard Anda.
+        <p className="text-muted-foreground text-lg">
+          Masuk ke dashboard untuk kelola bisnis Anda.
         </p>
-      </motion.div>
+      </div>
 
       {/* Form Card */}
-      <motion.div variants={itemVariants}>
-        <Card className="shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white/40 bg-white/40 backdrop-blur-2xl rounded-[32px] overflow-hidden">
-          <CardBody className="p-8 md:p-12">
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-              <Input 
-                {...register("email")}
-                type="email" 
-                label={<span className="font-bold text-xs uppercase tracking-widest text-slate-500">Alamat Email</span>}
-                placeholder="nama@bisnis.com" 
-                variant="flat"
-                size="lg"
-                labelPlacement="outside"
-                startContent={<Mail className="text-slate-400 w-5 h-5" aria-hidden="true" />}
-                classNames={{
-                  input: "font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-medium",
-                  inputWrapper: "h-16 bg-white border border-slate-200 shadow-sm rounded-2xl group-data-[hover=true]:border-slate-300 group-data-[focus=true]:border-orange-500 group-data-[focus=true]:ring-4 group-data-[focus=true]:ring-orange-500/10 transition-all",
-                  errorMessage: "font-bold text-xs uppercase tracking-wider",
-                }}
-                isInvalid={!!errors.email}
-                errorMessage={errors.email?.message}
+      <Card className="border border-border bg-card/80 backdrop-blur-sm rounded-2xl shadow-lg">
+        <CardContent className="p-8 md:p-10">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+            <FormField
+              {...register("email")}
+              type="email"
+              label="Alamat Email"
+              placeholder="nama@bisnis.com"
+              icon={<Mail className="w-5 h-5" />}
+              error={errors.email?.message}
+            />
+            
+            <div className="space-y-2">
+              <FormField
+                {...register("password")}
+                type="password"
+                label="Kata Sandi"
+                placeholder="••••••••"
+                icon={<Lock className="w-5 h-5" />}
+                error={errors.password?.message}
               />
-              <div className="space-y-2">
-                <Input 
-                  {...register("password")}
-                  type="password" 
-                  label={<span className="font-bold text-xs uppercase tracking-widest text-slate-500">Kata Sandi</span>}
-                  placeholder="••••••••" 
-                  variant="flat"
-                  size="lg"
-                  labelPlacement="outside"
-                  startContent={<Lock className="text-slate-400 w-5 h-5" aria-hidden="true" />}
-                  classNames={{
-                    input: "font-semibold text-slate-900 placeholder:text-slate-400",
-                    inputWrapper: "h-16 bg-white border border-slate-200 shadow-sm rounded-2xl group-data-[hover=true]:border-slate-300 group-data-[focus=true]:border-orange-500 group-data-[focus=true]:ring-4 group-data-[focus=true]:ring-orange-500/10 transition-all",
-                    errorMessage: "font-bold text-xs uppercase tracking-wider",
-                  }}
-                  isInvalid={!!errors.password}
-                  errorMessage={errors.password?.message}
-                />
-                <div className="flex justify-end">
-                  <Link href="#" size="sm" className="text-orange-600 font-bold text-xs uppercase tracking-widest hover:text-orange-700 transition-colors">
-                    Lupa Password?
-                  </Link>
-                </div>
-              </div>
-              
-              {serverError && (
-                <motion.div 
-                  className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-xs font-bold text-center flex items-center justify-center gap-2"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  role="alert"
+              <div className="flex justify-end">
+                <Link 
+                  href="#" 
+                  className="text-primary text-sm font-medium hover:text-primary/80 transition-colors"
                 >
-                  <AlertCircle className="w-4 h-4" aria-hidden="true" />
-                  {serverError}
-                </motion.div>
-              )}
-
-              <Button 
-                type="submit" 
-                color="primary" 
-                fullWidth 
-                size="lg"
-                className="bg-orange-500 text-white font-bold text-sm uppercase tracking-widest h-16 rounded-2xl shadow-xl shadow-orange-500/30 hover:scale-[1.02] transition-all"
-                isLoading={isPending}
-                endContent={!isPending && <ArrowRight className="w-5 h-5" aria-hidden="true" />}
-              >
-                {isPending ? "Memproses..." : "Masuk Sekarang"}
-              </Button>
-            </form>
-
-            <div className="relative my-10">
-              <Divider className="bg-slate-200" />
-            </div>
-
-            <div className="text-center">
-              <p className="text-slate-500 font-medium">
-                Belum punya akun?{" "}
-                <Link href="/daftar" className="font-bold text-orange-600 hover:text-orange-700 transition-colors">
-                  Daftar Gratis
+                  Lupa Password?
                 </Link>
-              </p>
+              </div>
             </div>
-          </CardBody>
-        </Card>
-      </motion.div>
+            
+            {serverError && (
+              <div 
+                className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium text-center flex items-center justify-center gap-2"
+                role="alert"
+              >
+                <AlertCircle className="w-4 h-4" aria-hidden="true" />
+                {serverError}
+              </div>
+            )}
+
+            <Button 
+              type="submit" 
+              size="xl"
+              className="w-full h-14 rounded-xl font-semibold text-base shadow-lg shadow-primary/20"
+              isLoading={isPending}
+            >
+              {isPending ? "Memproses..." : (
+                <>
+                  Masuk Sekarang
+                  <ArrowRight className="w-5 h-5 ml-2" aria-hidden="true" />
+                </>
+              )}
+            </Button>
+          </form>
+
+          <div className="relative my-8">
+            <Separator />
+          </div>
+
+          <div className="text-center">
+            <p className="text-muted-foreground">
+              Belum punya akun?{" "}
+              <Link 
+                href="/daftar" 
+                className="font-semibold text-primary hover:text-primary/80 transition-colors"
+              >
+                Daftar Gratis
+              </Link>
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Trust indicators (mobile) */}
-      <motion.div 
-        className="flex flex-wrap justify-center gap-6 text-xs font-bold uppercase tracking-widest text-slate-400 lg:hidden"
-        variants={itemVariants}
-      >
+      <div className="flex flex-wrap justify-center gap-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:hidden">
         <span className="flex items-center gap-2">✓ Setup 2 Menit</span>
         <span className="flex items-center gap-2">✓ Mitra Berizin</span>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

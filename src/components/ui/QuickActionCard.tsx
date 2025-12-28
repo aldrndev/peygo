@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { LucideIcon, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface QuickActionCardProps {
   href: string;
@@ -13,22 +14,18 @@ interface QuickActionCardProps {
 
 const colorStyles = {
   orange: {
-    bg: "bg-orange-50/50",
-    iconBg: "bg-orange-100",
-    iconColor: "text-orange-600",
+    iconBg: "bg-primary/10",
+    iconColor: "text-primary",
   },
   blue: {
-    bg: "bg-blue-50/50",
     iconBg: "bg-blue-100",
     iconColor: "text-blue-600",
   },
   green: {
-    bg: "bg-green-50/50",
-    iconBg: "bg-green-100",
-    iconColor: "text-green-600",
+    iconBg: "bg-success/10",
+    iconColor: "text-success",
   },
   purple: {
-    bg: "bg-purple-50/50",
     iconBg: "bg-purple-100",
     iconColor: "text-purple-600",
   },
@@ -44,22 +41,22 @@ export default function QuickActionCard({
   const styles = colorStyles[color];
 
   return (
-    <Link href={href} className="block outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-xl">
+    <Link href={href} className="block outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl">
       <div
-        className="bg-white border border-slate-100 rounded-xl p-4 active:bg-slate-50 transition-colors"
+        className="bg-card border border-border rounded-xl p-4 hover:bg-accent/50 transition-colors"
         tabIndex={-1}
       >
         <div className="flex items-center gap-4">
-          <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${styles.iconBg} flex items-center justify-center shrink-0`}>
+          <div className={cn("w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0", styles.iconBg)}>
             <Icon size={20} className={styles.iconColor} aria-hidden="true" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-slate-900 text-sm md:text-base">{label}</p>
+            <p className="font-medium text-foreground text-sm md:text-base">{label}</p>
             {description && (
-              <p className="text-xs text-slate-500 mt-0.5 truncate">{description}</p>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">{description}</p>
             )}
           </div>
-          <ChevronRight size={16} className="text-slate-300 shrink-0" aria-hidden="true" />
+          <ChevronRight size={16} className="text-muted-foreground/50 shrink-0" aria-hidden="true" />
         </div>
       </div>
     </Link>

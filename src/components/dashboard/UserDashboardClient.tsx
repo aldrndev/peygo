@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { 
   CreditCard, 
   Clock,
@@ -10,7 +9,7 @@ import {
   Send,
   ArrowRight
 } from "lucide-react";
-import { Button } from "@heroui/react";
+import { Button } from "@/components/ui/button";
 import StatCard from "@/components/ui/StatCard";
 import QuickActionCard from "@/components/ui/QuickActionCard";
 import ActivityItem from "@/components/ui/ActivityItem";
@@ -59,39 +58,21 @@ export default function UserDashboardClient({
     return `Rp ${amount}`;
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 15 },
-    visible: { opacity: 1, y: 0 }
-  };
-
   return (
-    <motion.div 
-      className="relative space-y-8 md:space-y-12 pb-20"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
+    <div className="relative space-y-8 md:space-y-12 pb-20">
       {/* Greeting Section */}
-      <motion.section variants={itemVariants}>
-        <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 mb-2">
+      <section>
+        <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-2">
           Halo, {userName}
         </h1>
-        <p className="text-slate-500 text-sm md:text-base">
+        <p className="text-muted-foreground text-sm md:text-base">
           {companyName ? `Selamat datang kembali di ${companyName}.` : "Selamat datang kembali."}
         </p>
-      </motion.section>
+      </section>
 
       {/* Stats Section */}
-      <motion.section variants={itemVariants}>
-        <h2 className="text-sm font-medium text-slate-500 mb-4">Ikhtisar Keuangan</h2>
+      <section>
+        <h2 className="text-sm font-medium text-muted-foreground mb-4">Ikhtisar Keuangan</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
           <StatCard
             title="Total Penagihan"
@@ -112,20 +93,20 @@ export default function UserDashboardClient({
             variant="warning"
           />
         </div>
-      </motion.section>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         {/* Left: Recent Activity */}
-        <motion.section variants={itemVariants} className="lg:col-span-7 flex flex-col h-full">
+        <section className="lg:col-span-7 flex flex-col h-full">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-medium text-slate-500">Aktivitas Terbaru</h2>
+            <h2 className="text-sm font-medium text-muted-foreground">Aktivitas Terbaru</h2>
             <Link 
               href="/dashboard/pembayaran" 
-              className="group flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-orange-500 p-1 rounded-lg"
+              className="group flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-ring p-1 rounded-lg"
               aria-label="Lihat semua aktivitas pembayaran"
             >
-              <span className="text-xs font-semibold text-slate-900 uppercase tracking-widest group-hover:text-orange-600 transition-colors">Lihat Semua</span>
-              <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-all">
+              <span className="text-xs font-semibold text-foreground uppercase tracking-wide group-hover:text-primary transition-colors">Lihat Semua</span>
+              <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                 <ArrowRight size={12} />
               </div>
             </Link>
@@ -148,7 +129,7 @@ export default function UserDashboardClient({
                 ))}
               </div>
             ) : (
-              <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-[32px] p-12">
+              <div className="bg-card border border-border rounded-xl p-12">
                 <EmptyState 
                   variant="payment"
                   title="Sangat sepi di sini..."
@@ -157,12 +138,12 @@ export default function UserDashboardClient({
               </div>
             )}
           </div>
-        </motion.section>
+        </section>
 
         {/* Right: Quick Actions */}
-        <motion.section variants={itemVariants} className="lg:col-span-5">
+        <section className="lg:col-span-5">
           <div className="flex items-center gap-3 mb-8">
-             <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-[0.3em]">Menu Akses Cepat</h2>
+             <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Menu Akses Cepat</h2>
           </div>
           <div className="grid grid-cols-1 gap-6">
             <QuickActionCard
@@ -182,24 +163,21 @@ export default function UserDashboardClient({
           </div>
 
           {/* Tips Card */}
-          <motion.div 
-            className="mt-12 p-8 bg-gradient-to-br from-slate-900 to-slate-800 rounded-[32px] text-white relative overflow-hidden shadow-2xl shadow-slate-900/20"
-            whileHover={{ y: -5 }}
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/20 blur-[50px] rounded-full" />
+          <div className="mt-12 p-8 bg-foreground rounded-xl text-background relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-[50px] rounded-full" />
             <div className="relative z-10">
               <h3 className="text-xl font-semibold tracking-tight mb-2">Tips Pro ✨</h3>
-                  <p className="text-slate-500 font-medium line-clamp-2 mt-1 italic">&quot;Aktivitas terbaru akan muncul di sini seiring penggunaan aplikasi.&quot;</p>
-                  <p className="text-slate-400 text-sm font-medium leading-relaxed mt-2">
+                  <p className="text-background/50 font-medium line-clamp-2 mt-1 italic">&quot;Aktivitas terbaru akan muncul di sini seiring penggunaan aplikasi.&quot;</p>
+                  <p className="text-background/70 text-sm font-medium leading-relaxed mt-2">
                     Gunakan fitur &quot;Kelola Supplier&quot; untuk menyimpan data rekening agar proses pembayaran lebih cepat di masa mendatang.
                   </p>
-              <Button size="sm" className="mt-6 bg-white text-slate-900 font-semibold rounded-xl hover:bg-orange-500 hover:text-white transition-all outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900">
+              <Button size="sm" variant="secondary" className="mt-6">
                 PELAJARI LEBIH LANJUT
               </Button>
             </div>
-          </motion.div>
-        </motion.section>
+          </div>
+        </section>
       </div>
-    </motion.div>
+    </div>
   );
 }
