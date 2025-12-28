@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Button } from "@heroui/react";
 import { Upload, X, ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 interface LogoUploadProps {
   currentLogoUrl?: string | null;
@@ -130,15 +130,19 @@ export default function LogoUpload({ currentLogoUrl, onLogoChange }: LogoUploadP
       <div
         className={`relative group border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all overflow-hidden ${
           isDragging 
-            ? "border-orange-500 bg-orange-50" 
+            ? "border-primary bg-primary/5" 
             : preview 
-              ? "border-emerald-200 bg-emerald-50" 
-              : "border-slate-200 bg-slate-50 hover:border-orange-300 hover:bg-white"
+              ? "border-success/30 bg-success/5" 
+              : "border-border bg-muted hover:border-primary/50 hover:bg-background"
         }`}
         onClick={() => inputRef.current?.click()}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
+        aria-label="Upload logo"
       >
         <input
           ref={inputRef}
@@ -146,16 +150,17 @@ export default function LogoUpload({ currentLogoUrl, onLogoChange }: LogoUploadP
           accept="image/*"
           onChange={handleInputChange}
           className="hidden"
+          aria-hidden="true"
         />
         
         {isCompressing ? (
           <div className="py-4">
-            <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-xs text-slate-400">Optimasi...</p>
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-xs text-muted-foreground">Optimasi...</p>
           </div>
         ) : preview ? (
           <div className="flex items-center gap-3">
-            <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-white border border-slate-100">
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-background border border-border">
               <Image 
                 src={preview} 
                 alt="Logo" 
@@ -165,17 +170,16 @@ export default function LogoUpload({ currentLogoUrl, onLogoChange }: LogoUploadP
               />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-medium text-slate-900">Logo Terpasang</p>
-              <p className="text-xs text-emerald-500">Klik untuk ganti</p>
+              <p className="text-sm font-medium text-foreground">Logo Terpasang</p>
+              <p className="text-xs text-success">Klik untuk ganti</p>
             </div>
             <div onClick={(e) => e.stopPropagation()}>
               <Button
-                isIconOnly
-                size="sm"
-                color="danger"
-                variant="flat"
-                className="bg-rose-50 text-rose-500 rounded-lg"
-                onPress={handleRemove}
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                onClick={handleRemove}
+                aria-label="Remove logo"
               >
                 <X size={14} />
               </Button>
@@ -183,18 +187,18 @@ export default function LogoUpload({ currentLogoUrl, onLogoChange }: LogoUploadP
           </div>
         ) : (
           <div className="py-4">
-            <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center mx-auto mb-3">
+            <div className="w-10 h-10 rounded-lg bg-foreground flex items-center justify-center mx-auto mb-3">
               {isDragging ? (
-                <Upload size={18} className="text-orange-500" />
+                <Upload size={18} className="text-primary" />
               ) : (
-                <ImageIcon size={18} className="text-white" />
+                <ImageIcon size={18} className="text-background" />
               )}
             </div>
-            <p className="text-sm font-medium text-slate-900 mb-1">
-              <span className="text-orange-500">Pilih Logo</span>
+            <p className="text-sm font-medium text-foreground mb-1">
+              <span className="text-primary">Pilih Logo</span>
               {" "}atau seret
             </p>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-muted-foreground">
               Digunakan pada Invoice
             </p>
           </div>

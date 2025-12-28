@@ -66,7 +66,7 @@ export async function completeOnboarding(
   const result = await updateProfile(prevState, formData);
   
   if (result.success) {
-    redirect("/dashboard/penagihan");
+    redirect("/dashboard/penjualan");
   }
   
   return result;

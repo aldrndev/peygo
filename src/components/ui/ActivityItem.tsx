@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { Receipt, CreditCard, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ActivityItemProps {
   id: string;
@@ -15,12 +15,12 @@ interface ActivityItemProps {
 }
 
 const statusConfig: Record<string, { color: string; bg: string; label: string }> = {
-  PAID: { color: "text-emerald-700", bg: "bg-emerald-50", label: "Terbayar" },
-  DISBURSED: { color: "text-blue-700", bg: "bg-blue-50", label: "Dicairkan" },
-  SENT: { color: "text-orange-700", bg: "bg-orange-50", label: "Terkirim" },
-  DRAFT: { color: "text-slate-500", bg: "bg-slate-100", label: "Draft" },
-  FAILED: { color: "text-rose-700", bg: "bg-rose-50", label: "Gagal" },
-  EXPIRED: { color: "text-slate-400", bg: "bg-slate-100", label: "Kedaluwarsa" },
+  PAID: { color: "text-success", bg: "bg-success/10", label: "Terbayar" },
+  DISBURSED: { color: "text-blue-600", bg: "bg-blue-50", label: "Dicairkan" },
+  SENT: { color: "text-warning", bg: "bg-warning/10", label: "Terkirim" },
+  DRAFT: { color: "text-muted-foreground", bg: "bg-muted", label: "Draft" },
+  FAILED: { color: "text-destructive", bg: "bg-destructive/10", label: "Gagal" },
+  EXPIRED: { color: "text-muted-foreground", bg: "bg-muted", label: "Kedaluwarsa" },
 };
 
 export default function ActivityItem({
@@ -55,38 +55,39 @@ export default function ActivityItem({
   };
 
   return (
-    <Link href={href} aria-label={`${isBilling ? "Penagihan" : "Pembayaran"} ${recipientName}: ${formatCurrency(amount)}, status ${statusStyle.label}`} className="block outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 rounded-xl">
+    <Link href={href} aria-label={`${isBilling ? "Penagihan" : "Pembayaran"} ${recipientName}: ${formatCurrency(amount)}, status ${statusStyle.label}`} className="block outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl">
       <div
-        className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100 active:bg-slate-50 transition-colors"
+        className="flex items-center gap-3 p-4 bg-card rounded-xl border border-border hover:bg-accent/50 transition-colors"
         tabIndex={-1}
       >
         {/* Icon */}
-        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 ${
-          isBilling ? "bg-orange-50 text-orange-600" : "bg-blue-50 text-blue-600"
-        }`}>
+        <div className={cn(
+          "w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0",
+          isBilling ? "bg-primary/10 text-primary" : "bg-blue-50 text-blue-600"
+        )}>
           {isBilling ? <Receipt size={20} aria-hidden="true" /> : <CreditCard size={20} aria-hidden="true" />}
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
-            <p className="font-medium text-slate-900 truncate text-sm">
+            <p className="font-medium text-foreground truncate text-sm">
               {recipientName || "Tanpa Nama"}
             </p>
-            <p className="font-semibold text-slate-900 text-sm md:text-base whitespace-nowrap">
+            <p className="font-semibold text-foreground text-sm md:text-base whitespace-nowrap tabular-nums">
               {formatCurrency(amount)}
             </p>
           </div>
           <div className="flex items-center justify-between gap-2 mt-1.5">
-            <span className={`text-xs font-medium px-2 py-0.5 rounded ${statusStyle.bg} ${statusStyle.color}`}>
+            <span className={cn("text-xs font-medium px-2 py-0.5 rounded", statusStyle.bg, statusStyle.color)}>
               {statusStyle.label}
             </span>
-            <span className="text-xs text-slate-400">{formatDate(date)}</span>
+            <span className="text-xs text-muted-foreground">{formatDate(date)}</span>
           </div>
         </div>
 
         {/* Arrow - hidden on mobile */}
-        <ChevronRight size={16} className="text-slate-300 hidden md:block shrink-0" aria-hidden="true" />
+        <ChevronRight size={16} className="text-muted-foreground/50 hidden md:block shrink-0" aria-hidden="true" />
       </div>
     </Link>
   );

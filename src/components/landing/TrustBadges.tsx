@@ -1,7 +1,6 @@
 "use client";
 
 import { Shield, Lock, CheckCircle2, Building } from "lucide-react";
-import { motion } from "framer-motion";
 
 const badges = [
   {
@@ -31,55 +30,46 @@ const badges = [
 ];
 
 const colorMap: Record<string, { bg: string; text: string; border: string }> = {
-  emerald: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-100" },
+  emerald: { bg: "bg-success/10", text: "text-success", border: "border-success/20" },
   blue: { bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-100" },
-  orange: { bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-100" },
-  slate: { bg: "bg-slate-100", text: "text-slate-600", border: "border-slate-200" }
+  orange: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20" },
+  slate: { bg: "bg-muted", text: "text-muted-foreground", border: "border-border" }
 };
 
 export default function TrustBadges() {
   return (
     <section className="py-16 relative z-10">
       <div className="container mx-auto px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-5 py-2 rounded-2xl text-xs font-bold uppercase tracking-widest mb-6">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-success/10 text-success px-5 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6">
             <Shield className="w-4 h-4" />
             <span>Keamanan & Kepercayaan</span>
           </div>
-          <h3 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">
+          <h3 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">
             Bisnis Anda Terlindungi
           </h3>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {badges.map((badge, index) => {
+          {badges.map((badge) => {
             const colors = colorMap[badge.color];
             const Icon = badge.icon;
             
             return (
-              <motion.div
+              <div
                 key={badge.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-3xl p-6 text-center shadow-lg shadow-slate-200/30 hover:shadow-xl hover:-translate-y-1 transition-all"
+                className="bg-card/80 backdrop-blur-xl border border-border rounded-2xl p-6 text-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className={`w-14 h-14 mx-auto mb-4 rounded-2xl ${colors.bg} ${colors.text} flex items-center justify-center border ${colors.border}`}>
                   <Icon className="w-7 h-7" />
                 </div>
-                <h4 className="font-bold text-slate-900 text-sm tracking-tight mb-1">
+                <h4 className="font-semibold text-foreground text-sm tracking-tight mb-1">
                   {badge.title}
                 </h4>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   {badge.description}
                 </p>
-              </motion.div>
+              </div>
             );
           })}
         </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardBody, Input, Switch, Button, Divider } from "@heroui/react";
 import { 
   Globe, 
   Bell, 
@@ -11,18 +10,24 @@ import {
   Lock,
   Smartphone,
   Info,
-  Settings as SettingsIcon
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 export default function AdminSettingsClient() {
   return (
     <div className="relative space-y-6 md:space-y-8 pb-10">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
+        <h1 className="text-2xl md:text-3xl font-semibold text-foreground">
           Pengaturan Sistem
         </h1>
-        <p className="text-slate-500 text-sm mt-1">
+        <p className="text-muted-foreground text-sm mt-1">
           Kelola parameter operasional dan keamanan platform.
         </p>
       </div>
@@ -37,7 +42,7 @@ export default function AdminSettingsClient() {
             description="Identitas dan kontak publik platform"
             color="blue"
           >
-            <div className="grid grid-cols-1 gap-8">
+            <div className="grid grid-cols-1 gap-6">
               <StandardInput 
                 label="Nama Platform" 
                 defaultValue="PeyGo" 
@@ -47,12 +52,12 @@ export default function AdminSettingsClient() {
                 <StandardInput 
                   label="Email Support" 
                   defaultValue="support@peygo.id" 
-                  startContent={<Mail className="w-4 h-4 text-slate-400" />}
+                  icon={<Mail className="w-4 h-4 text-muted-foreground" />}
                 />
                 <StandardInput 
                   label="WhatsApp Center" 
                   defaultValue="+6281234567890" 
-                  startContent={<Smartphone className="w-4 h-4 text-slate-400" />}
+                  icon={<Smartphone className="w-4 h-4 text-muted-foreground" />}
                 />
               </div>
             </div>
@@ -69,27 +74,27 @@ export default function AdminSettingsClient() {
               <StandardInput 
                 label="Biaya Platform" 
                 defaultValue="2.5" 
-                endContent={<span className="text-slate-400 font-bold text-xs uppercase">%</span>}
+                suffix="%"
                 type="number"
               />
               <StandardInput 
                 label="Biaya MDR" 
                 defaultValue="1.5" 
-                endContent={<span className="text-slate-400 font-bold text-xs uppercase">%</span>}
+                suffix="%"
                 type="number"
               />
               <StandardInput 
                 label="PPN Standar" 
                 defaultValue="11" 
-                endContent={<span className="text-slate-400 font-bold text-xs uppercase">%</span>}
+                suffix="%"
                 type="number"
               />
             </div>
-            <div className="mt-8 p-5 rounded-2xl bg-blue-50/50 border border-blue-100/50 backdrop-blur-md flex gap-4">
-              <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-200">
+            <div className="mt-8 p-5 rounded-2xl bg-blue-50 border border-blue-100 flex gap-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center shrink-0">
                 <Info size={18} />
               </div>
-              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                 Perubahan pada parameter biaya akan berdampak langsung pada seluruh kalkulasi invoice baru. Pastikan telah melalui sinkronisasi dengan tim finansial sebelum menyimpan.
               </p>
             </div>
@@ -102,7 +107,7 @@ export default function AdminSettingsClient() {
             description="Konfigurasi pengiriman notifikasi sistem"
             color="indigo"
           >
-            <div className="grid grid-cols-1 gap-8">
+            <div className="grid grid-cols-1 gap-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <StandardInput label="SMTP Host" defaultValue="smtp.gmail.com" />
                 <StandardInput label="SMTP Port" defaultValue="587" />
@@ -126,15 +131,15 @@ export default function AdminSettingsClient() {
               <StandardSwitch 
                 title="Email Transaksi" 
                 description="Kirim detail ke admin saat ada pembayaran"
-                defaultSelected
+                defaultChecked
               />
-              <Divider className="opacity-40" />
+              <Separator />
               <StandardSwitch 
                 title="Alert Pendaftaran" 
                 description="Notifikasi instan untuk verifikasi pengguna"
-                defaultSelected
+                defaultChecked
               />
-              <Divider className="opacity-40" />
+              <Separator />
               <StandardSwitch 
                 title="Reminder WhatsApp" 
                 description="Kirim pengingat otomatis H-1 jatuh tempo"
@@ -154,41 +159,36 @@ export default function AdminSettingsClient() {
                 title="Wajibkan 2FA Admin" 
                 description="Meningkatkan keamanan akses administratif"
               />
-              <Divider className="opacity-40" />
+              <Separator />
               <StandardSwitch 
                 title="Auto-Logout Inactivity" 
                 description="Sesi berakhir setelah 30 menit"
-                defaultSelected
+                defaultChecked
               />
               <div className="mt-8">
-                <Button 
-                  variant="flat" 
-                  fullWidth
-                  className="font-bold text-xs uppercase tracking-widest rounded-2xl h-12 bg-slate-900 text-white shadow-xl shadow-slate-200"
-                  startContent={<Lock className="w-4 h-4" />}
-                >
+                <Button className="w-full">
+                  <Lock className="w-4 h-4 mr-2" />
                   Lihat Audit Log Keamanan
                 </Button>
               </div>
             </div>
           </SettingsSection>
 
-          {/* Save Action Glass */}
-          <Card className="shadow-lg shadow-blue-200/20 border border-blue-100/50 bg-blue-600 rounded-[32px] overflow-hidden">
-            <CardBody className="p-8 text-white relative">
+          {/* Save Action */}
+          <Card className="bg-primary">
+            <CardContent className="p-8 text-primary-foreground relative">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl -z-0" />
               <h3 className="text-xl font-semibold mb-2 relative z-10">Simpan Konfigurasi</h3>
-              <p className="text-white/70 text-sm mb-8 font-medium relative z-10">Pastikan seluruh parameter sudah sesuai sebelum memperbarui sistem inti PeyGo.</p>
+              <p className="text-primary-foreground/70 text-sm mb-8 font-medium relative z-10">Pastikan seluruh parameter sudah sesuai sebelum memperbarui sistem inti PeyGo.</p>
               <Button 
-                variant="solid"
+                variant="secondary"
                 size="lg" 
-                fullWidth 
-                className="rounded-2xl h-14 bg-white text-blue-600 font-bold text-sm tracking-tight shadow-md relative z-10"
-                startContent={<Save className="w-5 h-5 shadow-sm" />}
+                className="w-full relative z-10"
               >
+                <Save className="w-5 h-5 mr-2" />
                 Terapkan Perubahan
               </Button>
-            </CardBody>
+            </CardContent>
           </Card>
         </div>
       </div>
@@ -198,62 +198,63 @@ export default function AdminSettingsClient() {
 
 function SettingsSection({ icon, title, description, children, color }: { icon: React.ReactNode, title: string, description: string, children: React.ReactNode, color: string }) {
   const bgClasses: Record<string, string> = {
-    blue: "bg-blue-500/10 text-blue-600 border-blue-500/20 group-hover:bg-blue-500 group-hover:text-white",
-    emerald: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white",
-    indigo: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20 group-hover:bg-indigo-500 group-hover:text-white",
-    orange: "bg-orange-500/10 text-orange-600 border-orange-500/20 group-hover:bg-orange-500 group-hover:text-white",
-    rose: "bg-rose-500/10 text-rose-600 border-rose-500/20 group-hover:bg-rose-500 group-hover:text-white",
+    blue: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+    emerald: "bg-success/10 text-success border-success/20",
+    indigo: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20",
+    orange: "bg-primary/10 text-primary border-primary/20",
+    rose: "bg-destructive/10 text-destructive border-destructive/20",
   };
 
   return (
-    <Card className="shadow-lg shadow-slate-200/10 border border-white/50 bg-white/60 backdrop-blur-xl rounded-[32px] overflow-hidden group">
-      <CardBody className="p-8">
+    <Card>
+      <CardContent className="p-8">
         <div className="flex items-center gap-4 mb-10">
-          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-300 ${bgClasses[color]}`}>
+          <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-300", bgClasses[color])}>
             {icon}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-slate-900 leading-tight mb-1">{title}</h3>
-            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{description}</p>
+            <h3 className="text-lg font-semibold text-foreground leading-tight mb-1">{title}</h3>
+            <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{description}</p>
           </div>
         </div>
         {children}
-      </CardBody>
+      </CardContent>
     </Card>
   );
 }
 
-function StandardInput({ label, ...props }: { label: string } & React.ComponentProps<typeof Input>) {
+function StandardInput({ label, icon, suffix, ...props }: { label: string, icon?: React.ReactNode, suffix?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <Input
-      label={label}
-      labelPlacement="outside"
-      variant="bordered"
-      classNames={{
-        label: "text-slate-700 font-bold text-xs uppercase tracking-widest mb-3",
-        inputWrapper: "bg-white/80 border-slate-200 shadow-sm rounded-2xl h-12 hover:border-blue-400 transition-colors",
-        input: "text-sm font-semibold",
-      }}
-      {...props}
-    />
+    <div className="space-y-2">
+      <Label className="text-xs font-medium uppercase tracking-wide">{label}</Label>
+      <div className="relative">
+        {icon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2">
+            {icon}
+          </div>
+        )}
+        <Input
+          className={cn(icon && "pl-10", suffix && "pr-10")}
+          {...props}
+        />
+        {suffix && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-xs">
+            {suffix}
+          </span>
+        )}
+      </div>
+    </div>
   );
 }
 
-function StandardSwitch({ title, description, ...props }: { title: string, description: string } & React.ComponentProps<typeof Switch>) {
+function StandardSwitch({ title, description, defaultChecked }: { title: string, description: string, defaultChecked?: boolean }) {
   return (
     <div className="flex items-center justify-between py-1">
       <div className="pr-6">
-        <h4 className="text-sm font-semibold text-slate-800 leading-tight mb-1">{title}</h4>
-        <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{description}</p>
+        <h4 className="text-sm font-semibold text-foreground leading-tight mb-1">{title}</h4>
+        <p className="text-xs text-muted-foreground font-medium">{description}</p>
       </div>
-      <Switch 
-        size="md"
-        color="primary"
-        classNames={{
-            wrapper: "group-data-[selected=true]:bg-blue-600",
-        }}
-        {...props}
-      />
+      <Switch defaultChecked={defaultChecked} />
     </div>
   );
 }

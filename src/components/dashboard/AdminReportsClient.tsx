@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardBody, Select, SelectItem, Progress, Button } from "@heroui/react";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -11,8 +10,12 @@ import {
   Calendar,
   Activity,
   PieChart as PieChartIcon,
-  Filter
+  FileText,
 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 interface MonthlyData {
   month: string;
@@ -71,26 +74,25 @@ export default function AdminReportsClient({
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
+          <h1 className="text-2xl md:text-3xl font-semibold text-foreground">
             Laporan Analitik
           </h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-muted-foreground text-sm mt-1">
             Pantau pertumbuhan dan performa finansial.
           </p>
         </div>
         <div className="w-full md:w-48">
-          <Select 
-            placeholder="6 Bulan Terakhir" 
-            size="sm"
-            startContent={<Calendar className="w-3 h-3 text-slate-400" />}
-            classNames={{
-              trigger: "bg-white border-slate-100 border rounded-lg h-9 text-xs",
-            }}
-          >
-            <SelectItem key="1month">1 Bulan</SelectItem>
-            <SelectItem key="3months">3 Bulan</SelectItem>
-            <SelectItem key="6months">6 Bulan</SelectItem>
-            <SelectItem key="1year">1 Tahun</SelectItem>
+          <Select defaultValue="6months">
+            <SelectTrigger>
+              <Calendar className="w-3 h-3 text-muted-foreground mr-2" />
+              <SelectValue placeholder="6 Bulan Terakhir" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1month">1 Bulan</SelectItem>
+              <SelectItem value="3months">3 Bulan</SelectItem>
+              <SelectItem value="6months">6 Bulan</SelectItem>
+              <SelectItem value="1year">1 Tahun</SelectItem>
+            </SelectContent>
           </Select>
         </div>
       </div>
@@ -111,7 +113,7 @@ export default function AdminReportsClient({
           color="blue"
         />
         <ReportCard
-          icon={<Receipt className="w-5 h-5" />}
+          icon={<FileText className="w-5 h-5" />}
           label="Total Invoice"
           value={totalInvoices.toLocaleString("id-ID")}
           change={invoiceGrowth}
@@ -129,15 +131,15 @@ export default function AdminReportsClient({
       {/* Main Analysis Section */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
         {/* Monthly Trend Table */}
-        <Card className="lg:col-span-8 shadow-lg shadow-slate-200/20 border border-white/50 bg-white/60 backdrop-blur-xl overflow-hidden rounded-[32px]">
-          <CardBody className="p-0">
-            <div className="p-8 border-b border-slate-100/50 flex items-center justify-between">
+        <Card className="lg:col-span-8">
+          <CardContent className="p-0">
+            <div className="p-8 border-b border-border flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-semibold text-slate-900">Tren Kinerja Bulanan</h3>
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Laporan Semester Berjalan</p>
+                <h3 className="text-xl font-semibold text-foreground">Tren Kinerja Bulanan</h3>
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mt-1">Laporan Semester Berjalan</p>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 font-bold text-xs uppercase tracking-widest border border-emerald-500/20">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-success/10 text-success font-medium text-xs uppercase tracking-wide border border-success/20">
+                <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
                 <span>Live Insights</span>
               </div>
             </div>
@@ -145,7 +147,7 @@ export default function AdminReportsClient({
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
                 <thead>
-                  <tr className="text-slate-400 font-semibold uppercase text-xs tracking-widest border-b border-slate-100/50">
+                  <tr className="text-muted-foreground font-semibold uppercase text-xs tracking-wide border-b border-border">
                     <th className="py-6 px-10">Periode</th>
                     <th className="py-6 px-10 text-right">Volume</th>
                     <th className="py-6 px-10 text-right">Platform Fee</th>
@@ -153,23 +155,23 @@ export default function AdminReportsClient({
                     <th className="py-6 px-10 text-right">Growth</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50/50 font-medium">
+                <tbody className="divide-y divide-border font-medium">
                   {monthlyData.map((data, index) => (
-                    <tr key={index} className="hover:bg-slate-50/40 transition-colors group">
-                      <td className="py-6 px-10 font-semibold text-slate-900 capitalize">
+                    <tr key={index} className="hover:bg-accent/50 transition-colors group">
+                      <td className="py-6 px-10 font-semibold text-foreground capitalize">
                         {data.month} {data.year}
                       </td>
-                      <td className="py-6 px-10 text-right font-semibold text-slate-700">
+                      <td className="py-6 px-10 text-right font-semibold text-muted-foreground tabular-nums">
                         {formatCurrency(data.revenue)}
                       </td>
-                      <td className="py-6 px-10 text-right font-bold text-emerald-600">
+                      <td className="py-6 px-10 text-right font-bold text-success tabular-nums">
                         {formatCurrency(data.fees)}
                       </td>
-                      <td className="py-6 px-10 text-center text-slate-400 font-bold">
+                      <td className="py-6 px-10 text-center text-muted-foreground font-bold tabular-nums">
                         {data.invoices}
                       </td>
                       <td className="py-6 px-10 text-right">
-                        <span className="inline-flex items-center gap-1 font-bold text-indigo-600 px-2 py-1 bg-indigo-50/50 rounded-lg border border-indigo-100/50">
+                        <span className="inline-flex items-center gap-1 font-bold text-primary px-2 py-1 bg-primary/10 rounded-lg border border-primary/20">
                           <Users size={12} />
                           +{data.users}
                         </span>
@@ -177,46 +179,46 @@ export default function AdminReportsClient({
                     </tr>
                   ))}
                 </tbody>
-                <tfoot className="bg-slate-900/95 backdrop-blur-xl text-white">
-                  <tr className="font-semibold italic">
-                    <td className="py-6 px-10 uppercase text-xs font-bold tracking-[0.2em] opacity-60">Cumulative Total</td>
-                    <td className="py-6 px-10 text-right text-lg tracking-tight">
+                <tfoot className="bg-foreground text-background">
+                  <tr className="font-semibold">
+                    <td className="py-6 px-10 uppercase text-xs font-bold tracking-wide opacity-60">Cumulative Total</td>
+                    <td className="py-6 px-10 text-right text-lg tracking-tight tabular-nums">
                       {formatCurrency(monthlyData.reduce((acc, d) => acc + d.revenue, 0))}
                     </td>
-                    <td className="py-6 px-10 text-right text-emerald-400 text-lg tracking-tight">
+                    <td className="py-6 px-10 text-right text-success text-lg tracking-tight tabular-nums">
                       {formatCurrency(monthlyData.reduce((acc, d) => acc + d.fees, 0))}
                     </td>
-                    <td className="py-6 px-10 text-center font-bold">
+                    <td className="py-6 px-10 text-center font-bold tabular-nums">
                       {monthlyData.reduce((acc, d) => acc + d.invoices, 0).toLocaleString()}
                     </td>
                     <td className="py-6 px-10 text-right">
-                       <span className="text-white/60 font-bold">+{monthlyData.reduce((acc, d) => acc + d.users, 0)}</span>
+                       <span className="opacity-60 font-bold">+{monthlyData.reduce((acc, d) => acc + d.users, 0)}</span>
                     </td>
                   </tr>
                 </tfoot>
               </table>
             </div>
-          </CardBody>
+          </CardContent>
         </Card>
 
         {/* Breakdown Analysis Sidebars */}
         <div className="lg:col-span-4 space-y-6">
           {/* Invoice Type Breakdown */}
-          <Card className="shadow-lg shadow-slate-200/20 border border-white/50 bg-white/60 backdrop-blur-xl rounded-[32px]">
-            <CardBody className="p-8">
+          <Card>
+            <CardContent className="p-8">
               <div className="flex items-center gap-4 mb-10">
-                <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-md">
+                <div className="w-12 h-12 rounded-2xl bg-foreground text-background flex items-center justify-center">
                   <PieChartIcon size={20} />
                 </div>
                 <div>
-                    <h3 className="text-lg font-semibold text-slate-900 leading-tight">Proporsi Transaksi</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Berdasarkan Tipe Dokumen</p>
+                    <h3 className="text-lg font-semibold text-foreground leading-tight">Proporsi Transaksi</h3>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mt-1">Berdasarkan Tipe Dokumen</p>
                 </div>
               </div>
               
               <div className="space-y-8">
                 <BreakdownItem 
-                  label="Penagihan (Billing)"
+                  label="Penjualan (Billing)"
                   value={billingCount}
                   total={totalInvoices}
                   icon={<Receipt className="w-4 h-4" />}
@@ -230,42 +232,42 @@ export default function AdminReportsClient({
                   color="orange"
                 />
               </div>
-            </CardBody>
+            </CardContent>
           </Card>
 
           {/* Status Breakdown */}
-          <Card className="shadow-2xl shadow-slate-200/40 border border-white/50 bg-white/60 backdrop-blur-xl rounded-[32px]">
-            <CardBody className="p-8">
+          <Card>
+            <CardContent className="p-8">
               <div className="flex items-center gap-4 mb-10">
-                <div className="w-12 h-12 rounded-2xl bg-white text-slate-900 border border-slate-100 flex items-center justify-center shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-card text-foreground border border-border flex items-center justify-center">
                   <Activity size={20} />
                 </div>
                 <div>
-                    <h3 className="text-lg font-semibold text-slate-900 leading-tight">Status Dokumen</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Distribusi Status Saat Ini</p>
+                    <h3 className="text-lg font-semibold text-foreground leading-tight">Status Dokumen</h3>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mt-1">Distribusi Status Saat Ini</p>
                 </div>
               </div>
               
               <div className="space-y-4">
                 {[
-                  { status: "PAID", label: "Lunas", color: "bg-emerald-500", text: "text-emerald-600" },
-                  { status: "DISBURSED", label: "Dicairkan", color: "bg-emerald-400", text: "text-emerald-500" },
-                  { status: "SENT", label: "Terkirim", color: "bg-orange-400", text: "text-orange-500" },
-                  { status: "DRAFT", label: "Draft", color: "bg-slate-300", text: "text-slate-400" },
-                  { status: "FAILED", label: "Gagal", color: "bg-rose-500", text: "text-rose-600" },
+                  { status: "PAID", label: "Lunas", color: "bg-success", text: "text-success" },
+                  { status: "DISBURSED", label: "Dicairkan", color: "bg-success", text: "text-success" },
+                  { status: "SENT", label: "Terkirim", color: "bg-warning", text: "text-warning" },
+                  { status: "DRAFT", label: "Draft", color: "bg-muted-foreground", text: "text-muted-foreground" },
+                  { status: "FAILED", label: "Gagal", color: "bg-destructive", text: "text-destructive" },
                 ].map(({ status, label, color, text }) => (
-                  <div key={status} className="flex items-center justify-between text-sm p-3 rounded-2xl hover:bg-slate-50/50 transition-colors border border-transparent hover:border-slate-100">
+                  <div key={status} className="flex items-center justify-between text-sm p-3 rounded-2xl hover:bg-accent/50 transition-colors border border-transparent hover:border-border">
                     <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${color} shadow-sm shadow-slate-200`} />
-                      <span className="text-slate-600 font-semibold">{label}</span>
+                      <div className={cn("w-2 h-2 rounded-full", color)} />
+                      <span className="text-muted-foreground font-semibold">{label}</span>
                     </div>
-                    <span className={`font-bold text-base ${text}`}>
+                    <span className={cn("font-bold text-base tabular-nums", text)}>
                       {statusCounts[status] || 0}
                     </span>
                   </div>
                 ))}
               </div>
-            </CardBody>
+            </CardContent>
           </Card>
         </div>
       </div>
@@ -287,31 +289,34 @@ function ReportCard({
   color: string;
 }) {
   const bgClasses: Record<string, string> = {
-    emerald: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white",
-    blue: "bg-blue-500/10 text-blue-600 border-blue-500/20 group-hover:bg-blue-500 group-hover:text-white",
-    orange: "bg-orange-500/10 text-orange-600 border-orange-500/20 group-hover:bg-orange-500 group-hover:text-white",
-    indigo: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20 group-hover:bg-indigo-500 group-hover:text-white",
+    emerald: "bg-success/10 text-success border-success/20",
+    blue: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+    orange: "bg-primary/10 text-primary border-primary/20",
+    indigo: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20",
   };
 
   return (
-    <Card shadow="none" className="group h-full shadow-lg shadow-slate-200/20 border border-white/50 bg-white/60 backdrop-blur-xl rounded-[32px] overflow-hidden hover:-translate-y-1 transition-all duration-500">
-      <CardBody className="p-6">
+    <Card className="h-full hover:-translate-y-1 transition-transform duration-300">
+      <CardContent className="p-6">
         <div className="flex items-start justify-between mb-8">
-          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-all duration-300 ${bgClasses[color]}`}>
+          <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center border transition-all duration-300", bgClasses[color])}>
             {icon}
           </div>
           {change !== undefined && (
-            <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest ${change >= 0 ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"}`}>
+            <div className={cn(
+              "flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide",
+              change >= 0 ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"
+            )}>
               {change >= 0 ? <TrendingUp size={12} strokeWidth={3} /> : <TrendingDown size={12} strokeWidth={3} />}
               <span>{Math.abs(change).toFixed(1)}%</span>
             </div>
           )}
         </div>
         <div>
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.15em] mb-2">{label}</p>
-          <p className="text-2xl font-semibold text-slate-900 tracking-tight">{value}</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">{label}</p>
+          <p className="text-2xl font-semibold text-foreground tracking-tight tabular-nums">{value}</p>
         </div>
-      </CardBody>
+      </CardContent>
     </Card>
   );
 }
@@ -322,26 +327,24 @@ function BreakdownItem({ label, value, total, icon, color }: { label: string, va
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between text-sm font-semibold">
-        <div className="flex items-center gap-3 text-slate-700">
-          <div className={`p-2 rounded-xl border ${color === "blue" ? "bg-blue-50 text-blue-600 border-blue-100" : "bg-orange-50 text-orange-600 border-orange-100"}`}>
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <div className={cn(
+            "p-2 rounded-xl border",
+            color === "blue" ? "bg-blue-50 text-blue-600 border-blue-100" : "bg-primary/10 text-primary border-primary/20"
+          )}>
             {icon}
           </div>
           <span className="tracking-tight">{label}</span>
         </div>
         <div className="text-right">
-          <span className="text-base text-slate-900">{value}</span>
-          <span className="text-xs text-slate-400 ml-2 italic tracking-widest">({percentage.toFixed(0)}%)</span>
+          <span className="text-base text-foreground tabular-nums">{value}</span>
+          <span className="text-xs text-muted-foreground ml-2">({percentage.toFixed(0)}%)</span>
         </div>
       </div>
       <Progress 
         aria-label={label}
-        size="sm"
         value={percentage}
-        radius="full"
-        classNames={{
-          track: "bg-slate-100/50 backdrop-blur-sm",
-          indicator: color === "blue" ? "bg-blue-600 shadow-lg shadow-blue-200" : "bg-orange-500 shadow-lg shadow-orange-200",
-        }}
+        className="h-2"
       />
     </div>
   );

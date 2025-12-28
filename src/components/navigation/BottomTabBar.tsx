@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
 import { 
   LayoutDashboard, 
   ScrollText, 
@@ -10,6 +9,7 @@ import {
   User,
   Plus
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface TabItem {
   href: string;
@@ -26,14 +26,14 @@ interface BottomTabBarProps {
 
 const defaultItems: TabItem[] = [
   { href: "/dashboard", icon: <LayoutDashboard size={20} />, label: "Home", exact: true },
-  { href: "/dashboard/penagihan", icon: <ScrollText size={20} />, label: "Tagihan" },
+  { href: "/dashboard/penjualan", icon: <ScrollText size={20} />, label: "Penjualan" },
   { href: "/dashboard/pembayaran", icon: <CreditCard size={20} />, label: "Bayar" },
   { href: "/dashboard/profil", icon: <User size={20} />, label: "Profil" },
 ];
 
 export default function BottomTabBar({ 
   items = defaultItems,
-  fabHref = "/dashboard/penagihan/baru",
+  fabHref = "/dashboard/penjualan/baru",
   fabLabel = "Buat"
 }: BottomTabBarProps) {
   const pathname = usePathname();
@@ -50,7 +50,7 @@ export default function BottomTabBar({
   return (
     <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden">
       {/* Background with blur */}
-      <div className="absolute inset-0 bg-white/90 backdrop-blur-xl border-t border-gray-100" />
+      <div className="absolute inset-0 bg-card/90 backdrop-blur-xl border-t border-border" />
       
       {/* Tab Items Container */}
       <div className="relative flex items-center justify-around h-16 px-2 max-w-md mx-auto">
@@ -68,13 +68,10 @@ export default function BottomTabBar({
           href={fabHref}
           className="relative -mt-6"
         >
-          <motion.div 
-            className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/30"
-            whileTap={{ scale: 0.95 }}
-          >
-            <Plus size={24} className="text-white" strokeWidth={2.5} />
-          </motion.div>
-          <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-xs font-medium text-orange-600 whitespace-nowrap">
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/30 active:scale-95 transition-transform">
+            <Plus size={24} className="text-primary-foreground" strokeWidth={2.5} />
+          </div>
+          <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-xs font-medium text-primary whitespace-nowrap">
             {fabLabel}
           </span>
         </Link>
@@ -90,7 +87,7 @@ export default function BottomTabBar({
       </div>
 
       {/* Safe area padding for devices with home indicator */}
-      <div className="h-safe-area-inset-bottom bg-white/90" />
+      <div className="h-safe-area-inset-bottom bg-card/90" />
     </nav>
   );
 }
@@ -106,19 +103,18 @@ function TabItem({
       href={href}
       className="flex flex-col items-center justify-center min-w-[64px] h-full py-2"
     >
-      <motion.div
-        className={`p-1.5 rounded-xl transition-colors ${
-          active 
-            ? "text-orange-600 bg-orange-50" 
-            : "text-gray-400"
-        }`}
-        whileTap={{ scale: 0.9 }}
+      <div
+        className={cn(
+          "p-1.5 rounded-xl transition-colors active:scale-90",
+          active ? "text-primary bg-primary/10" : "text-muted-foreground"
+        )}
       >
         {icon}
-      </motion.div>
-      <span className={`text-xs mt-0.5 font-medium ${
-        active ? "text-orange-600" : "text-gray-400"
-      }`}>
+      </div>
+      <span className={cn(
+        "text-xs mt-0.5 font-medium",
+        active ? "text-primary" : "text-muted-foreground"
+      )}>
         {label}
       </span>
     </Link>

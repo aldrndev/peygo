@@ -2,25 +2,19 @@
 
 import { useState } from "react";
 import { 
-  Card, 
-  CardBody, 
-  Input, 
-  Button, 
-  Chip,
-  Avatar,
-  Pagination
-} from "@heroui/react";
-import { 
   Search, 
   UserPlus, 
   Phone, 
   ChevronRight,
-  Shield,
   Activity,
-  Filter
 } from "lucide-react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { SimplePagination } from "@/components/ui/pagination";
 
 interface UserProfile {
   id: string;
@@ -53,54 +47,47 @@ export default function AdminUsersClient({ users, userInvoiceCounts }: AdminUser
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">
+          <h1 className="text-2xl md:text-3xl font-semibold text-foreground">
             Manajemen Pengguna
           </h1>
-          <p className="text-slate-500 text-sm mt-1">Verifikasi dan kontrol akses pengguna.</p>
+          <p className="text-muted-foreground text-sm mt-1">Verifikasi dan kontrol akses pengguna.</p>
         </div>
         
-        <Button 
-          color="primary" 
-          size="sm"
-          startContent={<UserPlus size={16} />}
-          className="font-medium text-xs h-9 rounded-lg"
-        >
+        <Button size="sm">
+          <UserPlus size={16} className="mr-2" />
           Tambah Admin
         </Button>
       </div>
 
       {/* Control Hub */}
-      <Card className="border border-slate-100 bg-white rounded-xl overflow-hidden">
-        <CardBody className="p-4">
+      <Card>
+        <CardContent className="p-4">
            <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
+                <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
                     <Input
                         placeholder="Cari nama atau nomor telepon..."
-                        startContent={<Search className="text-slate-400" size={16} />}
                         value={searchQuery}
-                        onValueChange={setQuery => { setSearchQuery(setQuery); setPage(1); }}
-                        classNames={{
-                            inputWrapper: "bg-white border-slate-100 border rounded-lg h-10",
-                            input: "text-sm",
-                        }}
+                        onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+                        className="pl-10"
                     />
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="px-4 py-2 rounded-lg bg-slate-900 text-white flex items-center gap-2">
+                    <div className="px-4 py-2 rounded-lg bg-foreground text-background flex items-center gap-2">
                          <span className="text-sm font-medium">{users.length} Users</span>
                     </div>
                 </div>
            </div>
-        </CardBody>
+        </CardContent>
       </Card>
 
       {/* Users Table */}
-      <Card className="border border-slate-100 bg-white rounded-xl overflow-hidden">
-        <CardBody className="p-0">
+      <Card>
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead>
-                <tr className="text-slate-500 font-medium text-xs border-b border-slate-100">
+                <tr className="text-muted-foreground font-medium text-xs border-b border-border">
                   <th className="py-3 px-4 md:px-5">Pengguna</th>
                   <th className="py-3 px-4 md:px-5 hidden md:table-cell">Kontak</th>
                   <th className="py-3 px-4 md:px-5 text-center hidden md:table-cell">Role</th>
@@ -108,92 +95,77 @@ export default function AdminUsersClient({ users, userInvoiceCounts }: AdminUser
                   <th className="py-3 px-4 md:px-5 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50/50 font-medium">
-                <AnimatePresence mode="popLayout">
-                  {items.map((user) => (
-                    <motion.tr 
-                        layout
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        key={user.id} 
-                        className="hover:bg-slate-50/40 transition-colors group"
-                    >
-                      <td className="py-8 px-10">
+              <tbody className="divide-y divide-border font-medium">
+                {items.map((user) => {
+                  const initials = (user.name || "U").split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+                  return (
+                    <tr key={user.id} className="hover:bg-accent/50 transition-colors group">
+                      <td className="py-6 px-4 md:px-5">
                         <div className="flex items-center gap-4">
-                          <Avatar 
-                             name={user.name || "U"} 
-                             className="w-12 h-12 rounded-2xl font-bold bg-slate-900 text-white shadow-md" 
-                          />
+                          <Avatar className="w-12 h-12">
+                            <AvatarFallback className="bg-foreground text-background font-bold">
+                              {initials}
+                            </AvatarFallback>
+                          </Avatar>
                           <div>
-                            <p className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors tracking-tight text-base">
+                            <p className="font-semibold text-foreground group-hover:text-primary transition-colors tracking-tight text-base">
                                 {user.name || "Unnamed User"}
                             </p>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+                            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mt-1">
                                 Join {new Date(user.created_at).toLocaleDateString("id-ID", { month: 'short', year: 'numeric' })}
                             </p>
                           </div>
                         </div>
                       </td>
-                      <td className="py-8 px-10">
+                      <td className="py-6 px-4 md:px-5 hidden md:table-cell">
                         <div className="space-y-1.5">
-                            <div className="flex items-center gap-2 text-slate-500 group-hover:text-slate-900 transition-colors">
-                                <Phone size={12} className="text-slate-300" />
+                            <div className="flex items-center gap-2 text-muted-foreground group-hover:text-foreground transition-colors">
+                                <Phone size={12} />
                                 <span className="text-sm font-semibold tracking-tight">{user.phone || "-"}</span>
                             </div>
                         </div>
                       </td>
-                      <td className="py-8 px-10 text-center">
-                        <Chip 
-                            size="sm" 
-                            variant="flat" 
-                            color={user.role === "admin" ? "primary" : "default"}
-                            className={`font-bold text-xs uppercase tracking-widest h-8 px-3 border border-white/50 backdrop-blur-md ${user.role === "admin" ? "bg-blue-500/10" : "bg-slate-500/10"}`}
-                        >
-                            {user.role}
-                        </Chip>
+                      <td className="py-6 px-4 md:px-5 text-center hidden md:table-cell">
+                        <Badge variant={user.role === "admin" ? "default" : "secondary"}>
+                          {user.role}
+                        </Badge>
                       </td>
-                      <td className="py-8 px-10 text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50/50 border border-slate-100 group-hover:bg-white group-hover:shadow-sm transition-all">
-                             <Activity size={14} className="text-orange-500" />
-                             <span className="font-bold text-slate-900">{userInvoiceCounts[user.id] || 0}</span>
+                      <td className="py-6 px-4 md:px-5 text-center">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-muted border border-border group-hover:bg-card group-hover:shadow-sm transition-all">
+                             <Activity size={14} className="text-primary" />
+                             <span className="font-bold text-foreground tabular-nums">{userInvoiceCounts[user.id] || 0}</span>
                         </div>
                       </td>
-                      <td className="py-8 px-10 text-right">
-                        <Link href={`/dashboard/admin/users/${user.id}`}>
-                            <Button 
-                                variant="light" 
-                                isIconOnly 
-                                className="bg-white/60 hover:bg-slate-900 hover:text-white border border-white/50 backdrop-blur-md rounded-2xl transition-all shadow-sm"
-                            >
-                                <ChevronRight size={18} />
-                            </Button>
-                        </Link>
+                      <td className="py-6 px-4 md:px-5 text-right">
+                        <Button 
+                            variant="ghost" 
+                            size="icon"
+                            className="hover:bg-foreground hover:text-background"
+                            asChild
+                        >
+                          <Link href={`/dashboard/admin/users/${user.id}`}>
+                              <ChevronRight size={18} />
+                          </Link>
+                        </Button>
                       </td>
-                    </motion.tr>
-                  ))}
-                </AnimatePresence>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
-          <div className="p-8 border-t border-slate-100/50 flex flex-col sm:flex-row items-center justify-between gap-6">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">
+          <div className="p-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Menampilkan {items.length} dari {filteredUsers.length} pengguna
             </p>
-            <Pagination
-              total={pages}
-              page={page}
-              onChange={setPage}
-              variant="flat"
-              classNames={{
-                wrapper: "gap-2",
-                item: "bg-white/60 backdrop-blur-md border border-white/50 rounded-xl font-bold text-xs hover:bg-slate-900 hover:text-white transition-all",
-                cursor: "bg-slate-900 text-white shadow-lg shadow-slate-200",
-              }}
+            <SimplePagination 
+              currentPage={page}
+              totalPages={pages}
+              onPageChange={setPage}
             />
           </div>
-        </CardBody>
+        </CardContent>
       </Card>
     </div>
   );

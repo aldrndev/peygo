@@ -3,21 +3,17 @@
 import { useState, useMemo } from "react";
 import { Supplier } from "@/types/database";
 import { useForm, useWatch } from "react-hook-form";
-import { 
-  Button,
-  Input,
-  Avatar,
-  useDisclosure
-} from "@heroui/react";
-import { motion } from "framer-motion";
-import { Edit2, Trash2, Plus, Search, Phone, Mail, Building2, User } from "lucide-react";
+import { Edit2, Trash2, Plus, Search, Phone, Mail } from "lucide-react";
 import SupplierForm from "./SupplierForm";
 import { deleteSupplier } from "@/app/(dashboard)/dashboard/supplier/actions";
 import EmptyState from "@/components/ui/EmptyState";
 import FloatingActionButton from "@/components/ui/FloatingActionButton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
   
   const { register, control } = useForm({
@@ -26,17 +22,16 @@ export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
     }
   });
 
-  // Watch values using useWatch for React Compiler compatibility
   const search = useWatch({ control, name: "search", defaultValue: "" });
 
   const handleCreate = () => {
     setSelectedSupplier(null);
-    onOpen();
+    setIsOpen(true);
   };
 
   const handleEdit = (supplier: Supplier) => {
     setSelectedSupplier(supplier);
-    onOpen();
+    setIsOpen(true);
   };
 
   const handleDelete = async (id: string, name: string) => {
@@ -58,21 +53,19 @@ export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
         {/* Header - Desktop */}
         <div className="hidden md:flex justify-between items-center">
           <div>
-            <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">Supplier</h1>
-            <p className="text-slate-500 text-sm mt-1">Kelola rekan bisnis dan informasi pembayaran</p>
+            <h1 className="text-2xl md:text-3xl font-semibold text-foreground">Supplier</h1>
+            <p className="text-muted-foreground text-sm mt-1">Kelola rekan bisnis dan informasi pembayaran</p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="px-3 py-1.5 rounded-lg bg-slate-100 text-xs font-medium text-slate-600">
+            <div className="px-3 py-1.5 rounded-lg bg-muted text-xs font-medium text-muted-foreground">
               {suppliers.length}/5 slot
             </div>
             <Button 
-              color="primary" 
               size="sm"
-              className="font-medium text-xs h-9 rounded-lg"
-              startContent={<Plus size={16} />}
-              onPress={handleCreate}
-              isDisabled={suppliers.length >= 5}
+              onClick={handleCreate}
+              disabled={suppliers.length >= 5}
             >
+              <Plus size={16} className="mr-2" />
               Tambah
             </Button>
           </div>
@@ -81,22 +74,18 @@ export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
         {/* Mobile Header */}
         <div className="md:hidden flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Supplier</h1>
-            <p className="text-xs text-slate-500 mt-0.5">{suppliers.length}/5 slot terpakai</p>
+            <h1 className="text-2xl font-semibold text-foreground">Supplier</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">{suppliers.length}/5 slot terpakai</p>
           </div>
         </div>
 
         {/* Search */}
-        <div>
+        <div className="relative">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
             {...register("search")}
             placeholder="Cari supplier..."
-            startContent={<Search size={16} className="text-slate-400" />}
-            className="w-full"
-            classNames={{
-              inputWrapper: "bg-white border-slate-100 border rounded-lg h-10",
-              input: "text-sm placeholder:text-slate-400",
-            }}
+            className="pl-10"
           />
         </div>
 
@@ -111,26 +100,16 @@ export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
             />
           </div>
         ) : (
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            {filteredSuppliers.map((supplier, index) => (
-              <motion.div
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredSuppliers.map((supplier) => (
+              <SupplierCard 
                 key={supplier.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.04 }}
-              >
-                <SupplierCard 
-                  supplier={supplier} 
-                  onEdit={() => handleEdit(supplier)}
-                  onDelete={() => handleDelete(supplier.id, supplier.name)}
-                />
-              </motion.div>
+                supplier={supplier} 
+                onEdit={() => handleEdit(supplier)}
+                onDelete={() => handleDelete(supplier.id, supplier.name)}
+              />
             ))}
-          </motion.div>
+          </div>
         )}
       </div>
 
@@ -144,10 +123,10 @@ export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
         </div>
       )}
 
-      {/* Unified Form (Drawer/Modal handled inside) */}
+      {/* Unified Form */}
       <SupplierForm 
         isOpen={isOpen} 
-        onOpenChange={onOpenChange} 
+        onOpenChange={() => setIsOpen(false)} 
         supplier={selectedSupplier} 
       />
     </>
@@ -163,30 +142,32 @@ function SupplierCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const initials = supplier.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+  
   return (
-    <div className="bg-white border border-slate-100 rounded-xl p-4 h-full flex flex-col">
+    <div className="bg-card border border-border rounded-xl p-4 h-full flex flex-col">
       <div className="flex items-start gap-3 flex-1 mb-4">
-        <Avatar 
-          name={supplier.name} 
-          size="md"
-          className="w-10 h-10 text-base font-semibold bg-slate-900 text-white rounded-xl"
-        />
+        <Avatar className="w-10 h-10">
+          <AvatarFallback className="bg-foreground text-background font-semibold">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
 
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-slate-900 truncate text-sm mb-1">{supplier.name}</h3>
-          <span className="text-xs text-slate-500">{supplier.bank_name}</span>
+          <h3 className="font-semibold text-foreground truncate text-sm mb-1">{supplier.name}</h3>
+          <span className="text-xs text-muted-foreground">{supplier.bank_name}</span>
         </div>
       </div>
 
       {/* Bank Account Section */}
-      <div className="bg-slate-50 rounded-lg p-3 mb-3">
-        <p className="text-xs text-slate-500 mb-1">Rekening</p>
-        <p className="font-semibold text-slate-900 text-sm">{supplier.bank_account_number}</p>
-        <p className="text-xs text-orange-500">A/N: {supplier.bank_account_name}</p>
+      <div className="bg-muted rounded-lg p-3 mb-3">
+        <p className="text-xs text-muted-foreground mb-1">Rekening</p>
+        <p className="font-semibold text-foreground text-sm">{supplier.bank_account_number}</p>
+        <p className="text-xs text-primary">A/N: {supplier.bank_account_name}</p>
       </div>
       
       {/* Contact Section */}
-      <div className="space-y-2 mb-4 text-xs text-slate-500">
+      <div className="space-y-2 mb-4 text-xs text-muted-foreground">
         {supplier.email && (
           <div className="flex items-center gap-2">
             <Mail size={12} />
@@ -202,23 +183,20 @@ function SupplierCard({
       </div>
 
       {/* Card Actions */}
-      <div className="flex items-center gap-2 mt-auto pt-3 border-t border-slate-100">
+      <div className="flex items-center gap-2 mt-auto pt-3 border-t border-border">
         <Button
-          fullWidth
           size="sm"
-          variant="flat"
-          className="font-medium text-xs bg-slate-900 text-white rounded-lg h-9"
-          startContent={<Edit2 size={14} />}
-          onPress={onEdit}
+          className="flex-1"
+          onClick={onEdit}
         >
+          <Edit2 size={14} className="mr-2" />
           Edit
         </Button>
         <Button
-          isIconOnly
-          size="sm"
-          variant="light"
-          className="text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg w-9 h-9"
-          onPress={onDelete}
+          size="icon"
+          variant="ghost"
+          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-9 w-9"
+          onClick={onDelete}
         >
           <Trash2 size={16} />
         </Button>

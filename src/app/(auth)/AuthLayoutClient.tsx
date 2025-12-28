@@ -1,7 +1,6 @@
 "use client";
 
-import { Link } from "@heroui/react";
-import { motion } from "framer-motion";
+import Link from "next/link";
 import { FileText, Shield, Zap, CheckCircle2 } from "lucide-react";
 
 interface AuthLayoutClientProps {
@@ -10,36 +9,12 @@ interface AuthLayoutClientProps {
 
 export default function AuthLayoutClient({ children }: AuthLayoutClientProps) {
   return (
-    <div className="min-h-screen flex bg-slate-50 overflow-hidden relative">
-      {/* Aurora Background Elements */}
+    <div className="min-h-screen flex bg-background relative">
+      {/* Subtle Background Pattern */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <motion.div 
-          animate={{
-            scale: [1, 1.2, 1],
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] rounded-full bg-orange-300/20 blur-[120px]"
-        />
-        <motion.div 
-          animate={{
-            scale: [1.2, 1, 1.2],
-            x: [0, -40, 0],
-            y: [0, -50, 0],
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-blue-300/10 blur-[120px]"
-        />
-        <motion.div 
-          animate={{
-            scale: [1, 1.3, 1],
-            x: [0, 20, 0],
-            y: [0, 60, 0],
-          }}
-          transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-          className="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] rounded-full bg-emerald-300/10 blur-[120px]"
-        />
+        <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-[120px]" />
+        <div className="absolute top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-secondary/20 blur-[120px]" />
+        <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] rounded-full bg-success/5 blur-[120px]" />
       </div>
 
       {/* Left Side - Branding (Desktop only) */}
@@ -48,73 +23,59 @@ export default function AuthLayoutClient({ children }: AuthLayoutClientProps) {
           {/* Logo */}
           <Link href="/" className="flex flex-col w-fit group mb-20">
             <span className="text-4xl font-bold tracking-tighter">
-              <span className="text-orange-500">Pey</span><span className="text-black">Go</span>
+              <span className="text-primary">Pey</span><span className="text-foreground">Go</span>
             </span>
           </Link>
  
           {/* Main Content */}
           <div className="space-y-12">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: "circOut" }}
-            >
-              <h1 className="text-6xl font-bold leading-[0.9] tracking-tighter mb-8 text-slate-900">
-                Pindah Gerak,
+            <div>
+              <h1 className="text-5xl font-bold leading-[0.95] tracking-tight mb-8 text-foreground">
+                Kirim Invoice,
                 <br />
-                <span className="text-orange-500">Kirim Tagihan</span>
+                <span className="text-primary">Terima Pembayaran</span>
                 <br />
-                Makin Kilat.
+                Lebih Cepat.
               </h1>
-              <p className="text-slate-500 text-xl max-w-md font-medium leading-relaxed">
-                Kelola bisnis Anda dengan platform invoice <span className="text-slate-900 font-bold underline decoration-orange-300 decoration-4">tercanggih</span> di Indonesia.
+              <p className="text-muted-foreground text-xl max-w-md leading-relaxed">
+                Platform invoice yang memudahkan penjualan dan pembayaran bisnis Anda.
               </p>
-            </motion.div>
+            </div>
  
             {/* Features */}
-            <motion.div 
-              className="space-y-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
+            <div className="space-y-5">
               <div className="flex items-center gap-4 group">
-                <div className="w-12 h-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-900 shadow-xl shadow-slate-200/50 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
-                  <FileText className="w-6 h-6" />
+                <div className="w-12 h-12 bg-card border border-border rounded-xl flex items-center justify-center text-foreground shadow-sm group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">
+                  <FileText className="w-5 h-5" aria-hidden="true" />
                 </div>
-                <span className="text-slate-900 font-bold text-sm uppercase tracking-tight">Invoice Profesional Kilat</span>
+                <span className="text-foreground font-semibold text-sm">Invoice Profesional</span>
               </div>
               <div className="flex items-center gap-4 group">
-                <div className="w-12 h-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-900 shadow-xl shadow-slate-200/50 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
-                  <Zap className="w-6 h-6" />
+                <div className="w-12 h-12 bg-card border border-border rounded-xl flex items-center justify-center text-foreground shadow-sm group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">
+                  <Zap className="w-5 h-5" aria-hidden="true" />
                 </div>
-                <span className="text-slate-900 font-bold text-sm uppercase tracking-tight">Otomasi Pembayaran Global</span>
+                <span className="text-foreground font-semibold text-sm">Berbagai Metode Pembayaran</span>
               </div>
               <div className="flex items-center gap-4 group">
-                <div className="w-12 h-12 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-900 shadow-xl shadow-slate-200/50 group-hover:bg-slate-900 group-hover:text-white transition-all duration-300">
-                  <Shield className="w-6 h-6" />
+                <div className="w-12 h-12 bg-card border border-border rounded-xl flex items-center justify-center text-foreground shadow-sm group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">
+                  <Shield className="w-5 h-5" aria-hidden="true" />
                 </div>
-                <span className="text-slate-900 font-bold text-sm uppercase tracking-tight">Keamanan Standar Perbankan</span>
+                <span className="text-foreground font-semibold text-sm">Keamanan Standar Perbankan</span>
               </div>
-            </motion.div>
+            </div>
           </div>
  
           {/* Bottom */}
-          <motion.div 
-            className="flex items-center gap-8 text-xs font-bold uppercase tracking-[0.2em] text-slate-400"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
+          <div className="mt-auto flex items-center gap-8 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <CheckCircle2 className="w-4 h-4 text-success" aria-hidden="true" />
               <span>Mitra Berizin OJK</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <CheckCircle2 className="w-4 h-4 text-success" aria-hidden="true" />
               <span>Dukungan 24/7</span>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
  
@@ -124,26 +85,21 @@ export default function AuthLayoutClient({ children }: AuthLayoutClientProps) {
         <header className="lg:hidden py-8 px-8">
           <Link href="/" className="flex flex-col w-fit">
             <span className="text-3xl font-bold tracking-tighter">
-              <span className="text-orange-500">Pey</span><span className="text-black">Go</span>
+              <span className="text-primary">Pey</span><span className="text-foreground">Go</span>
             </span>
           </Link>
         </header>
  
         {/* Form Container */}
         <main className="flex-1 flex items-center justify-center px-6 py-8">
-          <motion.div 
-            className="w-full max-w-lg"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "circOut" }}
-          >
+          <div className="w-full max-w-lg">
             {children}
-          </motion.div>
+          </div>
         </main>
  
         {/* Footer */}
-        <footer className="py-6 px-8 text-center text-slate-400">
-          <p className="text-xs font-bold uppercase tracking-widest leading-relaxed">
+        <footer className="py-6 px-8 text-center text-muted-foreground">
+          <p className="text-xs font-medium leading-relaxed">
             © {new Date().getFullYear()} PeyGo. Semua Hak Dilindungi.<br/>
             Platform Invoice untuk UMKM Indonesia.
           </p>

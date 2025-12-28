@@ -1,13 +1,17 @@
 "use client";
 
 import { startTransition, useState } from "react";
-import { Button, Card, CardBody, Input, Link, Divider } from "@heroui/react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { signup } from "../actions";
 import { Mail, Lock, User, ArrowRight, Sparkles, AlertCircle } from "lucide-react";
-import { motion } from "framer-motion";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { FormField } from "@/components/core/form-field";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
@@ -16,21 +20,6 @@ const registerSchema = z.object({
 });
 
 type RegisterSchema = z.infer<typeof registerSchema>;
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
 
 export default function RegisterPage() {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -63,143 +52,108 @@ export default function RegisterPage() {
   };
 
   return (
-    <motion.div 
-      className="space-y-8"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
+    <div className="space-y-8">
       {/* Header */}
-      <motion.div 
-        className="text-center lg:text-left"
-        variants={itemVariants}
-      >
-        <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
+      <div className="text-center lg:text-left">
+        <div className="inline-flex items-center gap-2 bg-success/10 text-success px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide mb-4">
           <Sparkles className="w-3 h-3" aria-hidden="true" />
           <span>Gratis Selamanya</span>
         </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-2 tracking-tighter">
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight">
           Bergabung Sekarang
         </h1>
-        <p className="text-slate-500 font-medium text-lg">
-          Langkah pertama menuju efisiensi bisnis Anda.
+        <p className="text-muted-foreground text-lg">
+          Buat akun dan mulai kelola invoice Anda.
         </p>
-      </motion.div>
+      </div>
 
       {/* Form Card */}
-      <motion.div variants={itemVariants}>
-        <Card className="shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white/40 bg-white/40 backdrop-blur-2xl rounded-[32px] overflow-hidden">
-          <CardBody className="p-8 md:p-12">
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-              <Input 
-                {...register("name")}
-                type="text" 
-                label={<span className="font-bold text-xs uppercase tracking-widest text-slate-500">Nama Lengkap</span>}
-                placeholder="Nama Lengkap Anda" 
-                variant="flat"
-                size="lg"
-                labelPlacement="outside"
-                startContent={<User className="text-slate-400 w-5 h-5" aria-hidden="true" />}
-                classNames={{
-                   input: "font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-medium",
-                   inputWrapper: "h-16 bg-white border border-slate-200 shadow-sm rounded-2xl group-data-[hover=true]:border-slate-300 group-data-[focus=true]:border-orange-500 group-data-[focus=true]:ring-4 group-data-[focus=true]:ring-orange-500/10 transition-all",
-                   errorMessage: "font-bold text-xs uppercase tracking-wider",
-                }}
-                isInvalid={!!errors.name}
-                errorMessage={errors.name?.message}
-              />
-              <Input 
-                {...register("email")}
-                type="email" 
-                label={<span className="font-bold text-xs uppercase tracking-widest text-slate-500">Email Bisnis</span>}
-                placeholder="nama@perusahaan.com" 
-                variant="flat"
-                size="lg"
-                labelPlacement="outside"
-                startContent={<Mail className="text-slate-400 w-5 h-5" aria-hidden="true" />}
-                classNames={{
-                   input: "font-semibold text-slate-900 placeholder:text-slate-400 placeholder:font-medium",
-                   inputWrapper: "h-16 bg-white border border-slate-200 shadow-sm rounded-2xl group-data-[hover=true]:border-slate-300 group-data-[focus=true]:border-orange-500 group-data-[focus=true]:ring-4 group-data-[focus=true]:ring-orange-500/10 transition-all",
-                   errorMessage: "font-bold text-xs uppercase tracking-wider",
-                }}
-                isInvalid={!!errors.email}
-                errorMessage={errors.email?.message}
-              />
-              <Input 
-                {...register("password")}
-                type="password" 
-                label={<span className="font-bold text-xs uppercase tracking-widest text-slate-500">Kata Sandi</span>}
-                placeholder="••••••••" 
-                variant="flat"
-                size="lg"
-                labelPlacement="outside"
-                startContent={<Lock className="text-slate-400 w-5 h-5" aria-hidden="true" />}
-                classNames={{
-                   input: "font-semibold text-slate-900 placeholder:text-slate-400",
-                   inputWrapper: "h-16 bg-white border border-slate-200 shadow-sm rounded-2xl group-data-[hover=true]:border-slate-300 group-data-[focus=true]:border-orange-500 group-data-[focus=true]:ring-4 group-data-[focus=true]:ring-orange-500/10 transition-all",
-                   errorMessage: "font-bold text-xs uppercase tracking-wider",
-                }}
-                isInvalid={!!errors.password}
-                errorMessage={errors.password?.message}
-              />
-              
-              {serverError && (
-                <motion.div 
-                  className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-xs font-bold text-center flex items-center justify-center gap-2"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  role="alert"
-                >
-                  <AlertCircle className="w-4 h-4" aria-hidden="true" />
-                  {serverError}
-                </motion.div>
-              )}
-
-              <Button 
-                type="submit" 
-                color="primary" 
-                fullWidth 
-                size="lg"
-                className="bg-orange-500 text-white font-bold text-sm uppercase tracking-widest h-16 rounded-2xl shadow-xl shadow-orange-500/30 hover:scale-[1.02] transition-all"
-                isLoading={isPending}
-                endContent={!isPending && <ArrowRight className="w-5 h-5" aria-hidden="true" />}
+      <Card className="border border-border bg-card/80 backdrop-blur-sm rounded-2xl shadow-lg">
+        <CardContent className="p-8 md:p-10">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+            <FormField
+              {...register("name")}
+              type="text"
+              label="Nama Lengkap"
+              placeholder="Nama Lengkap Anda"
+              icon={<User className="w-5 h-5" />}
+              error={errors.name?.message}
+            />
+            
+            <FormField
+              {...register("email")}
+              type="email"
+              label="Email Bisnis"
+              placeholder="nama@perusahaan.com"
+              icon={<Mail className="w-5 h-5" />}
+              error={errors.email?.message}
+            />
+            
+            <FormField
+              {...register("password")}
+              type="password"
+              label="Kata Sandi"
+              placeholder="••••••••"
+              icon={<Lock className="w-5 h-5" />}
+              error={errors.password?.message}
+            />
+            
+            {serverError && (
+              <div 
+                className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium text-center flex items-center justify-center gap-2"
+                role="alert"
               >
-                {isPending ? "Memproses..." : "Buat Akun Gratis"}
-              </Button>
+                <AlertCircle className="w-4 h-4" aria-hidden="true" />
+                {serverError}
+              </div>
+            )}
 
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 text-center leading-relaxed">
-                Dengan mendaftar, Anda menyetujui<br/>
-                <Link href="#" className="text-orange-600 hover:text-orange-700 font-medium">Syarat & Ketentuan</Link> Kami.
-              </p>
-            </form>
+            <Button 
+              type="submit" 
+              size="xl"
+              className="w-full h-14 rounded-xl font-semibold text-base shadow-lg shadow-primary/20"
+              isLoading={isPending}
+            >
+              {isPending ? "Memproses..." : (
+                <>
+                  Buat Akun Gratis
+                  <ArrowRight className="w-5 h-5 ml-2" aria-hidden="true" />
+                </>
+              )}
+            </Button>
 
-            <div className="relative my-10">
-              <Divider className="bg-slate-200" />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-xs font-bold uppercase tracking-[0.2em] text-slate-400">
-                 Atau
-              </span>
-            </div>
+            <p className="text-xs font-medium text-muted-foreground text-center leading-relaxed">
+              Dengan mendaftar, Anda menyetujui<br/>
+              <Link href="#" className="text-primary hover:text-primary/80">Syarat &amp; Ketentuan</Link> Kami.
+            </p>
+          </form>
 
-            <div className="text-center">
-              <p className="text-slate-500 font-medium">
-                Sudah punya akun?{" "}
-                <Link href="/masuk" className="font-bold text-orange-600 hover:text-orange-700 transition-colors">
-                  Masuk Sekarang
-                </Link>
-              </p>
-            </div>
-          </CardBody>
-        </Card>
-      </motion.div>
+          <div className="relative my-8">
+            <Separator />
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Atau
+            </span>
+          </div>
+
+          <div className="text-center">
+            <p className="text-muted-foreground">
+              Sudah punya akun?{" "}
+              <Link 
+                href="/masuk" 
+                className="font-semibold text-primary hover:text-primary/80 transition-colors"
+              >
+                Masuk Sekarang
+              </Link>
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Trust indicators (mobile only) */}
-      <motion.div 
-        className="flex flex-wrap justify-center gap-6 text-xs font-bold uppercase tracking-widest text-slate-400 lg:hidden"
-        variants={itemVariants}
-      >
+      <div className="flex flex-wrap justify-center gap-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground lg:hidden">
         <span className="flex items-center gap-2">✓ Setup 2 Menit</span>
         <span className="flex items-center gap-2">✓ Mitra Berizin</span>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

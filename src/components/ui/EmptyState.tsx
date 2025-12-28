@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { LucideIcon, Receipt, FileText, Users, CreditCard } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface EmptyStateProps {
   icon?: LucideIcon;
@@ -32,32 +33,25 @@ export default function EmptyState({
   const Icon = icon || variantIcons[variant];
 
   return (
-    <div className="text-center py-8 px-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
-      <div className="w-12 h-12 mx-auto mb-3 bg-orange-50 rounded-xl flex items-center justify-center">
-        <Icon size={20} className="text-orange-500" aria-hidden="true" />
+    <div className="text-center py-8 px-4 bg-muted/50 rounded-xl border border-dashed border-border">
+      <div className="w-12 h-12 mx-auto mb-3 bg-primary/10 rounded-xl flex items-center justify-center">
+        <Icon size={20} className="text-primary" aria-hidden="true" />
       </div>
-      <h3 className="font-semibold text-slate-900 text-sm mb-1">{title}</h3>
+      <h3 className="font-semibold text-foreground text-sm mb-1">{title}</h3>
       {description && (
-        <p className="text-xs text-slate-500 mb-4 max-w-xs mx-auto">
+        <p className="text-xs text-muted-foreground mb-4 max-w-xs mx-auto">
           {description}
         </p>
       )}
       {action && (
         action.href ? (
-          <Link
-            href={action.href}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 text-white font-medium text-xs rounded-lg hover:bg-orange-600 transition-colors"
-          >
-            {action.label}
-          </Link>
+          <Button asChild size="sm">
+            <Link href={action.href}>{action.label}</Link>
+          </Button>
         ) : (
-          <button
-            onClick={action.onClick}
-            type="button"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 text-white font-medium text-xs rounded-lg hover:bg-orange-600 transition-colors cursor-pointer"
-          >
+          <Button size="sm" onClick={action.onClick}>
             {action.label}
-          </button>
+          </Button>
         )
       )}
     </div>
