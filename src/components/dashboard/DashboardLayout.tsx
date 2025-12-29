@@ -78,9 +78,8 @@ export default function DashboardLayout({
     loadingOverlay.show("Keluar...");
     const result = await logout();
     if (result?.success) {
-      // Small delay for session cleanup before redirect
-      await new Promise(resolve => setTimeout(resolve, 100));
-      router.push("/masuk");
+      // Hard redirect - router.push may not work after session cleared
+      window.location.href = "/masuk";
     }
   };
 
