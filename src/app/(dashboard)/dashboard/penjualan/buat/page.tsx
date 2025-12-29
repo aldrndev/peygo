@@ -7,7 +7,7 @@ import { useForm, useFieldArray, useWatch, type Path, type Resolver } from "reac
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createInvoice } from "@/app/(dashboard)/dashboard/invoice/actions";
-import { invoiceSchema, step2Schema } from "@/app/(dashboard)/dashboard/invoice/schema";
+import { invoiceSchema } from "@/app/(dashboard)/dashboard/invoice/schema";
 import { Button } from "@/components/ui/button";
 import { InvoiceFormSteps } from "@/components/invoice/InvoiceFormSteps";
 import { RecipientFormSection } from "@/components/invoice/RecipientFormSection";

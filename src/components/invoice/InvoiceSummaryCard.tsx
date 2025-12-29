@@ -4,12 +4,6 @@ import { Check } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-interface WatchedItem {
-  description: string;
-  quantity: number;
-  unit_price: number;
-}
-
 interface InvoiceSummaryCardProps {
   totalAmount: number;
   subtotal: number;

@@ -76,6 +76,9 @@ export const metadata: Metadata = {
   },
 };
 
+import { ScrollToTop } from "@/components/ui/ScrollToTop";
+import { NavigationProgress } from "@/components/ui/NavigationProgress";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -87,6 +90,8 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased min-h-screen bg-background text-foreground font-sans`}
       >
         <Providers>
+          <NavigationProgress />
+          <ScrollToTop />
           {children}
         </Providers>
       </body>

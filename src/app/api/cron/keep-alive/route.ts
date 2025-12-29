@@ -21,7 +21,6 @@ export async function GET() {
       .limit(1);
 
     if (error) {
-      console.error("Keep-alive query failed:", error);
       return NextResponse.json({ 
         success: false, 
         error: error.message 
@@ -33,8 +32,7 @@ export async function GET() {
       message: "Database pinged successfully",
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
-    console.error("Keep-alive error:", error);
+  } catch {
     return NextResponse.json({ 
       success: false, 
       error: "Internal error" 

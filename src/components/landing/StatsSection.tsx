@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface StatsCounterProps {
   end: number;
@@ -12,16 +12,16 @@ interface StatsCounterProps {
 
 function StatsCounter({ end, suffix = "", prefix = "", label, isVisible }: StatsCounterProps) {
   const [count, setCount] = useState(0);
-  const [hasStarted, setHasStarted] = useState(false);
+  const hasStartedRef = useRef(false);
 
   useEffect(() => {
-    if (isVisible && !hasStarted) {
-      setHasStarted(true);
+    if (isVisible && !hasStartedRef.current) {
+      hasStartedRef.current = true;
     }
-  }, [isVisible, hasStarted]);
+  }, [isVisible]);
 
   useEffect(() => {
-    if (!hasStarted) return;
+    if (!hasStartedRef.current) return;
     
     let startTime: number;
     let rafId: number;
@@ -37,7 +37,7 @@ function StatsCounter({ end, suffix = "", prefix = "", label, isVisible }: Stats
     rafId = requestAnimationFrame(animate);
     
     return () => cancelAnimationFrame(rafId);
-  }, [end, hasStarted]);
+  }, [end, isVisible]);
 
   return (
     <div className="text-center md:border-r border-border last:border-0">
