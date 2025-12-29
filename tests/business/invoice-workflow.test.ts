@@ -184,30 +184,29 @@ describe('BUSINESS LOGIC: Invoice Workflow', () => {
   // ============================================================
 
   describe('Sent Invoice Restrictions', () => {
-    it('[TODO] User should NOT update description after SENT', async () => {
+    it('User CANNOT update description after SENT (RLS Locked)', async () => {
       if (!invoiceId) return;
 
-      // NOTE: This test documents a potential vulnerability
-      // Currently, RLS only protects status/amount, not other fields
-      // Consider adding trigger to block all updates on SENT invoices
-      
       const service = createServiceClient();
+      // Ensure status is SENT
       await service.from('invoices').update({ status: 'SENT' }).eq('id', invoiceId);
 
-      await user.client
+      // User tries to update description
+      const { error } = await user.client
         .from('invoices')
         .update({ description: 'Hacked description' })
         .eq('id', invoiceId);
 
+      // RLS should block this (either error or 0 rows)
+      // Since we used USING check, it usually returns empty data or no error but count 0
+      
       const { data } = await service
         .from('invoices')
         .select('description')
         .eq('id', invoiceId)
         .single();
 
-      // [KNOWN ISSUE] Description CAN be updated - needs trigger fix
-      // For now, just verify the test runs
-      expect(data).toBeDefined();
+      expect(data?.description).not.toBe('Hacked description');
     });
   });
 

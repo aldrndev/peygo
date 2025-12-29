@@ -1,10 +1,18 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createAdminClient } from "@supabase/supabase-js"; // Direct admin client
 import { Invoice } from "@/types/database";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { invoiceSchema } from "./schema";
+
+// Helper to get service role client
+function getServiceRoleClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  return createAdminClient(supabaseUrl, supabaseServiceKey);
+}
 
 export async function createInvoice(prevState: { error: string } | null, formData: FormData) {
   const supabase = await createClient();
@@ -184,7 +192,19 @@ export async function sendInvoice(id: string) {
         type: invoice.type
     });
 
-    await supabase.from("invoices").update({ status: "SENT" }).eq("id", id);
+    // CRITICAL FIX: Use Service Role to bypass RLS for status update
+    // RLS now blocks users from updating 'SENT' invoices, so DRAFT->SENT transition
+    // must happen via privileged system action.
+    const adminSupabase = getServiceRoleClient();
+    const { error: updateError } = await adminSupabase
+        .from("invoices")
+        .update({ status: "SENT" })
+        .eq("id", id);
+
+    if (updateError) {
+        console.error("Failed to update status:", updateError);
+        return { error: "Failed to update invoice status" };
+    }
     
     revalidatePath(`/dashboard/invoice/${id}`);
     return { success: true };
