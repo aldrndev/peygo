@@ -16,20 +16,60 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PeyGo - Platform Invoice & Billing",
-  description: "Platform invoice dan billing untuk freelancer, UMKM, dan startup di Indonesia. Semua pemrosesan pembayaran ditangani oleh mitra pembayaran berlisensi.",
-  keywords: ["invoice", "billing", "pembayaran", "UMKM", "freelancer", "Indonesia"],
-  authors: [{ name: "PeyGo" }],
+  metadataBase: new URL("https://peygo.id"),
+  title: {
+    default: "PeyGo - Platform Invoice & Billing untuk UMKM Indonesia",
+    template: "%s | PeyGo",
+  },
+  description: "Platform invoice dan billing untuk freelancer, UMKM, dan startup di Indonesia. Buat invoice profesional, terima pembayaran via QRIS, VA Bank, E-Wallet. Gratis daftar!",
+  keywords: ["invoice", "billing", "pembayaran", "UMKM", "freelancer", "Indonesia", "QRIS", "virtual account", "e-wallet", "tagihan online"],
+  authors: [{ name: "PeyGo", url: "https://peygo.id" }],
+  creator: "PeyGo",
+  publisher: "PeyGo",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: "/icon.png",
     shortcut: "/favicon.png",
     apple: "/icon.png",
   },
   openGraph: {
-    title: "PeyGo - Platform Invoice & Billing",
-    description: "Platform invoice dan billing untuk freelancer, UMKM, dan startup di Indonesia.",
     type: "website",
     locale: "id_ID",
+    url: "https://peygo.id",
+    siteName: "PeyGo",
+    title: "PeyGo - Platform Invoice & Billing untuk UMKM Indonesia",
+    description: "Buat invoice profesional, terima pembayaran via QRIS, VA Bank, E-Wallet. Mulai gratis hari ini!",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "PeyGo - Platform Invoice & Billing",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PeyGo - Platform Invoice & Billing untuk UMKM Indonesia",
+    description: "Buat invoice profesional, terima pembayaran via QRIS, VA Bank, E-Wallet. Mulai gratis!",
+    images: ["/og-image.png"],
+    creator: "@peygo_id",
+  },
+  alternates: {
+    canonical: "https://peygo.id",
+  },
+  verification: {
+    google: "your-google-verification-code",
   },
 };
 
