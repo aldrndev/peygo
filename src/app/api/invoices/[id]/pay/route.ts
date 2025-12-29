@@ -9,12 +9,13 @@ export async function POST(
   const { id } = await params;
   const supabase = await createClient();
   
-  // 1. Check Auth & Ownership
+  // 1. Check Auth
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // 2. Fetch invoice
   const { data: invoice } = await supabase
     .from("invoices")
     .select("*")
@@ -23,6 +24,14 @@ export async function POST(
 
   if (!invoice) {
     return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+  }
+
+  // 3. SECURITY: Authorization check
+  // For PAYMENT_REQUEST: Only the owner (user who created) can pay
+  // For BILLING: Owner sends, recipient pays (recipient may not be authenticated user)
+  // Current implementation: Only owner can trigger payment from dashboard
+  if (invoice.user_id !== user.id) {
+    return NextResponse.json({ error: "Access denied" }, { status: 403 });
   }
   
   // Note: Depending on flow, user might be paying THEIR OWN request (top up?) or paying a bill?

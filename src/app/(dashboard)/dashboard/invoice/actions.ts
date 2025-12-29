@@ -157,7 +157,13 @@ export async function sendInvoice(id: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: "Unauthorized" };
 
-    const { data: invoice } = await supabase.from("invoices").select("*").eq("id", id).single();
+    // SECURITY: Ensure user owns this invoice
+    const { data: invoice } = await supabase
+        .from("invoices")
+        .select("*")
+        .eq("id", id)
+        .eq("user_id", user.id) // Added ownership check
+        .single();
     if (!invoice) return { error: "Invoice not found" };
     
     // Validate Archive

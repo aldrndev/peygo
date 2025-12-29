@@ -48,7 +48,7 @@ export default function LandingPage() {
         <CTASection />
         <LandingFooter />
         
-        <WhatsAppFloatingButton phoneNumber="628123456789" message="Halo, saya tertarik dengan PeyGo!" />
+        <WhatsAppFloatingButton />
       </div>
     </>
   );

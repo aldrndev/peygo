@@ -1,21 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, Suspense, useCallback } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
-
-function useNavigationState() {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  return `${pathname}?${searchParams.toString()}`;
-}
+import { useEffect, useRef, useState, useCallback } from "react";
+import { usePathname } from "next/navigation";
 
 function NavigationProgressInner() {
-  const routeKey = useNavigationState();
+  const pathname = usePathname();
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const isNavigatingRef = useRef(false);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const prevRouteKeyRef = useRef(routeKey);
+  const prevPathnameRef = useRef(pathname);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
 
@@ -37,13 +31,14 @@ function NavigationProgressInner() {
 
   // Handle route change complete
   useEffect(() => {
-    if (prevRouteKeyRef.current !== routeKey && isNavigatingRef.current) {
-      prevRouteKeyRef.current = routeKey;
-      queueMicrotask(() => {
-        completeProgress();
-      });
-    } else {
-      prevRouteKeyRef.current = routeKey;
+    if (prevPathnameRef.current !== pathname) {
+      // Route actually changed
+      if (isNavigatingRef.current) {
+        queueMicrotask(() => {
+          completeProgress();
+        });
+      }
+      prevPathnameRef.current = pathname;
     }
     
     return () => {
@@ -51,9 +46,9 @@ function NavigationProgressInner() {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [routeKey, completeProgress]);
+  }, [pathname, completeProgress]);
 
-  // Timeout fallback - if navigation takes too long or same page, complete after 3s
+  // Timeout fallback - if navigation takes too long, complete after 3s
   useEffect(() => {
     if (isNavigatingRef.current && startTimeRef.current > 0) {
       const fallbackTimeout = setTimeout(() => {
@@ -184,9 +179,5 @@ function NavigationProgressInner() {
 }
 
 export function NavigationProgress() {
-  return (
-    <Suspense fallback={null}>
-      <NavigationProgressInner />
-    </Suspense>
-  );
+  return <NavigationProgressInner />;
 }

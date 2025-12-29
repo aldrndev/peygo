@@ -28,13 +28,14 @@ export async function login(_prevState: { error: string } | null, formData: Form
 
   if (error) {
     // Map common Supabase error messages to Indonesian
+    // SECURITY: Use generic message for "User not found" and "Invalid login credentials" to prevent enumeration
     const errorMap: Record<string, string> = {
-      "Invalid login credentials": "Email atau password salah",
       "Email not confirmed": "Email belum dikonfirmasi. Cek inbox Anda.",
-      "User not found": "Pengguna tidak ditemukan",
       "Too many requests": "Terlalu banyak percobaan. Coba lagi nanti.",
     };
-    return { error: errorMap[error.message] || "Gagal masuk. Silakan coba lagi." };
+    
+    // Default generic error for auth failures
+    return { error: errorMap[error.message] || "Email atau password salah." };
   }
 
   revalidatePath("/", "layout");

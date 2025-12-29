@@ -15,6 +15,8 @@ import { logout } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { useLoadingOverlay } from "@/components/ui/LoadingOverlay";
+import { useSetting } from "@/contexts/SettingsContext";
 
 interface NavItem {
   href: string;
@@ -46,6 +48,8 @@ export default function Sidebar({
   onToggle
 }: SidebarProps) {
   const pathname = usePathname();
+  const loadingOverlay = useLoadingOverlay();
+  const platformName = useSetting("platform_name");
 
   const isActive = (href: string, exact?: boolean) => {
     if (exact) return pathname === href;
@@ -53,6 +57,11 @@ export default function Sidebar({
   };
 
   const initials = userName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+
+  const handleLogout = async () => {
+    loadingOverlay.show("Keluar...");
+    await logout();
+  };
 
   return (
     <aside 
@@ -65,11 +74,11 @@ export default function Sidebar({
       <div className="flex items-center h-16 px-4 border-b border-border">
         <Link href="/dashboard" className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg shrink-0">
-            P
+            {platformName.charAt(0)}
           </div>
           {!collapsed && (
             <span className="text-xl font-bold text-foreground">
-              PeyGo
+              {platformName}
             </span>
           )}
         </Link>
@@ -141,16 +150,15 @@ export default function Sidebar({
               <p className="text-sm font-medium text-foreground truncate">{userName}</p>
               <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
             </div>
-            <form action={logout}>
-              <Button
-                type="submit"
-                variant="ghost"
-                size="icon"
-                className="text-muted-foreground hover:text-destructive h-8 w-8"
-              >
-                <LogOut size={18} />
-              </Button>
-            </form>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-destructive h-8 w-8"
+              onClick={handleLogout}
+            >
+              <LogOut size={18} />
+            </Button>
           </div>
         )}
       </div>

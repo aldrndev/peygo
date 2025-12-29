@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { MessageCircle } from "lucide-react";
+import { useSettings } from "@/contexts/SettingsContext";
 
 interface WhatsAppFloatingButtonProps {
   phoneNumber?: string;
@@ -10,12 +11,17 @@ interface WhatsAppFloatingButtonProps {
 }
 
 export default function WhatsAppFloatingButton({ 
-  phoneNumber = "6281234567890",
-  message = "Halo, saya tertarik dengan PeyGo!"
+  phoneNumber,
+  message
 }: WhatsAppFloatingButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
-
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+  const settings = useSettings();
+  
+  // Use prop or settings, remove + from phone number
+  const phone = phoneNumber || settings.whatsapp_center.replace(/\+/g, "");
+  const defaultMessage = message || `Halo, saya tertarik dengan ${settings.platform_name}!`;
+  
+  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(defaultMessage)}`;
 
   return (
     <div 

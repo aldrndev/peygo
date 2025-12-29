@@ -145,10 +145,17 @@ export async function updateSupplier(
 
 export async function deleteSupplier(id: string) {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    return { error: "Tidak terautentikasi" };
+  }
+  
   const { error } = await supabase
     .from("suppliers")
     .delete()
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_id", user.id); // SECURITY: Ensure user owns this supplier
     
   if (error) return { error: error.message };
   

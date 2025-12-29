@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { SidebarHeader } from "@/components/layout/sidebar-header";
 import { SidebarNav, type NavItem } from "@/components/layout/sidebar-nav";
 import { UserMenu } from "@/components/layout/user-menu";
+import { useLoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { MobileNav } from "@/components/layout/mobile-nav";
 
 interface DashboardLayoutProps {
@@ -71,7 +72,10 @@ export default function DashboardLayout({
     return () => clearTimeout(timer);
   }, []);
 
+  const loadingOverlay = useLoadingOverlay();
+
   const handleLogout = async () => {
+    loadingOverlay.show("Keluar...");
     await logout();
   };
 

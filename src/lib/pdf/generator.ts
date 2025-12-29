@@ -1,13 +1,22 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { Invoice, InvoiceItem } from "@/types/database";
+import { Invoice, InvoiceItem, SettingsMap } from "@/types/database";
 
 interface JsPDFWithAutoTable extends jsPDF {
   lastAutoTable: { finalY: number };
 }
 
-export function generatePDF(invoice: Invoice & { items: InvoiceItem[] }) {
+interface GeneratePDFOptions {
+  invoice: Invoice & { items: InvoiceItem[] };
+  settings?: Pick<SettingsMap, "platform_name" | "platform_tagline">;
+}
+
+export function generatePDF({ invoice, settings }: GeneratePDFOptions) {
   const doc = new jsPDF();
+  
+  // Use dynamic or default platform name
+  const platformName = settings?.platform_name || "PeyGo";
+  const platformTagline = settings?.platform_tagline || "Platform Invoice & Billing";
 
   // Header
   doc.setFontSize(22);
@@ -21,10 +30,10 @@ export function generatePDF(invoice: Invoice & { items: InvoiceItem[] }) {
   // Sender Info (Right aligned)
   doc.setFontSize(12);
   doc.setTextColor(0);
-  doc.text("PeyGo", 190, 20, { align: "right" });
+  doc.text(platformName, 190, 20, { align: "right" });
   doc.setFontSize(10);
   doc.setTextColor(100);
-  doc.text("Platform Invoice & Billing", 190, 25, { align: "right" });
+  doc.text(platformTagline, 190, 25, { align: "right" });
 
   // Recipient info
   doc.setFontSize(10);
@@ -66,7 +75,7 @@ export function generatePDF(invoice: Invoice & { items: InvoiceItem[] }) {
   doc.setFontSize(8);
   doc.setTextColor(150);
   doc.text(
-    "PeyGo adalah platform invoice dan billing. Semua pemrosesan pembayaran dan pencairan dana ditangani oleh mitra pembayaran berlisensi.",
+    `${platformName} adalah platform invoice dan billing. Semua pemrosesan pembayaran dan pencairan dana ditangani oleh mitra pembayaran berlisensi.`,
     20,
     finalY + 10,
     { maxWidth: 170 }

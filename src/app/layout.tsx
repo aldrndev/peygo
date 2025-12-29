@@ -78,18 +78,22 @@ export const metadata: Metadata = {
 
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import { NavigationProgress } from "@/components/ui/NavigationProgress";
+import { getSettings } from "@/lib/settings";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch settings server-side (cached)
+  const settings = await getSettings();
+
   return (
-    <html lang="id" className="light" suppressHydrationWarning>
+    <html lang="id" className="light" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased min-h-screen bg-background text-foreground font-sans`}
       >
-        <Providers>
+        <Providers settings={settings}>
           <NavigationProgress />
           <ScrollToTop />
           {children}

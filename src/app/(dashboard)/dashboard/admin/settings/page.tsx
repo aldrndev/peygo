@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import AdminSettingsClient from "@/components/dashboard/AdminSettingsClient";
+import { getSettingsForAdmin } from "./actions";
 
 export default async function AdminSettingsPage() {
   const supabase = await createClient();
@@ -19,5 +20,8 @@ export default async function AdminSettingsPage() {
     return redirect("/dashboard");
   }
 
-  return <AdminSettingsClient />;
+  // Fetch settings for admin page
+  const settings = await getSettingsForAdmin();
+
+  return <AdminSettingsClient settings={settings} />;
 }

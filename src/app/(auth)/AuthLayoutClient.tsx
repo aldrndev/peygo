@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { FileText, Shield, Zap, CheckCircle2 } from "lucide-react";
+import { useSettings } from "@/contexts/SettingsContext";
 
 interface AuthLayoutClientProps {
   children: React.ReactNode;
 }
 
 export default function AuthLayoutClient({ children }: AuthLayoutClientProps) {
+  const settings = useSettings();
+  
   return (
     <div className="min-h-screen flex bg-background relative">
       {/* Subtle Background Pattern */}
@@ -23,7 +26,7 @@ export default function AuthLayoutClient({ children }: AuthLayoutClientProps) {
           {/* Logo */}
           <Link href="/" className="flex flex-col w-fit group mb-20">
             <span className="text-4xl font-bold tracking-tighter">
-              <span className="text-primary">Pey</span><span className="text-foreground">Go</span>
+              <span className="text-primary">{settings.platform_name.slice(0, 3)}</span><span className="text-foreground">{settings.platform_name.slice(3)}</span>
             </span>
           </Link>
  
@@ -100,8 +103,8 @@ export default function AuthLayoutClient({ children }: AuthLayoutClientProps) {
         {/* Footer */}
         <footer className="py-6 px-8 text-center text-muted-foreground">
           <p className="text-xs font-medium leading-relaxed">
-            © {new Date().getFullYear()} PeyGo. Semua Hak Dilindungi.<br/>
-            Platform Invoice untuk UMKM Indonesia.
+            © {new Date().getFullYear()} {settings.platform_name}. Semua Hak Dilindungi.<br/>
+            {settings.platform_tagline}
           </p>
         </footer>
       </div>

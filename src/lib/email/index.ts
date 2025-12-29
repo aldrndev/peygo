@@ -1,7 +1,7 @@
 import { Resend } from "resend";
+import { getSetting } from "@/lib/settings";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = "PeyGo <onboarding@resend.dev>"; // Gunakan domain terverifikasi di Production
 
 interface SendInvoiceEmailProps {
   to: string;
@@ -26,8 +26,14 @@ export async function sendInvoiceEmail({
       return { success: false, error: "Missing API Key" };
   }
 
+  // Get dynamic platform name
+  const platformName = await getSetting("platform_name");
+  const supportEmail = await getSetting("support_email");
+
+  const FROM_EMAIL = `${platformName} <onboarding@resend.dev>`; // Gunakan domain terverifikasi di Production
+
   const subject = type === "BILLING" 
-    ? `Tagihan Baru dari PeyGo: ${invoiceNumber}`
+    ? `Tagihan Baru dari ${platformName}: ${invoiceNumber}`
     : `Permintaan Pembayaran: ${invoiceNumber}`;
 
   const label = type === "BILLING" ? "Tagihan" : "Permintaan Pembayaran";
@@ -62,6 +68,12 @@ export async function sendInvoiceEmail({
             Jatuh tempo pembayaran mengikuti ketentuan yang berlaku.
             Jika tombol tidak berfungsi, salin link berikut: <br>
             ${paymentUrl}
+          </p>
+          
+          <hr style="margin-top: 30px; border: none; border-top: 1px solid #e4e4e7;">
+          <p style="font-size: 11px; color: #a1a1aa; text-align: center;">
+            Email ini dikirim oleh ${platformName}. 
+            Butuh bantuan? Hubungi ${supportEmail}
           </p>
         </div>
       `,

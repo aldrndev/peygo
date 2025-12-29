@@ -130,7 +130,54 @@ export type Database = {
         Insert: Partial<Supplier>;
         Update: Partial<Supplier>;
       };
+      settings: {
+        Row: Setting;
+        Insert: Partial<Setting>;
+        Update: Partial<Setting>;
+      };
       // ... allow other tables
     };
   };
 };
+
+// Settings types
+export type SettingType = "string" | "number" | "boolean";
+export type SettingCategory = "general" | "financial" | "notification" | "security" | "smtp";
+
+export interface Setting {
+  id: string;
+  key: string;
+  value: string;
+  type: SettingType;
+  category: SettingCategory;
+  label: string | null;
+  description: string | null;
+  is_secret: boolean;
+  created_at: string;
+  updated_at: string;
+  updated_by: string | null;
+}
+
+// Parsed settings map for easy access
+export interface SettingsMap {
+  // General
+  platform_name: string;
+  platform_tagline: string;
+  support_email: string;
+  whatsapp_center: string;
+  // Financial
+  platform_fee: number;
+  mdr_fee: number;
+  ppn_rate: number;
+  // Notification
+  email_transaction: boolean;
+  alert_registration: boolean;
+  wa_reminder: boolean;
+  // Security
+  require_2fa: boolean;
+  auto_logout_mins: number;
+  // SMTP
+  smtp_host: string;
+  smtp_port: number;
+  smtp_user: string;
+}

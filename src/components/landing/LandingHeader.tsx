@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useSetting } from "@/contexts/SettingsContext";
 
 interface LandingHeaderProps {
   className?: string;
@@ -13,6 +14,7 @@ interface LandingHeaderProps {
 export function LandingHeader({ className }: LandingHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const platformName = useSetting("platform_name");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,7 +48,7 @@ export function LandingHeader({ className }: LandingHeaderProps) {
         <nav className="flex items-center justify-between">
           <Link href="/" className="group">
             <span className="text-3xl font-bold tracking-tighter">
-              <span className="text-primary">Pey</span><span className="text-foreground">Go</span>
+              <span className="text-primary">{platformName.slice(0, 3)}</span><span className="text-foreground">{platformName.slice(3)}</span>
             </span>
           </Link>
           

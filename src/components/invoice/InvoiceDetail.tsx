@@ -32,6 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useSetting } from "@/contexts/SettingsContext";
 
 interface InvoiceWithItems extends Invoice {
   items: InvoiceItem[];
@@ -54,6 +55,7 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
   const profile = invoice.profile;
   const supplier = invoice.supplier;
   const isBilling = invoice.type === 'BILLING';
+  const platformName = useSetting("platform_name");
 
   const handleSendEmail = async () => {
     if (!confirm("Kirim invoice ke email penerima?")) return;
@@ -351,7 +353,7 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
           {/* Footer */}
           <div className="mt-12 pt-8 border-t border-border text-center text-xs text-muted-foreground print:border-gray-200 print:text-gray-500">
             <p>Invoice ini dibuat secara digital dan sah tanpa tanda tangan.</p>
-            <p className="mt-1">Dibuat dengan <span className="font-semibold text-primary">PeyGo</span> • peygo.id</p>
+            <p className="mt-1">Dibuat dengan <span className="font-semibold text-primary">{platformName}</span> • peygo.id</p>
           </div>
         </div>
       </div>
