@@ -202,7 +202,6 @@ export async function sendInvoice(id: string) {
         .eq("id", id);
 
     if (updateError) {
-        console.error("Failed to update status:", updateError);
         return { error: "Failed to update invoice status" };
     }
     

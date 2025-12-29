@@ -64,12 +64,22 @@ export async function createPaymentRequest(data: PivotPaymentRequest): Promise<P
   }
 }
 
-export function verifyWebhookSignature(_payload: string, _signature: string): boolean {
-  // TODO: Implement actual signature verification once standard is confirmed
-  // Usually involves HMAC-SHA256 of payload + secret
+import crypto from "crypto";
+
+export function verifyWebhookSignature(payload: string, signature: string): boolean {
   const secret = process.env.PIVOT_WEBHOOK_SECRET;
-  if (!secret) return true; // Fail open in dev if needed, or false in prod
+  if (!secret) {
+    if (process.env.NODE_ENV === "development") return true; // Dev bypass
+    return false; // Fail secure in prod
+  }
   
-  // Placeholder implementation
-  return true; 
+  // Pivot usually sends HMAC-SHA256 hex digest
+  const hmac = crypto.createHmac("sha256", secret);
+  const digest = hmac.update(payload).digest("hex");
+  
+  // Constant time comparison to prevent timing attacks
+  return crypto.timingSafeEqual(
+    Buffer.from(signature), 
+    Buffer.from(digest)
+  );
 }
