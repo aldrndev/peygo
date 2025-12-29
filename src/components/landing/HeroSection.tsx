@@ -5,37 +5,37 @@ import { Button } from "@/components/ui/button";
 
 export function HeroSection() {
   return (
-    <section className="relative pt-32 pb-16 md:pt-48 md:pb-32 overflow-hidden z-10">
-      <div className="container mx-auto px-6 relative">
-        <div className="grid lg:grid-cols-12 gap-16 items-center">
+    <section className="relative pt-24 pb-12 sm:pt-32 md:pt-48 md:pb-32 overflow-hidden z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
           {/* Left content */}
           <div className="lg:col-span-7 text-center lg:text-left">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-card border border-border text-primary px-5 py-2.5 rounded-2xl text-xs font-medium uppercase tracking-wide mb-10 shadow-lg">
-              <Zap className="w-4 h-4" />
+            <div className="inline-flex items-center gap-2 bg-card border border-border text-primary px-4 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6 sm:mb-10 shadow-lg">
+              <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>Platform Invoice untuk UMKM</span>
             </div>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-semibold text-foreground mb-8 leading-[0.9] tracking-tighter">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-semibold text-foreground mb-6 sm:mb-8 leading-[1.1] sm:leading-[0.9] tracking-tighter">
               Kirim Invoice, 
-              <br />
-              <span className="text-primary">Terima Pembayaran</span>
-              <br />
-              Lebih Cepat.
+              <br className="hidden sm:block" />
+              <span className="text-primary"> Terima Pembayaran</span>
+              <br className="hidden sm:block" />
+              {" "}Lebih Cepat.
             </h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-12 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
               Platform invoice yang membuat proses penjualan dan pembayaran bisnis Anda semudah mengirim pesan. <span className="text-foreground font-semibold">Mulai gratis hari ini.</span>
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start mb-12">
-              <Button asChild size="lg">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 justify-center lg:justify-start mb-8 sm:mb-12">
+              <Button asChild size="lg" className="w-full sm:w-auto">
                 <Link href="/daftar">
                   Mulai Gratis
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" asChild>
+              <Button variant="outline" size="lg" asChild className="w-full sm:w-auto">
                 <Link href="https://wa.me/628123456789">
                   <MessageCircle className="w-5 h-5 mr-2" />
                   Hubungi Sales
@@ -44,7 +44,7 @@ export function HeroSection() {
             </div>
 
             {/* Social proof badge */}
-            <div className="flex items-center gap-4 justify-center lg:justify-start mb-8">
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 justify-center lg:justify-start mb-6 sm:mb-8">
               <div className="flex -space-x-3">
                 {[
                   '/avatars/user-1.jpg',
@@ -59,37 +59,37 @@ export function HeroSection() {
                     alt={`User ${i + 1}`}
                     width={40}
                     height={40}
-                    className="w-10 h-10 rounded-full border-2 border-card shadow-md object-cover"
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-card shadow-md object-cover"
                     loading={i < 2 ? "eager" : "lazy"}
                   />
                 ))}
               </div>
-              <div className="text-left">
+              <div className="text-center sm:text-left">
                 <p className="text-sm font-semibold text-foreground">1.000+ UMKM Indonesia</p>
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Sudah Mempercayai PeyGo</p>
               </div>
             </div>
 
             {/* Trust indicators */}
-            <div className="flex flex-wrap items-center gap-6 justify-center lg:justify-start">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 justify-center lg:justify-start">
               <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 <div className="w-2 h-2 rounded-full bg-primary" />
                 <span>Setup 2 Menit</span>
               </div>
               <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 <div className="w-2 h-2 rounded-full bg-blue-500" />
-                <span>Bekerjasama dengan Mitra Berizin</span>
+                <span className="hidden xs:inline">Bekerjasama dengan</span> <span>Mitra Berizin</span>
               </div>
               <div className="h-6 w-px bg-border hidden md:block" />
-              <div className="flex items-center gap-4">
-                <Image src="/logos/regulatory/ojk.png" alt="Mitra berizin OJK" width={60} height={24} className="h-6 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity" loading="eager" />
-                <Image src="/logos/regulatory/bi.png" alt="Mitra terdaftar BI" width={50} height={20} className="h-5 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity" loading="eager" />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <Image src="/logos/regulatory/ojk.png" alt="Mitra berizin OJK" width={60} height={24} className="h-5 sm:h-6 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity" loading="eager" />
+                <Image src="/logos/regulatory/bi.png" alt="Mitra terdaftar BI" width={50} height={20} className="h-4 sm:h-5 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity" loading="eager" />
               </div>
             </div>
           </div>
 
-          {/* Right content - 3D Mockup */}
-          <div className="lg:col-span-5 relative">
+          {/* Right content - 3D Mockup (hidden on small mobile, simplified on medium) */}
+          <div className="lg:col-span-5 relative hidden sm:block">
             <HeroMockup />
           </div>
         </div>

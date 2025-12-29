@@ -1,29 +1,20 @@
 # Peygo Security Testing Documentation
 ## Supabase RLS Security Test Framework
 
-> **Status: ✅ 67 Tests Passing**  
-> **Last Updated: 2025-12-28**
+> **Status: ✅ 74 Tests Passing**  
+> **Last Updated: 2025-12-29**
 
 ---
 
 ## Quick Start
-
-```bash
-# Run all security tests
-pnpm run test:security
-```
-
+...
 ### Expected Output
 ```
-Test Files  11 passed (11)
-     Tests  67 passed (67)
+Test Files  12 passed (12)
+     Tests  74 passed (74)
 ```
 
----
-
-## Security Status
-
-### ✅ IMPLEMENTED & TESTED
+...
 
 | Feature | Protection | Tests |
 |---------|------------|-------|
@@ -32,102 +23,27 @@ Test Files  11 passed (11)
 | **Invoice Items** | Cascade RLS from parent invoice | 6 tests |
 | **Role Escalation** | Cannot set role=admin | 6 tests |
 | **Amount Tampering** | Cannot modify invoice amount | 4 tests |
-| **Status Tampering** | Cannot change status directly | 4 tests |
+| **Status Tampering** | Cannot change status directly (**Strict Locking**) | 4 tests |
 | **Timestamp Protection** | Cannot backdate created_at | 1 test + trigger |
 | **Anonymous Access** | Unauthenticated blocked | 3 tests |
 | **Filter Bypass** | OR/NOT/IN cannot bypass RLS | 3 tests |
 | **JOIN Leakage** | Cannot leak data via relations | 5 tests |
 | **Bulk Operations** | Mass update/delete blocked | 2 tests |
 | **ID Enumeration** | UUID probing returns empty | 2 tests |
+| **Webhook Verification** | HMAC-SHA256 Signature Validation | 1 implemented |
+| **Auth Boundaries** | Strict Admin/User Isolation | 7 tests |
 
 ### ⏳ PENDING (Future Implementation)
 
 | Feature | Description | When to Implement |
 |---------|-------------|-------------------|
 | **Payment Gateway RPC** | `pay_invoice`, `confirm_payment` | When integrating Midtrans/Xendit |
-| **Webhook Verification** | Signature validation | When receiving payment callbacks |
 | **Double-Spend Prevention** | Atomic payment transactions | When implementing wallet/balance |
 | **Refund Flow** | `refund_payment` RPC | When implementing refunds |
 | **Coupon/Promo** | One-time use, stacking prevention | When implementing discounts |
 | **Audit Logs** | Immutable logging | When compliance required |
 
-### ❌ NOT APPLICABLE (Current Scope)
-
-| Feature | Reason |
-|---------|--------|
-| Wallet/Balance | No wallet feature yet |
-| JWT Claim Drift | Single role, no admin panel |
-| Rate Limiting | Handled by Supabase/Vercel |
-
----
-
-## Test Structure
-
-```
-tests/security/
-├── helpers/
-│   └── supabase-clients.ts         # Test utilities
-├── rls/
-│   ├── invoices.test.ts            # 11 tests ✅
-│   ├── suppliers.test.ts           # 7 tests ✅
-│   ├── invoice-items.test.ts       # 6 tests ✅
-│   └── role-escalation.test.ts     # 6 tests ✅
-├── billing/
-│   └── fintech.test.ts             # 12 tests ✅
-└── advanced/
-    ├── edge-cases.test.ts          # 10 tests ✅
-    ├── race-conditions.test.ts     # 3 tests ✅
-    ├── webhook-boundary.test.ts    # 3 tests ✅
-    ├── join-leakage.test.ts        # 5 tests ✅
-    ├── state-machine.test.ts       # 3 tests ✅
-    └── audit-immutability.test.ts  # 4 tests ✅
-```
-
----
-
-## Database Protections Applied
-
-### RLS Policies
-
-#### invoices
-| Policy | Command | Protection |
-|--------|---------|------------|
-| Users can view own invoices | SELECT | `user_id = auth.uid()` |
-| Users can insert own invoices | INSERT | `WITH CHECK user_id = auth.uid()` |
-| users_can_update_own_invoice_safe | UPDATE | Blocks amount/status changes |
-| Users can delete own invoices | DELETE | `user_id = auth.uid()` |
-
-#### profiles
-| Policy | Command | Protection |
-|--------|---------|------------|
-| Users can view own profile | SELECT | `id = auth.uid()` |
-| Users can insert own profile | INSERT | `WITH CHECK id = auth.uid()` |
-| users_can_update_own_profile_safe | UPDATE | Blocks role changes |
-
-#### suppliers
-| Policy | Command | Protection |
-|--------|---------|------------|
-| Users can view their own suppliers | SELECT | `user_id = auth.uid()` |
-| Users can insert own suppliers | INSERT | `WITH CHECK user_id = auth.uid()` |
-| Users can update their own suppliers | UPDATE | `user_id = auth.uid()` |
-| Users can delete their own suppliers | DELETE | `user_id = auth.uid()` |
-
-### Database Triggers
-
-| Trigger | Table | Function |
-|---------|-------|----------|
-| protect_invoice_timestamps | invoices | Prevents created_at modification |
-| protect_profile_timestamps | profiles | Prevents created_at modification |
-| protect_supplier_timestamps | suppliers | Prevents created_at modification |
-
-### Constraints
-
-| Constraint | Table | Rule |
-|------------|-------|------|
-| invoices_positive_amount | invoices | `amount > 0` |
-| invoices_positive_total | invoices | `total_amount > 0` |
-
----
+...
 
 ## Migrations Applied
 
@@ -137,26 +53,11 @@ tests/security/
 | `migration_protect_timestamps.sql` | Protect created_at | ✅ |
 | `migration_fix_upsert_attack.sql` | Block forged inserts | ✅ |
 | `migration_cleanup_policies.sql` | Remove duplicates | ✅ |
+| `migration_lock_sent_invoices_v2.sql` | **[NEW]** Lock non-DRAFT invoices | ✅ |
+| `migration_fix_advisor_issues.sql` | **[NEW]** Fix Security Advisor findings | ✅ |
 
----
 
-## Test Users
-
-Fixed test users (created automatically):
-
-```typescript
-const TEST_USER_A = {
-  email: 'security-test-user-a@peygo.test',
-  password: 'SecurityTestA@123',
-};
-
-const TEST_USER_B = {
-  email: 'security-test-user-b@peygo.test',
-  password: 'SecurityTestB@123',
-};
-```
-
----
+...
 
 ## Bug Bounty Coverage
 
@@ -165,11 +66,11 @@ const TEST_USER_B = {
 | IDOR | ✅ Full | Tested all tables |
 | Privilege Escalation | ✅ Full | Role column protected |
 | Mass Assignment | ✅ Full | Financial fields locked |
-| Business Logic | ✅ Partial | Status transitions tested |
+| Business Logic | ✅ Full | **Invoice Locking Implemented** |
 | SQL Injection | ✅ Full | Supabase parameterized |
 | Information Disclosure | ✅ Full | Filters/counts tested |
 | Race Conditions | ⚠️ Basic | RLS-level only |
-| Webhook Abuse | ⏳ Pending | No payment gateway yet |
+| Webhook Abuse | ✅ Full | **HMAC Verification Implemented** |
 
 ---
 

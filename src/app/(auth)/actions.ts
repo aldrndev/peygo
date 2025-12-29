@@ -10,7 +10,7 @@ const authSchema = z.object({
   password: z.string().min(6, "Password minimal 6 karakter"),
 });
 
-export async function login(_prevState: { error: string } | null, formData: FormData) {
+export async function login(_prevState: { error: string; success?: boolean } | null, formData: FormData) {
   const supabase = await createClient();
 
   const data = {
@@ -39,10 +39,11 @@ export async function login(_prevState: { error: string } | null, formData: Form
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  // Return success flag - let client handle redirect after cookies are set
+  return { error: "", success: true };
 }
 
-export async function signup(_prevState: { error: string } | null, formData: FormData) {
+export async function signup(_prevState: { error: string; success?: boolean } | null, formData: FormData) {
   const supabase = await createClient();
 
 
@@ -83,7 +84,8 @@ export async function signup(_prevState: { error: string } | null, formData: For
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  // Return success flag - let client handle redirect after cookies are set
+  return { error: "", success: true };
 }
 
 export async function logout() {
