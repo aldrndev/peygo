@@ -133,7 +133,7 @@ export default function UserDashboardClient({
                 <EmptyState 
                   variant="payment"
                   title="Sangat sepi di sini..."
-                  description="Belum ada aktivitas pembayaran. Mulai dengan membuat permintaan pembayaran pertama Anda."
+                  description="Belum ada aktivitas pembayaran. Mulai dengan mencatat pembayaran pertama Anda."
                 />
               </div>
             )}
@@ -147,10 +147,17 @@ export default function UserDashboardClient({
           </div>
           <div className="grid grid-cols-1 gap-6">
             <QuickActionCard
+              href="/dashboard/penjualan/buat"
+              icon={Plus}
+              label="Buat Penjualan"
+              description="Tagih invoice ke pelanggan"
+              color="blue"
+            />
+            <QuickActionCard
               href="/dashboard/pembayaran/buat"
               icon={Plus}
               label="Buat Pembayaran"
-              description="Kirim permintaan dana ke supplier"
+              description="Catat pembayaran ke supplier"
               color="orange"
             />
             <QuickActionCard
@@ -158,7 +165,7 @@ export default function UserDashboardClient({
               icon={Send}
               label="Kelola Supplier"
               description="Input atau edit data supplier"
-              color="blue"
+              color="purple"
             />
           </div>
 

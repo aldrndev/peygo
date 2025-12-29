@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Supplier } from "@/types/database";
 import { useForm, useWatch } from "react-hook-form";
 import { Edit2, Trash2, Plus, Search, Phone, Mail } from "lucide-react";
@@ -11,8 +12,23 @@ import FloatingActionButton from "@/components/ui/FloatingActionButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { SimplePagination } from "@/components/ui/pagination";
 
-export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
+interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  pageSize: number;
+}
+
+interface SupplierListProps {
+  suppliers: Supplier[];
+  pagination?: PaginationInfo;
+}
+
+export default function SupplierList({ suppliers, pagination }: SupplierListProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
   
@@ -40,6 +56,12 @@ export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", page.toString());
+    router.push(`/dashboard/supplier?${params.toString()}`);
+  };
+
   const filteredSuppliers = useMemo(() => {
     return suppliers.filter(s =>
       s.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -57,13 +79,14 @@ export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
             <p className="text-muted-foreground text-sm mt-1">Kelola rekan bisnis dan informasi pembayaran</p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="px-3 py-1.5 rounded-lg bg-muted text-xs font-medium text-muted-foreground">
-              {suppliers.length}/5 slot
-            </div>
+            {pagination && (
+              <div className="px-3 py-1.5 rounded-lg bg-muted text-xs font-medium text-muted-foreground">
+                {pagination.totalCount} supplier
+              </div>
+            )}
             <Button 
               size="sm"
               onClick={handleCreate}
-              disabled={suppliers.length >= 5}
             >
               <Plus size={16} className="mr-2" />
               Tambah
@@ -75,7 +98,9 @@ export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
         <div className="md:hidden flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-semibold text-foreground">Supplier</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">{suppliers.length}/5 slot terpakai</p>
+            {pagination && (
+              <p className="text-xs text-muted-foreground mt-0.5">{pagination.totalCount} supplier terdaftar</p>
+            )}
           </div>
         </div>
 
@@ -95,8 +120,8 @@ export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
             <EmptyState
               variant="supplier"
               title={search ? "Tidak ditemukan" : "Belum ada supplier"}
-              description={search ? "Coba kata kunci lain atau periksa ejaan Anda" : "Data supplier diperlukan untuk membuat permintaan pembayaran"}
-              action={!search && suppliers.length < 5 ? { label: "Tambah Supplier", onClick: handleCreate } : undefined}
+              description={search ? "Coba kata kunci lain atau periksa ejaan Anda" : "Data supplier diperlukan untuk membuat pembayaran"}
+              action={!search ? { label: "Tambah Supplier", onClick: handleCreate } : undefined}
             />
           </div>
         ) : (
@@ -111,17 +136,33 @@ export default function SupplierList({ suppliers }: { suppliers: Supplier[] }) {
             ))}
           </div>
         )}
+
+        {/* Pagination */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex justify-center pt-4">
+            <SimplePagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
+
+        {/* Pagination Info */}
+        {pagination && pagination.totalCount > 0 && (
+          <p className="text-center text-xs text-muted-foreground">
+            Menampilkan {((pagination.currentPage - 1) * pagination.pageSize) + 1} - {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalCount)} dari {pagination.totalCount} data
+          </p>
+        )}
       </div>
 
       {/* Mobile FAB */}
-      {suppliers.length < 5 && (
-        <div className="md:hidden">
-          <FloatingActionButton 
-            onPrimaryPress={handleCreate}
-            primaryLabel="Tambah" 
-          />
-        </div>
-      )}
+      <div className="md:hidden">
+        <FloatingActionButton 
+          onPrimaryPress={handleCreate}
+          primaryLabel="Tambah" 
+        />
+      </div>
 
       {/* Unified Form */}
       <SupplierForm 

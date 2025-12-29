@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 
 import { supplierSchema } from "./schema";
 
+const PAGE_SIZE = 20;
+
 export async function getSuppliers() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -20,6 +22,40 @@ export async function getSuppliers() {
   return data || [];
 }
 
+export async function getSuppliersPaginated(page: number = 1) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) return { suppliers: [], totalCount: 0, totalPages: 0, currentPage: 1 };
+
+  const offset = (page - 1) * PAGE_SIZE;
+
+  // Get total count
+  const { count } = await supabase
+    .from("suppliers")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  // Get paginated data
+  const { data } = await supabase
+    .from("suppliers")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .range(offset, offset + PAGE_SIZE - 1);
+
+  const totalCount = count || 0;
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+  return {
+    suppliers: data || [],
+    totalCount,
+    totalPages,
+    currentPage: page,
+    pageSize: PAGE_SIZE,
+  };
+}
+
 export async function createSupplier(
   prevState: { error: string; success?: boolean } | null,
   formData: FormData
@@ -29,16 +65,6 @@ export async function createSupplier(
 
   if (!user) {
     return { error: "Tidak terautentikasi" };
-  }
-
-  // Check limits (Free tier: max 5 suppliers)
-  const { count } = await supabase
-    .from("suppliers")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id);
-
-  if (count && count >= 5) {
-    return { error: "Batas maksimal 5 supplier tercapai. Hubungi admin untuk upgrade." };
   }
 
   const rawData = {

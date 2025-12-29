@@ -25,7 +25,7 @@ type Step = 1 | 2 | 3;
 const STEPS = [
   { id: 1, title: "Supplier", description: "Pilih penerima", icon: Building2 },
   { id: 2, title: "Item & Biaya", description: "Rincian pembayaran", icon: Package },
-  { id: 3, title: "Konfirmasi", description: "Tinjau & kirim", icon: Send },
+  { id: 3, title: "Konfirmasi", description: "Tinjau & simpan", icon: Send },
 ];
 
 export default function CreatePembayaranPage() {
@@ -212,7 +212,7 @@ export default function CreatePembayaranPage() {
         </Button>
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight">Buat Pembayaran</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">Kirim permintaan pembayaran ke supplier Anda</p>
+          <p className="text-muted-foreground text-sm mt-0.5">Catat pengeluaran atau pembayaran ke supplier Anda</p>
         </div>
       </div>
 
@@ -294,7 +294,7 @@ export default function CreatePembayaranPage() {
               isPending={isPending}
               onPrevStep={prevStep}
               onNextStep={nextStep}
-              submitLabel="Kirim Pembayaran"
+              submitLabel="Catat Pembayaran"
             />
           </div>
 

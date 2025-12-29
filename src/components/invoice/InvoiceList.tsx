@@ -2,20 +2,29 @@
 
 import { useMemo, useEffect } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Plus, Search, FileText, ChevronRight, CreditCard, Clock, Check, AlertCircle, FileStack, type LucideIcon } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
 import { Invoice } from "@/types/database";
 import EmptyState from "@/components/ui/EmptyState";
 import FloatingActionButton from "@/components/ui/FloatingActionButton";
 import StatCard from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SimplePagination } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
+
+interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  pageSize: number;
+}
 
 interface InvoiceListProps {
   invoices: Invoice[];
   type: "BILLING" | "PAYMENT_REQUEST";
+  pagination?: PaginationInfo;
 }
 
 type FilterStatus = "all" | "DRAFT" | "SENT" | "PAID" | "FAILED";
@@ -29,7 +38,8 @@ const statusConfig: Record<string, { color: string; bg: string; label: string; i
   EXPIRED: { color: "text-muted-foreground", bg: "bg-muted", label: "Kedaluwarsa", icon: AlertCircle, iconColor: "text-muted-foreground" },
 };
 
-export default function InvoiceList({ invoices, type }: InvoiceListProps) {
+export default function InvoiceList({ invoices, type, pagination }: InvoiceListProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
 
@@ -52,6 +62,8 @@ export default function InvoiceList({ invoices, type }: InvoiceListProps) {
   const isBilling = type === "BILLING";
   const title = isBilling ? "Penjualan" : "Pembayaran";
   const createLink = isBilling ? "/dashboard/penjualan/buat" : "/dashboard/pembayaran/buat";
+  const baseUrl = isBilling ? "/dashboard/penjualan" : "/dashboard/pembayaran";
+  
   const filters: { key: FilterStatus; label: string }[] = [
     { key: "all", label: "Semua" },
     { key: "DRAFT", label: "Draft" },
@@ -83,6 +95,12 @@ export default function InvoiceList({ invoices, type }: InvoiceListProps) {
     return `Rp ${value}`;
   };
 
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", page.toString());
+    router.push(`${baseUrl}?${params.toString()}`);
+  };
+
   return (
     <div className="relative space-y-6 md:space-y-8 pb-20">
       {/* Header - Desktop only */}
@@ -90,7 +108,7 @@ export default function InvoiceList({ invoices, type }: InvoiceListProps) {
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold text-foreground">{title}</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            {isBilling ? "Kelola daftar tagihan bisnis Anda." : "Kelola permintaan pembayaran supplier."}
+            {isBilling ? "Kelola daftar tagihan bisnis Anda." : "Kelola catatan pembayaran supplier."}
           </p>
         </div>
         <Button asChild size="sm">
@@ -173,6 +191,24 @@ export default function InvoiceList({ invoices, type }: InvoiceListProps) {
             <InvoiceItem key={invoice.id} invoice={invoice} />
           ))}
         </div>
+      )}
+
+      {/* Pagination */}
+      {pagination && pagination.totalPages > 1 && (
+        <div className="flex justify-center pt-4">
+          <SimplePagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
+
+      {/* Pagination Info */}
+      {pagination && pagination.totalCount > 0 && (
+        <p className="text-center text-xs text-muted-foreground">
+          Menampilkan {((pagination.currentPage - 1) * pagination.pageSize) + 1} - {Math.min(pagination.currentPage * pagination.pageSize, pagination.totalCount)} dari {pagination.totalCount} data
+        </p>
       )}
 
       {/* Mobile FAB */}
