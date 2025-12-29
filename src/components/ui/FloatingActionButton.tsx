@@ -35,24 +35,24 @@ export default function FloatingActionButton({
 }: FloatingActionButtonProps) {
   const [isOpen, setIsOpen] = useState(initialExpanded);
 
+  const fabContent = (
+    <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/30 ring-4 ring-background hover:scale-105 active:scale-95 transition-transform">
+      <Plus size={24} className="text-primary-foreground" strokeWidth={2.5} />
+    </div>
+  );
+
   // If only one action, go directly to that link or trigger action
   if (primaryHref || onPrimaryPress || (actions && actions.length === 1)) {
     const href = primaryHref || (actions && actions.length === 1 ? actions[0].href : undefined);
     
-    const content = (
-      <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/30 ring-4 ring-background hover:scale-105 active:scale-95 transition-transform">
-        <Plus size={24} className="text-primary-foreground" strokeWidth={2.5} />
-      </div>
-    );
-
     if (href) {
       return (
         <Link 
           href={href} 
-          className="fixed bottom-20 right-4 z-40 md:bottom-6"
+          className="fixed bottom-28 right-4 z-40 md:bottom-6 md:right-6 no-print"
           aria-label={primaryLabel}
         >
-          {content}
+          {fabContent}
         </Link>
       );
     }
@@ -60,16 +60,16 @@ export default function FloatingActionButton({
     return (
       <button 
         onClick={onPrimaryPress} 
-        className="fixed bottom-20 right-4 z-40 md:bottom-6"
+        className="fixed bottom-28 right-4 z-40 md:bottom-6 md:right-6 no-print"
         aria-label={primaryLabel}
       >
-        {content}
+        {fabContent}
       </button>
     );
   }
 
   return (
-    <div className="fixed bottom-20 right-4 z-40 md:bottom-6">
+    <div className="fixed bottom-28 right-4 z-40 md:bottom-6 md:right-6 no-print">
       {/* Backdrop */}
       {isOpen && (
         <div

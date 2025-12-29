@@ -210,6 +210,39 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* 
+ * Fix for macOS overlay scrollbars causing layout shift
+ * By styling the scrollbar, we force classic scrollbar behavior
+ * This makes scrollbar-gutter work properly
+ */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
@@ -218,6 +251,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: var(--line-height-normal);
+}
+
+/* Fix for Radix UI layout shift (GitHub issues #3251, #1925, #1496) */
+html body[data-scroll-locked] {
+  overflow-y: scroll !important;
+  --removed-body-scroll-bar-size: 0 !important;
+  margin-right: 0 !important; 
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -469,5 +509,52 @@ input[type="number"] {
 @media (prefers-contrast: more) {
   :root {
     --border: hsl(215 28% 50%);
+  }
+}
+
+/* Print styles - hide non-essential elements */
+@media print {
+  /* Hide navigation elements */
+  aside,
+  header,
+  nav,
+  .mobile-nav,
+  .skip-link,
+  [data-floating-button],
+  .fixed:not(main) {
+    display: none !important;
+  }
+
+  /* Reset layout for print */
+  main {
+    margin-left: 0 !important;
+    padding-top: 0 !important;
+    width: 100% !important;
+    min-height: auto !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Remove shadows and borders for cleaner print */
+  .bg-card,
+  .border {
+    box-shadow: none !important;
+    border-color: #ddd !important;
+  }
+
+  /* Ensure content breaks nicely */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+
+  .no-print {
+    display: none !important;
   }
 }

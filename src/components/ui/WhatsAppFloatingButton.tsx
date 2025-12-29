@@ -18,7 +18,10 @@ export default function WhatsAppFloatingButton({
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 md:bottom-8 md:right-8">
+    <div 
+      className="fixed bottom-24 right-6 z-50 md:bottom-8 md:right-8 no-print"
+      data-floating-button
+    >
       {/* Tooltip */}
       <div 
         className={`absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-card shadow-lg rounded-xl px-4 py-2 whitespace-nowrap border border-border transition-all duration-200 ${

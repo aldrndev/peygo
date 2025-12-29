@@ -13,6 +13,7 @@ export type UserRole = "user" | "admin";
 export interface Profile {
   id: string;
   name: string;
+  email?: string | null;
   phone: string | null;
   role: UserRole;
   bank_name: string | null;
@@ -71,6 +72,7 @@ export interface Invoice {
   pivot_payment_id: string | null;
   pivot_payment_url: string | null;
   payment_method: string | null;
+  sent_at: string | null;
   paid_at: string | null;
   disbursed_at: string | null;
   created_at: string;
@@ -89,6 +91,7 @@ export interface InvoiceItem {
   quantity: number;
   unit_price: number;
   total_price: number;
+  notes?: string | null;
   created_at: string;
 }
 
