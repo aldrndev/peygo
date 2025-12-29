@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import AuthLayoutClient from "./AuthLayoutClient";
 
 export default async function AuthLayout({
@@ -7,15 +5,7 @@ export default async function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Server-side session check - Best Practice
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  // If user is already authenticated, redirect to dashboard
-  if (user) {
-    redirect("/dashboard");
-  }
-
-  // If not authenticated, render the auth layout
+  // Middleware handles redirection of authenticated users to dashboard
+  // No server-side redirect here to avoid Next.js 15+ client-side error caching
   return <AuthLayoutClient>{children}</AuthLayoutClient>;
 }

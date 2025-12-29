@@ -1,12 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import AdminDashboardClient from "@/components/dashboard/AdminDashboardClient";
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) return redirect("/masuk");
+  // Middleware handles auth - return null as safety fallback
+  if (!user) return null;
 
   // Check if admin
   const { data: profile } = await supabase
@@ -15,9 +15,8 @@ export default async function AdminDashboardPage() {
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") {
-    return redirect("/dashboard");
-  }
+  // Middleware handles role check - return null as safety fallback
+  if (profile?.role !== "admin") return null;
 
   // Get all stats
   const { data: allUsers } = await supabase

@@ -1,12 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import AdminUserDetailClient from "@/components/dashboard/AdminUserDetailClient";
 
 export default async function AdminUserDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) return redirect("/masuk");
+  if (!user) return null;
 
   // Check if admin
   const { data: currentProfile } = await supabase
@@ -15,9 +15,7 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
     .eq("id", user.id)
     .single();
 
-  if (currentProfile?.role !== "admin") {
-    return redirect("/dashboard");
-  }
+  if (currentProfile?.role !== "admin") return null;
 
   const { id } = await params;
 

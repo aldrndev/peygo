@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import ProfilePage from "@/components/dashboard/ProfilePage";
 
 export default async function ProfilPage() {
@@ -7,9 +6,8 @@ export default async function ProfilPage() {
   
   const { data: { user } } = await supabase.auth.getUser();
   
-  if (!user) {
-    redirect("/masuk");
-  }
+  // Middleware handles auth - return null as safety fallback
+  if (!user) return null;
 
   const { data: profile } = await supabase
     .from("profiles")

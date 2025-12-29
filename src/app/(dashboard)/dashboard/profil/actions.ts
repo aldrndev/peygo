@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 const PROFILE_COMPLETE_COOKIE = "peygo_profile_complete";
@@ -60,15 +59,11 @@ export async function updateProfile(
 }
 
 export async function completeOnboarding(
-  prevState: { error: string } | null, 
+  prevState: { error: string; success?: boolean } | null, 
   formData: FormData
 ) {
   const result = await updateProfile(prevState, formData);
-  
-  if (result.success) {
-    redirect("/dashboard/penjualan");
-  }
-  
+  // Return result with success flag - client handles redirect to avoid Next.js 15+ issues
   return result;
 }
 

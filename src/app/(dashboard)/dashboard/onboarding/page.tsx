@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useState, startTransition } from "react";
+import { useActionState, useState, startTransition, useEffect } from "react";
 import { useFormStatus } from "react-dom";
+import { useRouter } from "next/navigation";
 import { User, Phone, Building, ArrowRight } from "lucide-react";
 import { completeOnboarding } from "@/app/(dashboard)/dashboard/profil/actions";
 import LogoUpload from "@/components/ui/LogoUpload";
@@ -14,6 +15,7 @@ import { Progress } from "@/components/ui/progress";
 
 const initialState = {
   error: "",
+  success: false,
 };
 
 function SubmitButton({ isUploading }: { isUploading: boolean }) {
@@ -29,9 +31,21 @@ function SubmitButton({ isUploading }: { isUploading: boolean }) {
 }
 
 export default function OnboardingPage() {
+  const router = useRouter();
   const [state, formAction] = useActionState(completeOnboarding, initialState);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Client-side redirect after successful onboarding
+  useEffect(() => {
+    if (state?.success) {
+      // Small delay for cookie propagation
+      const timer = setTimeout(() => {
+        router.push("/dashboard/penjualan");
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [state?.success, router]);
 
   const handleSubmit = async (formData: FormData) => {
     setIsUploading(true);

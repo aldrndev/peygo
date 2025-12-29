@@ -1,29 +1,14 @@
-import { redirect } from "next/navigation";
 import { getCurrentUser, getUserInvoices, calculateInvoiceStats } from "@/lib/data/user";
 import UserDashboardClient from "@/components/dashboard/UserDashboardClient";
-import { createClient } from "@/lib/supabase/server";
 
 export default async function UserDashboardPage() {
-  // 1. Check Auth first (strictly for valid session)
-  const supabase = await createClient();
-  const { data: { user: authUser } } = await supabase.auth.getUser();
-
-  if (!authUser) {
-    redirect("/masuk");
-  }
-
-  // 2. Get User Profile (Abstraction)
+  // Middleware handles all auth redirects. This page only renders for authenticated users.
   const user = await getCurrentUser();
 
-  // 3. If Auth exists but Profile missing/null (e.g. slow trigger, or partial signup)
-  // Redirect to onboarding instead of login to prevent loop
+  // Safety fallback - if somehow user is null, middleware should have redirected
+  // Return null instead of redirect to avoid Next.js 15+ client-side error caching
   if (!user) {
-    redirect("/dashboard/onboarding");
-  }
-
-  // Admin users go to admin dashboard
-  if (user.role === "admin") {
-    redirect("/dashboard/admin");
+    return null;
   }
 
   // Get invoices (cached)
@@ -44,3 +29,4 @@ export default async function UserDashboardPage() {
     />
   );
 }
+

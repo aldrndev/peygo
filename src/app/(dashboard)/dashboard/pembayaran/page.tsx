@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import InvoiceList from "@/components/invoice/InvoiceList";
 
 const PAGE_SIZE = 20;
@@ -14,9 +13,8 @@ export default async function PembayaranPage({ searchParams }: PageProps) {
   
   const { data: { user } } = await supabase.auth.getUser();
   
-  if (!user) {
-    redirect("/masuk");
-  }
+  // Middleware handles auth - return null as safety fallback
+  if (!user) return null;
 
   const currentPage = Math.max(1, parseInt(params.page || "1"));
   const offset = (currentPage - 1) * PAGE_SIZE;

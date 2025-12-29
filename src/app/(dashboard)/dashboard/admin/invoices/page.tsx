@@ -1,12 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import AdminInvoicesClient from "@/components/dashboard/AdminInvoicesClient";
 
 export default async function AdminInvoicesPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) return redirect("/masuk");
+  if (!user) return null;
 
   // Check if admin
   const { data: currentProfile } = await supabase
@@ -15,9 +14,7 @@ export default async function AdminInvoicesPage() {
     .eq("id", user.id)
     .single();
 
-  if (currentProfile?.role !== "admin") {
-    return redirect("/dashboard");
-  }
+  if (currentProfile?.role !== "admin") return null;
 
   // Get all invoices
   const { data: rawInvoices } = await supabase

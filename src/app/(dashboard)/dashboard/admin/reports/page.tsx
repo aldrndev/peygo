@@ -1,12 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import AdminReportsClient from "@/components/dashboard/AdminReportsClient";
 
 export default async function AdminReportsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) return redirect("/masuk");
+  if (!user) return null;
 
   // Check if admin
   const { data: currentProfile } = await supabase
@@ -15,9 +14,7 @@ export default async function AdminReportsPage() {
     .eq("id", user.id)
     .single();
 
-  if (currentProfile?.role !== "admin") {
-    return redirect("/dashboard");
-  }
+  if (currentProfile?.role !== "admin") return null;
 
   // Get all data for reports
   const { data: invoices } = await supabase
