@@ -1,7 +1,7 @@
 # Peygo Business Logic Testing Documentation
 
 > **Status: ✅ 40 Tests Passing**  
-> **Last Updated: 2025-12-28**
+> **Last Updated: 2025-12-29**
 
 ---
 
@@ -180,6 +180,7 @@ tests/business/
 | User cannot set SENT | ❌ Status unchanged |
 | User cannot set PAID | ❌ Status unchanged |
 | Service can change | ✅ Status changed |
+| User cannot update SENT description | ❌ **Blocked by RLS (Locked)** |
 
 #### Payment Flow
 | Test | Expected Result |
@@ -304,7 +305,6 @@ pnpm run test:business
 
 | Issue | Priority | Description |
 |-------|----------|-------------|
-| SENT invoice description editable | Medium | Need trigger to block all updates |
 | Invoice items schema variance | Low | Different schemas in different environments |
 | Profile column names | Low | `name` vs `full_name` varies |
 

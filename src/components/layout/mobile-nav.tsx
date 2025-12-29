@@ -18,7 +18,8 @@ export function MobileNav({ items, pathname, profileIcon }: MobileNavProps) {
 
   return (
     <nav 
-      className="md:hidden fixed bottom-6 inset-x-6 z-50 bg-foreground/95 backdrop-blur-sm border border-border shadow-xl rounded-2xl" 
+      className="md:hidden fixed inset-x-6 z-50 bg-foreground/95 backdrop-blur-sm border border-border shadow-xl rounded-2xl" 
+      style={{ bottom: "calc(1.5rem + var(--safe-area-inset-bottom, 0px))" }}
       aria-label="Mobile navigation"
     >
       <div className="flex items-center justify-between h-16 w-full px-6">
