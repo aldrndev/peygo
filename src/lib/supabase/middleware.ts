@@ -44,28 +44,33 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
+  // Skip redirect checks for static assets and API routes to improve performance
+  if (pathname.startsWith("/_next") || pathname.startsWith("/api")) {
+    return supabaseResponse;
+  }
+
   // Public routes (no auth required)
-  const publicRoutes = ["/", "/masuk", "/daftar", "/auth", "/blog", "/api"];
+  const publicRoutes = ["/", "/masuk", "/daftar", "/auth", "/blog"];
   const isPublicRoute = publicRoutes.some(route => 
     pathname === route || pathname.startsWith(route + "/")
   );
 
-  // Redirect unauthenticated users
-  // IMPORTANT: Only redirect if NOT already on masuk page to prevent loops
-  if (!user && !isPublicRoute && pathname !== "/masuk") {
+  // Auth pages that authenticated users should be redirected away from
+  const authPages = ["/masuk", "/daftar"];
+  const isAuthPage = authPages.some(page => 
+    pathname === page || pathname.startsWith(page + "/")
+  );
+
+  // Redirect unauthenticated users trying to access protected routes
+  if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/masuk";
     return NextResponse.redirect(url);
   }
 
-  // Redirect authenticated users away from auth pages
-  const authPages = ["/masuk", "/daftar"];
-  const isAuthPage = authPages.some(page => 
-    pathname === page || pathname.startsWith(page + "/")
-  );
-  
-  // IMPORTANT: Only redirect if NOT already on dashboard to prevent loops
-  if (user && isAuthPage && pathname !== "/dashboard") {
+  // Redirect authenticated users away from auth pages to dashboard
+  // Only redirect from auth pages, not if user is already going elsewhere
+  if (user && isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);

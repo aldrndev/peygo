@@ -2,6 +2,7 @@
 
 import { startTransition, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,6 +23,7 @@ const registerSchema = z.object({
 type RegisterSchema = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
 
@@ -47,6 +49,10 @@ export default function RegisterPage() {
       if (result?.error) {
         setServerError(result.error);
         setIsPending(false);
+      } else if (result?.success) {
+        // Small delay to ensure cookies are set before navigation
+        await new Promise(resolve => setTimeout(resolve, 100));
+        router.push("/dashboard");
       }
     });
   };

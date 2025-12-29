@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, Shield, Zap, CheckCircle2 } from "lucide-react";
+import { FileText, Shield, Zap, CheckCircle2, ArrowLeft } from "lucide-react";
 import { useSettings } from "@/contexts/SettingsContext";
+import { Button } from "@/components/ui/button";
 
 interface AuthLayoutClientProps {
   children: React.ReactNode;
@@ -23,12 +24,19 @@ export default function AuthLayoutClient({ children }: AuthLayoutClientProps) {
       {/* Left Side - Branding (Desktop only) */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden z-10">
         <div className="relative z-10 flex flex-col justify-start p-16 w-full">
-          {/* Logo */}
-          <Link href="/" className="flex flex-col w-fit group mb-20">
-            <span className="text-4xl font-bold tracking-tighter">
-              <span className="text-primary">{settings.platform_name.slice(0, 3)}</span><span className="text-foreground">{settings.platform_name.slice(3)}</span>
-            </span>
-          </Link>
+          {/* Back + Logo */}
+          <div className="flex items-center gap-4 mb-20">
+            <Button variant="ghost" size="icon" asChild className="shrink-0">
+              <Link href="/" aria-label="Kembali ke beranda">
+                <ArrowLeft className="w-5 h-5" />
+              </Link>
+            </Button>
+            <Link href="/" className="flex flex-col w-fit group">
+              <span className="text-4xl font-bold tracking-tighter">
+                <span className="text-primary">{settings.platform_name.slice(0, 3)}</span><span className="text-foreground">{settings.platform_name.slice(3)}</span>
+              </span>
+            </Link>
+          </div>
  
           {/* Main Content */}
           <div className="space-y-12">
@@ -84,10 +92,15 @@ export default function AuthLayoutClient({ children }: AuthLayoutClientProps) {
  
       {/* Right Side - Form */}
       <div className="flex-1 flex flex-col min-h-screen relative z-10">
-        {/* Mobile Header */}
-        <header className="lg:hidden py-8 px-8">
+        {/* Mobile Header with Back Button */}
+        <header className="lg:hidden py-6 px-4 sm:px-6 flex items-center gap-3">
+          <Button variant="ghost" size="icon" asChild className="shrink-0">
+            <Link href="/" aria-label="Kembali ke beranda">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+          </Button>
           <Link href="/" className="flex flex-col w-fit">
-            <span className="text-3xl font-bold tracking-tighter">
+            <span className="text-2xl sm:text-3xl font-bold tracking-tighter">
               <span className="text-primary">Pey</span><span className="text-foreground">Go</span>
             </span>
           </Link>
