@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, 
   ScrollText, 
@@ -60,7 +60,11 @@ export default function Sidebar({
 
   const handleLogout = async () => {
     loadingOverlay.show("Keluar...");
-    await logout();
+    const result = await logout();
+    if (result?.success) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      window.location.href = "/masuk";
+    }
   };
 
   return (

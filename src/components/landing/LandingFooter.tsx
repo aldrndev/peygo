@@ -28,7 +28,7 @@ export function LandingFooter() {
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Bekerjasama dengan Mitra Berizin dan Diawasi oleh</p>
               <div className="flex items-center gap-4">
                 <Image src="/logos/regulatory/ojk.png" alt="OJK" width={80} height={32} className="h-8 w-auto object-contain" loading="lazy" />
-                <Image src="/logos/regulatory/bi.png" alt="Bank Indonesia" width={100} height={24} className="h-6 w-auto object-contain" loading="lazy" />
+                <Image src="/logos/regulatory/bi.png" alt="Bank Indonesia" width={100} height={24} className="h-6 w-auto object-contain" style={{ width: 'auto', height: 'auto' }} loading="lazy" />
               </div>
             </div>
           </div>

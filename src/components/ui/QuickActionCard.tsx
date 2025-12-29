@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { LucideIcon, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";

@@ -83,7 +83,7 @@ export function HeroSection() {
               <div className="h-6 w-px bg-border hidden md:block" />
               <div className="flex items-center gap-3 sm:gap-4">
                 <Image src="/logos/regulatory/ojk.png" alt="Mitra berizin OJK" width={60} height={24} className="h-5 sm:h-6 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity" loading="eager" />
-                <Image src="/logos/regulatory/bi.png" alt="Mitra terdaftar BI" width={50} height={20} className="h-4 sm:h-5 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity" loading="eager" />
+                <Image src="/logos/regulatory/bi.png" alt="Mitra terdaftar BI" width={50} height={20} className="h-4 sm:h-5 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity" style={{ width: 'auto', height: 'auto' }} loading="eager" />
               </div>
             </div>
           </div>

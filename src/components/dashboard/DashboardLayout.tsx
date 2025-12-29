@@ -76,7 +76,12 @@ export default function DashboardLayout({
 
   const handleLogout = async () => {
     loadingOverlay.show("Keluar...");
-    await logout();
+    const result = await logout();
+    if (result?.success) {
+      // Small delay for session cleanup before redirect
+      await new Promise(resolve => setTimeout(resolve, 100));
+      router.push("/masuk");
+    }
   };
 
   const getPageTitle = (path: string): string => {

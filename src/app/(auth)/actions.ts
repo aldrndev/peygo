@@ -92,5 +92,6 @@ export async function logout() {
     const supabase = await createClient();
     await supabase.auth.signOut();
     revalidatePath("/", "layout");
-    redirect("/masuk");
+    // Return success - let client handle redirect with loading animation
+    return { success: true };
 }

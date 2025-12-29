@@ -126,6 +126,13 @@ export async function updateSession(request: NextRequest) {
       url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }
+
+    // Redirect admin users to admin dashboard when they visit regular /dashboard
+    if (pathname === "/dashboard" && userRole === "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard/admin";
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;
