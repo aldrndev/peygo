@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
-const isCapacitorBuild = process.env.CAPACITOR_BUILD === "true";
-
 const nextConfig: NextConfig = {
-  ...(isCapacitorBuild && { output: "export" }),
   images: {
     remotePatterns: [
       {
@@ -12,7 +9,6 @@ const nextConfig: NextConfig = {
         pathname: "/storage/v1/object/public/**",
       },
     ],
-    ...(isCapacitorBuild && { unoptimized: true }),
   },
   async headers() {
     return [

@@ -13,7 +13,7 @@
     "test:all": "vitest run",
     "cap:sync": "npx cap sync",
     "cap:android": "npx cap open android",
-    "cap:build": "bash scripts/capacitor-build.sh"
+    "cap:build": "npx cap sync android"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",

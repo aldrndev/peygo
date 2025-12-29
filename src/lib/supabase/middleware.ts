@@ -51,7 +51,8 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Redirect unauthenticated users
-  if (!user && !isPublicRoute) {
+  // IMPORTANT: Only redirect if NOT already on masuk page to prevent loops
+  if (!user && !isPublicRoute && pathname !== "/masuk") {
     const url = request.nextUrl.clone();
     url.pathname = "/masuk";
     return NextResponse.redirect(url);
@@ -63,7 +64,8 @@ export async function updateSession(request: NextRequest) {
     pathname === page || pathname.startsWith(page + "/")
   );
   
-  if (user && isAuthPage) {
+  // IMPORTANT: Only redirect if NOT already on dashboard to prevent loops
+  if (user && isAuthPage && pathname !== "/dashboard") {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
