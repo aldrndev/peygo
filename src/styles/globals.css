@@ -598,3 +598,17 @@ input[type="number"] {
     display: none;
   }
 }
+
+/* Spinner animation - ensure it works regardless of Tailwind version */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

@@ -53,17 +53,40 @@ export function LoadingOverlayProvider({ children }: LoadingOverlayProviderProps
       {/* Overlay */}
       {isLoading && (
         <div 
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-background/90 backdrop-blur-md"
           role="dialog"
           aria-modal="true"
           aria-label="Loading"
         >
-          <div className="flex flex-col items-center gap-4">
-            {/* Spinner */}
-            <div className="relative">
-              <div className="w-12 h-12 border-4 border-muted rounded-full" />
-              <div className="absolute inset-0 w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-            </div>
+          <div className="flex flex-col items-center gap-5">
+            {/* Premium SVG Spinner */}
+            <svg 
+              className="w-12 h-12" 
+              viewBox="0 0 50 50"
+              style={{ animation: 'spin 1s linear infinite' }}
+            >
+              <circle
+                cx="25"
+                cy="25"
+                r="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                className="text-muted opacity-20"
+              />
+              <circle
+                cx="25"
+                cy="25"
+                r="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+                className="text-primary"
+                strokeDasharray="80, 200"
+                strokeDashoffset="0"
+              />
+            </svg>
             
             {/* Message */}
             <p className="text-sm font-medium text-foreground">{message}</p>

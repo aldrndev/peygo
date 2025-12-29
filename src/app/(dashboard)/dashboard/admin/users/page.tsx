@@ -16,16 +16,14 @@ export default async function AdminUsersPage() {
 
   if (currentProfile?.role !== "admin") return null;
 
-  // Get all users
-  const { data: users } = await supabase
-    .from("profiles")
-    .select("id, name, phone, role, created_at")
-    .order("created_at", { ascending: false });
+  // Parallel data fetching
+  const [usersResult, invoiceCountsResult] = await Promise.all([
+    supabase.from("profiles").select("id, name, phone, role, created_at").order("created_at", { ascending: false }),
+    supabase.from("invoices").select("user_id"),
+  ]);
 
-  // Get invoice counts per user
-  const { data: invoiceCounts } = await supabase
-    .from("invoices")
-    .select("user_id");
+  const users = usersResult.data;
+  const invoiceCounts = invoiceCountsResult.data;
 
   const userInvoiceCounts: Record<string, number> = {};
   invoiceCounts?.forEach(inv => {

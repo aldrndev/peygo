@@ -18,14 +18,14 @@ export default async function AdminDashboardPage() {
   // Middleware handles role check - return null as safety fallback
   if (profile?.role !== "admin") return null;
 
-  // Get all stats
-  const { data: allUsers } = await supabase
-    .from("profiles")
-    .select("id, name, role, created_at");
+  // Parallel data fetching - much faster than sequential
+  const [usersResult, invoicesResult] = await Promise.all([
+    supabase.from("profiles").select("id, name, role, created_at"),
+    supabase.from("invoices").select("id, type, status, total_amount, platform_fee, created_at, user_id"),
+  ]);
 
-  const { data: allInvoices } = await supabase
-    .from("invoices")
-    .select("id, type, status, total_amount, platform_fee, created_at, user_id");
+  const allUsers = usersResult.data;
+  const allInvoices = invoicesResult.data;
 
   const now = new Date();
   const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
