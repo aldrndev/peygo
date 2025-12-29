@@ -1,32 +1,31 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 /**
  * Cron job to keep Supabase database alive
- * Runs every 6 hours to prevent free tier from pausing
+ * Runs every 2 days to prevent free tier from pausing
+ * 
+ * Note: This is a read-only operation, no auth required
+ * Vercel Cron will call this endpoint automatically
  */
-export async function GET(request: Request) {
-  // Verify cron secret for security
-  const authHeader = request.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+export async function GET() {
   try {
     const supabase = await createClient();
     
     // Simple query to keep database active
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("profiles")
       .select("id")
       .limit(1);
 
     if (error) {
       console.error("Keep-alive query failed:", error);
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+      return NextResponse.json({ 
+        success: false, 
+        error: error.message 
+      }, { status: 500 });
     }
 
     return NextResponse.json({ 
@@ -36,6 +35,9 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error("Keep-alive error:", error);
-    return NextResponse.json({ success: false, error: "Internal error" }, { status: 500 });
+    return NextResponse.json({ 
+      success: false, 
+      error: "Internal error" 
+    }, { status: 500 });
   }
 }
