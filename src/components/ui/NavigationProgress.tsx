@@ -74,7 +74,12 @@ function NavigationProgressInner() {
     const targetPath = targetHref.split("?")[0].split("#")[0];
     
     if (currentPath === targetPath) {
-      // Same page - don't show progress or show briefly then hide
+      // Same page - don't show progress
+      return;
+    }
+    
+    // Skip progress bar for dashboard routes (they have skeleton loading)
+    if (targetPath.startsWith("/dashboard")) {
       return;
     }
     
