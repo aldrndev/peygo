@@ -18,6 +18,6 @@ export const config = {
      * - api routes (handled separately)
      * - public pages (kebijakan-privasi, syarat-ketentuan, blog)
      */
-    "/((?!_next/static|_next/image|_next/data|api|favicon.ico|kebijakan-privasi|syarat-ketentuan|blog|pay|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2)$)(?!$).*)",
+    "/((?!_next/static|_next/image|_next/data|api|favicon.ico|robots.txt|sitemap.xml|kebijakan-privasi|syarat-ketentuan|blog|pay|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2)$)(?!$).*)",
   ],
 };
