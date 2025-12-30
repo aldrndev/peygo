@@ -1,6 +1,6 @@
-/* eslint-disable jsx-a11y/alt-text */
+
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Image, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image as PDFImage } from '@react-pdf/renderer';
 import { Invoice, InvoiceItem, Profile, Supplier } from "@/types/database";
 
 // Register fonts if needed - using standard Helvetica for now which is built-in
@@ -264,7 +264,7 @@ export const InvoicePDF = ({ invoice, qrCodeDataUrl, logoDataUrl, isBilling }: I
             {/* Logo Area */}
             <View style={{marginBottom: 8, alignItems: 'flex-start'}}>
               {logoDataUrl ? (
-                <Image 
+                <PDFImage 
                   src={logoDataUrl} 
                   style={{height: 40}} 
                 />
@@ -329,7 +329,7 @@ export const InvoicePDF = ({ invoice, qrCodeDataUrl, logoDataUrl, isBilling }: I
           <View style={styles.metadataColumn}>
             {isBilling && qrCodeDataUrl ? (
               <View style={styles.qrContainer}>
-                <Image src={qrCodeDataUrl} style={styles.qrCode} />
+                <PDFImage src={qrCodeDataUrl} style={styles.qrCode} />
                 <Text style={{fontSize: 8, color: '#64748B', marginTop: 4}}>Scan untuk bayar</Text>
               </View>
             ) : null}

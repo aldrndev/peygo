@@ -128,9 +128,8 @@ export default function RegisterPage() {
               )}
             </Button>
 
-            <p className="text-xs font-medium text-muted-foreground text-center leading-relaxed">
-              Dengan mendaftar, Anda menyetujui<br/>
-              <Link href="#" className="text-primary hover:text-primary/80">Syarat &amp; Ketentuan</Link> Kami.
+            <p className="text-xs font-medium text-muted-foreground text-center leading-relaxed max-w-sm mx-auto">
+              Dengan membuat akun, Anda menyetujui <Link href="/syarat-ketentuan" className="underline underline-offset-2 hover:text-primary transition-colors">Syarat &amp; Ketentuan</Link> serta <Link href="/kebijakan-privasi" className="underline underline-offset-2 hover:text-primary transition-colors">Kebijakan Privasi</Link> kami.
             </p>
           </form>
 

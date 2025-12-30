@@ -582,160 +582,162 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       </header>
 
-      {/* Cover Image */}
-      <div className="relative h-64 md:h-96 bg-muted">
-        <Image
-          src={post.image}
-          alt={post.title}
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-      </div>
-
-      {/* Article */}
-      <article className="py-12 md:py-16">
-        <div className="container mx-auto px-6 max-w-3xl">
-          {/* Back link */}
-          <Link href="/blog" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm font-medium mb-8">
-            <ArrowLeft className="w-4 h-4" />
-            Kembali ke Blog
-          </Link>
-
-          {/* Category */}
-          <div className="mb-6">
-            <span className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-medium uppercase tracking-wide">
-              {post.category}
-            </span>
-          </div>
-
-          {/* Title */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground mb-6 tracking-tighter leading-tight">
-            {post.title}
-          </h1>
-
-          {/* Meta */}
-          <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-12 pb-8 border-b border-border">
-            <div className="flex items-center gap-2">
-              <User className="w-4 h-4" />
-              <span>{post.author}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              <span>{new Date(post.date).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              <span>{post.readTime} baca</span>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="prose prose-lg max-w-none prose-headings:tracking-tight prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
-            {post.content.split("\n").map((line, i) => {
-              const trimmedLine = line.trim();
-              
-              // Helper function to parse inline markdown (bold)
-              const parseInline = (text: string) => {
-                const parts = text.split(/(\*\*[^*]+\*\*)/g);
-                return parts.map((part, idx) => {
-                  if (part.startsWith("**") && part.endsWith("**")) {
-                    return <strong key={idx} className="text-foreground font-semibold">{part.slice(2, -2)}</strong>;
-                  }
-                  return part;
-                });
-              };
-              
-              if (trimmedLine.startsWith("## ")) {
-                return <h2 key={i} className="text-2xl font-semibold mt-12 mb-4 text-foreground">{trimmedLine.replace("## ", "")}</h2>;
-              }
-              if (trimmedLine.startsWith("- ") || trimmedLine.startsWith("✅") || trimmedLine.startsWith("❌") || trimmedLine.startsWith("⚠️")) {
-                const content = trimmedLine.replace(/^- /, "");
-                return <li key={i} className="ml-6 mb-1">{parseInline(content)}</li>;
-              }
-              if (trimmedLine.startsWith("> ")) {
-                return <blockquote key={i} className="border-l-4 border-primary pl-4 italic my-6 text-muted-foreground">{parseInline(trimmedLine.replace("> ", ""))}</blockquote>;
-              }
-              if (/^\d+\.\s/.test(trimmedLine)) {
-                const content = trimmedLine.replace(/^\d+\.\s/, "");
-                return <li key={i} className="ml-6 mb-1 list-decimal">{parseInline(content)}</li>;
-              }
-              if (trimmedLine.startsWith("|")) {
-                return null;
-              }
-              if (trimmedLine.startsWith("*") && trimmedLine.endsWith("*") && !trimmedLine.startsWith("**")) {
-                return <p key={i} className="italic text-muted-foreground">{trimmedLine.replace(/^\*|\*$/g, "")}</p>;
-              }
-              if (trimmedLine) {
-                return <p key={i} className="mb-4 leading-relaxed">{parseInline(trimmedLine)}</p>;
-              }
-              return null;
-            })}
-          </div>
-
-          {/* Share */}
-          <div className="mt-12 pt-8 border-t border-border">
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-muted-foreground">Bagikan artikel ini:</span>
-              <Button variant="outline" size="sm">
-                <Share2 className="w-4 h-4 mr-2" />
-                Share
-              </Button>
-            </div>
-          </div>
+      <main>
+        {/* Cover Image */}
+        <div className="relative h-64 md:h-96 bg-muted">
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
         </div>
-      </article>
 
-      {/* Related Posts */}
-      {relatedPosts.length > 0 && (
-        <section className="py-16 bg-muted/50">
+        {/* Article */}
+        <article className="py-12 md:py-16">
           <div className="container mx-auto px-6 max-w-3xl">
-            <h2 className="text-2xl font-semibold text-foreground mb-8 tracking-tighter">Artikel Lainnya</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {relatedPosts.map(([relatedSlug, relatedPost]) => (
-                <Link key={relatedSlug} href={`/blog/${relatedSlug}`}>
-                  <Card className="h-full hover:-translate-y-1 transition-transform group">
-                    <div className="aspect-video relative overflow-hidden rounded-t-lg">
-                      <Image
-                        src={relatedPost.image}
-                        alt={relatedPost.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <CardContent className="p-4">
-                      <span className="text-xs font-medium text-primary uppercase tracking-wide">{relatedPost.category}</span>
-                      <h3 className="font-semibold text-foreground mt-2 group-hover:text-primary transition-colors line-clamp-2">
-                        {relatedPost.title}
-                      </h3>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground mt-3">
-                        <span>Baca selengkapnya</span>
-                        <ChevronRight className="w-3 h-3" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
+            {/* Back link */}
+            <Link href="/blog" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm font-medium mb-8">
+              <ArrowLeft className="w-4 h-4" />
+              Kembali ke Blog
+            </Link>
+
+            {/* Category */}
+            <div className="mb-6">
+              <span className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-medium uppercase tracking-wide">
+                {post.category}
+              </span>
             </div>
+
+            {/* Title */}
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground mb-6 tracking-tighter leading-tight">
+              {post.title}
+            </h1>
+
+            {/* Meta */}
+            <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-12 pb-8 border-b border-border">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span>{post.author}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <span>{new Date(post.date).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span>{post.readTime} baca</span>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="prose prose-lg max-w-none prose-headings:tracking-tight prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
+              {post.content.split("\n").map((line, i) => {
+                const trimmedLine = line.trim();
+                
+                // Helper function to parse inline markdown (bold)
+                const parseInline = (text: string) => {
+                  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+                  return parts.map((part, idx) => {
+                    if (part.startsWith("**") && part.endsWith("**")) {
+                      return <strong key={idx} className="text-foreground font-semibold">{part.slice(2, -2)}</strong>;
+                    }
+                    return part;
+                  });
+                };
+                
+                if (trimmedLine.startsWith("## ")) {
+                  return <h2 key={i} className="text-2xl font-semibold mt-12 mb-4 text-foreground">{trimmedLine.replace("## ", "")}</h2>;
+                }
+                if (trimmedLine.startsWith("- ") || trimmedLine.startsWith("✅") || trimmedLine.startsWith("❌") || trimmedLine.startsWith("⚠️")) {
+                  const content = trimmedLine.replace(/^- /, "");
+                  return <li key={i} className="ml-6 mb-1">{parseInline(content)}</li>;
+                }
+                if (trimmedLine.startsWith("> ")) {
+                  return <blockquote key={i} className="border-l-4 border-primary pl-4 italic my-6 text-muted-foreground">{parseInline(trimmedLine.replace("> ", ""))}</blockquote>;
+                }
+                if (/^\d+\.\s/.test(trimmedLine)) {
+                  const content = trimmedLine.replace(/^\d+\.\s/, "");
+                  return <li key={i} className="ml-6 mb-1 list-decimal">{parseInline(content)}</li>;
+                }
+                if (trimmedLine.startsWith("|")) {
+                  return null;
+                }
+                if (trimmedLine.startsWith("*") && trimmedLine.endsWith("*") && !trimmedLine.startsWith("**")) {
+                  return <p key={i} className="italic text-muted-foreground">{trimmedLine.replace(/^\*|\*$/g, "")}</p>;
+                }
+                if (trimmedLine) {
+                  return <p key={i} className="mb-4 leading-relaxed">{parseInline(trimmedLine)}</p>;
+                }
+                return null;
+              })}
+            </div>
+
+            {/* Share */}
+            <div className="mt-12 pt-8 border-t border-border">
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-muted-foreground">Bagikan artikel ini:</span>
+                <Button variant="outline" size="sm">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share
+                </Button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        {/* Related Posts */}
+        {relatedPosts.length > 0 && (
+          <section className="py-16 bg-muted/50">
+            <div className="container mx-auto px-6 max-w-3xl">
+              <h2 className="text-2xl font-semibold text-foreground mb-8 tracking-tighter">Artikel Lainnya</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {relatedPosts.map(([relatedSlug, relatedPost]) => (
+                  <Link key={relatedSlug} href={`/blog/${relatedSlug}`}>
+                    <Card className="h-full hover:-translate-y-1 transition-transform group">
+                      <div className="aspect-video relative overflow-hidden rounded-t-lg">
+                        <Image
+                          src={relatedPost.image}
+                          alt={relatedPost.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <CardContent className="p-4">
+                        <span className="text-xs font-medium text-primary uppercase tracking-wide">{relatedPost.category}</span>
+                        <h3 className="font-semibold text-foreground mt-2 group-hover:text-primary transition-colors line-clamp-2">
+                          {relatedPost.title}
+                        </h3>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-3">
+                          <span>Baca selengkapnya</span>
+                          <ChevronRight className="w-3 h-3" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* CTA */}
+        <section className="py-16 bg-foreground">
+          <div className="container mx-auto px-6 text-center max-w-2xl">
+            <h2 className="text-2xl md:text-3xl font-semibold text-background mb-4 tracking-tighter">
+              Mulai Kelola Invoice Anda dengan PeyGo
+            </h2>
+            <p className="text-background/60 mb-8">
+              Buat invoice profesional dan terima pembayaran dengan mudah. Gratis untuk memulai.
+            </p>
+            <Button asChild size="lg">
+              <Link href="/daftar">Daftar Gratis Sekarang</Link>
+            </Button>
           </div>
         </section>
-      )}
-
-      {/* CTA */}
-      <section className="py-16 bg-foreground">
-        <div className="container mx-auto px-6 text-center max-w-2xl">
-          <h2 className="text-2xl md:text-3xl font-semibold text-background mb-4 tracking-tighter">
-            Mulai Kelola Invoice Anda dengan PeyGo
-          </h2>
-          <p className="text-background/60 mb-8">
-            Buat invoice profesional dan terima pembayaran dengan mudah. Gratis untuk memulai.
-          </p>
-          <Button asChild size="lg">
-            <Link href="/daftar">Daftar Gratis Sekarang</Link>
-          </Button>
-        </div>
-      </section>
+      </main>
 
       {/* Footer */}
       <footer className="py-8 border-t border-border">

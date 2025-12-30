@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession } from "@/hooks/useSession";
 
@@ -14,75 +14,63 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const { user, profile, isLoading, isProfileComplete } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const [hasChecked, setHasChecked] = useState(false);
-  const isRedirecting = useRef(false);
+  const isRedirectingRef = useRef(false);
 
   // Use primitive values for deps
   const userId = user?.id ?? null;
   const userRole = profile?.role ?? "user";
 
-  // CRITICAL FIX #1: Reset redirect lock on route change
   useEffect(() => {
-    isRedirecting.current = false;
-    setHasChecked(false);
+    // Reset redirect lock when path changes (navigation complete)
+    isRedirectingRef.current = false;
   }, [pathname]);
 
+  // Derived State Logic (Pure)
+  let isAuthorized = true;
+  let redirectTarget: string | null = null;
+
+  if (isLoading) {
+    isAuthorized = false;
+  } else if (!userId) {
+    // Not logged in
+    if (pathname !== "/masuk") {
+      redirectTarget = "/masuk";
+      isAuthorized = false;
+    }
+  } else if (!isProfileComplete) {
+     // Profile incomplete
+     if (pathname !== "/dashboard/onboarding") {
+       redirectTarget = "/dashboard/onboarding";
+       isAuthorized = false;
+     }
+  } else if (userRole === "admin") {
+     const userOnlyPaths = ["/dashboard/penjualan", "/dashboard/pembayaran", "/dashboard/supplier", "/dashboard/invoice"];
+     const isUserOnlyRoute = userOnlyPaths.some(p => pathname === p || pathname.startsWith(p + "/"));
+     
+     if (pathname === "/dashboard") {
+       redirectTarget = "/dashboard/admin";
+       isAuthorized = false;
+     } else if (isUserOnlyRoute) {
+       redirectTarget = "/dashboard/admin";
+       isAuthorized = false;
+     }
+  } else {
+     // Regular user
+     if (pathname.startsWith("/dashboard/admin")) {
+       redirectTarget = "/dashboard";
+       isAuthorized = false;
+     }
+  }
+
+  // Handle Redirect Side Effect
   useEffect(() => {
-    // Wait for auth to be ready
-    if (isLoading) return;
-    
-    // Skip if already redirecting
-    if (isRedirecting.current) return;
-
-
-
-    // Not authenticated
-    if (!userId) {
-      if (pathname !== "/masuk") {
-        isRedirecting.current = true;
-        router.replace("/masuk");
-        return;
-      }
+    if (redirectTarget && !isRedirectingRef.current) {
+      isRedirectingRef.current = true;
+      router.replace(redirectTarget);
     }
-    // Profile incomplete
-    else if (!isProfileComplete) {
-      if (pathname !== "/dashboard/onboarding") {
-        isRedirecting.current = true;
-        router.replace("/dashboard/onboarding");
-        return;
-      }
-    }
-    // Admin user
-    else if (userRole === "admin") {
-      const userOnlyPaths = ["/dashboard/penjualan", "/dashboard/pembayaran", "/dashboard/supplier", "/dashboard/invoice"];
-      const isUserOnlyRoute = userOnlyPaths.some(p => pathname === p || pathname.startsWith(p + "/"));
-      
-      if (pathname === "/dashboard") {
-        isRedirecting.current = true;
-        router.replace("/dashboard/admin");
-        return;
-      } else if (isUserOnlyRoute) {
-        isRedirecting.current = true;
-        router.replace("/dashboard/admin");
-        return;
-      }
-    }
-    // Regular user
-    else {
-      if (pathname.startsWith("/dashboard/admin")) {
-        isRedirecting.current = true;
-        router.replace("/dashboard");
-        return;
-      }
-    }
+  }, [redirectTarget, router]);
 
-    // All checks passed - mark as checked
-    setHasChecked(true);
-
-  }, [isLoading, userId, userRole, isProfileComplete, pathname, router]);
-
-  // CRITICAL FIX #2: Use hasChecked for render gate
-  if (isLoading || !hasChecked) {
+  if (!isAuthorized) {
     return null;
   }
 

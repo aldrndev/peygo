@@ -18,7 +18,7 @@ export default function DashboardHome({ user, profile }: DashboardHomeProps) {
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">Dashboard</h1>
           <p className="text-muted-foreground text-sm md:text-base mt-2">
-            Halo, {profile?.name || user?.email?.split('@')[0]}! 👋
+            Halo, {profile?.name || user?.email?.split('@')[0]}
           </p>
         </div>
         <Button asChild size="lg" className="w-full sm:w-auto">

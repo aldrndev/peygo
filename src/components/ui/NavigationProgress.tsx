@@ -44,7 +44,8 @@ function NavigationProgressInner() {
     if (prevPathnameRef.current !== pathname || prevSearchParamsRef.current !== searchParamsString) {
       // Route actually changed
       if (isNavigatingRef.current) {
-         completeProgress();
+         // Wrap in timeout to avoid synchronous setState during render/effect cycle
+         setTimeout(() => completeProgress(), 0);
       }
       prevPathnameRef.current = pathname;
       prevSearchParamsRef.current = searchParamsString;

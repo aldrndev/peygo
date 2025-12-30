@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useState } from "react";
+import { startTransition, useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -24,6 +24,11 @@ type LoginSchema = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+  useEffect(() => {
+    // Prefetch dashboard for faster transition
+    router.prefetch("/dashboard");
+  }, [router]);
+
   const [isPending, setIsPending] = useState(false);
 
   const {
