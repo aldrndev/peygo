@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -105,7 +106,9 @@ export default async function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased min-h-screen bg-background text-foreground font-sans`}
       >
         <Providers settings={settings}>
-          <NavigationProgress />
+          <Suspense fallback={null}>
+            <NavigationProgress />
+          </Suspense>
           <ScrollToTop />
           {children}
         </Providers>
