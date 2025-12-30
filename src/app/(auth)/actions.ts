@@ -78,7 +78,11 @@ export async function signup(_prevState: { error: string; success?: boolean } | 
       "User already registered": "Email sudah terdaftar",
       "Password should be at least 6 characters": "Password minimal 6 karakter",
       "Unable to validate email address: invalid format": "Format email tidak valid",
+      "Database error saving new user": "Terjadi kesalahan database. Silakan coba lagi.",
+      "Signup requires a valid password": "Password wajib diisi",
     };
+    // eslint-disable-next-line no-console
+    console.error("[SIGNUP ERROR]", error.message, error);
     return { error: errorMap[error.message] || "Gagal mendaftar. Silakan coba lagi." };
   }
 

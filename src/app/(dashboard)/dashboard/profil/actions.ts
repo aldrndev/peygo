@@ -10,7 +10,8 @@ import { profileSchema } from "./schema";
 
 export async function updateProfile(
   prevState: { error: string; success?: boolean } | null, 
-  formData: FormData
+  formData: FormData,
+  onboardingComplete: boolean = false
 ) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -25,6 +26,9 @@ export async function updateProfile(
     company_name: formData.get("company_name") || null,
     company_address: formData.get("company_address") || null,
     logo_url: formData.get("logo_url") || null,
+    bank_name: formData.get("bank_name") || null,
+    bank_account_number: formData.get("bank_account_number") || null,
+    bank_account_name: formData.get("bank_account_name") || null,
   };
 
   const parsed = profileSchema.safeParse(rawData);
@@ -33,26 +37,34 @@ export async function updateProfile(
     return { error: parsed.error.issues[0].message };
   }
 
+  const upsertData: any = {
+    id: user.id,
+    ...parsed.data,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (onboardingComplete) {
+    upsertData.is_onboarding_complete = true;
+  }
+
   const { error } = await supabase
     .from("profiles")
-    .upsert({
-      id: user.id,
-      ...parsed.data,
-      updated_at: new Date().toISOString(),
-    });
+    .upsert(upsertData);
 
   if (error) {
     return { error: "Gagal menyimpan profil. Silakan periksa koneksi Anda dan coba lagi." };
   }
 
   // Set profile complete cookie for middleware caching
-  const cookieStore = await cookies();
-  cookieStore.set(PROFILE_COMPLETE_COOKIE, "true", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-  });
+  if (onboardingComplete) {
+    const cookieStore = await cookies();
+    cookieStore.set(PROFILE_COMPLETE_COOKIE, "true", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+  }
 
   revalidatePath("/dashboard");
   return { error: "", success: true };
@@ -62,8 +74,8 @@ export async function completeOnboarding(
   prevState: { error: string; success?: boolean } | null, 
   formData: FormData
 ) {
-  const result = await updateProfile(prevState, formData);
-  // Return result with success flag - client handles redirect to avoid Next.js 15+ issues
+  // Pass true to mark onboarding as complete
+  const result = await updateProfile(prevState, formData, true);
   return result;
 }
 

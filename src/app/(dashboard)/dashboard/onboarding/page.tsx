@@ -1,10 +1,8 @@
 "use client";
 
-import { useActionState, useState, startTransition, useEffect } from "react";
-import { useFormStatus } from "react-dom";
-import { useRouter } from "next/navigation";
-import { User, Phone, Building, ArrowRight } from "lucide-react";
-import { completeOnboarding } from "@/app/(dashboard)/dashboard/profil/actions";
+import { useState, useEffect } from "react";
+import { Phone, Building, ArrowRight, AlertCircle, CreditCard, User, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { completeOnboarding, updateProfile } from "@/app/(dashboard)/dashboard/profil/actions";
 import LogoUpload from "@/components/ui/LogoUpload";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -12,45 +10,58 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-
-const initialState = {
-  error: "",
-  success: false,
-};
-
-function SubmitButton({ isUploading }: { isUploading: boolean }) {
-  const { pending } = useFormStatus();
-  const loading = pending || isUploading;
-  
-  return (
-    <Button type="submit" size="lg" className="w-full" isLoading={loading}>
-      {loading ? "Menyimpan..." : "Lanjutkan ke Dashboard"}
-      {!loading && <ArrowRight size={18} className="ml-2" />}
-    </Button>
-  );
-}
+import { BankCombobox } from "@/components/ui/BankCombobox";
 
 export default function OnboardingPage() {
-  const router = useRouter();
-  const [state, formAction] = useActionState(completeOnboarding, initialState);
+  const [step, setStep] = useState(1);
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [profile, setProfile] = useState<{ 
+    name: string; 
+    phone: string | null;
+    company_name?: string | null;
+    company_address?: string | null;
+    bank_name?: string | null;
+    bank_account_number?: string | null;
+    bank_account_name?: string | null;
+    logo_url?: string | null;
+  } | null>(null);
+  const [selectedBank, setSelectedBank] = useState<string>("");
 
-  // Client-side redirect after successful onboarding
+  // Fetch existing profile data on mount
   useEffect(() => {
-    if (state?.success) {
-      // Small delay for cookie propagation
-      const timer = setTimeout(() => {
-        router.push("/dashboard/penjualan");
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [state?.success, router]);
-
-  const handleSubmit = async (formData: FormData) => {
-    setIsUploading(true);
+    const fetchProfile = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        if (data) {
+          setProfile(data);
+          if (data.bank_name) setSelectedBank(data.bank_name);
+        }
+      }
+    };
     
-    if (logoFile) {
+    fetchProfile();
+  }, []);
+
+  const handleNextStep = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    
+    // Handle logo upload if exists in Step 1
+    if (logoFile && step === 1) {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -70,11 +81,43 @@ export default function OnboardingPage() {
         }
       }
     }
-    
-    setIsUploading(false);
-    startTransition(() => {
-      formAction(formData);
-    });
+
+    if (step === 1) {
+      // Save progress but don't complete onboarding
+      const result = await updateProfile(null, formData, false);
+      if (result?.error) {
+        setError(result.error);
+        setIsSubmitting(false);
+      } else {
+        // Update local profile state
+        setProfile(prev => ({
+          ...prev!,
+          phone: formData.get("phone") as string,
+          company_name: formData.get("company_name") as string,
+          company_address: formData.get("company_address") as string,
+          logo_url: formData.get("logo_url") as string || prev?.logo_url,
+        }));
+        setStep(2);
+        setIsSubmitting(false);
+      }
+    } else {
+      // Step 2: Final submission
+      // Add selected bank to formData
+      formData.set("bank_name", selectedBank);
+      
+      // Call server action to complete onboarding
+      const result = await completeOnboarding(null, formData);
+      
+      if (result?.error) {
+        setError(result.error);
+        setIsSubmitting(false);
+      } else if (result?.success) {
+        // Hard navigation to dashboard
+        window.location.href = "/dashboard";
+      } else {
+        setIsSubmitting(false);
+      }
+    }
   };
 
   return (
@@ -88,94 +131,173 @@ export default function OnboardingPage() {
             </div>
             <span className="text-2xl font-bold text-foreground">PeyGo</span>
           </div>
-          <h1 className="text-xl font-bold text-foreground">Lengkapi Profil Anda</h1>
+          <h1 className="text-xl font-bold text-foreground">
+            {step === 1 ? "Lengkapi Profil Anda" : "Informasi Rekening"}
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Informasi ini diperlukan untuk membuat invoice
+            {step === 1 
+              ? "Informasi ini akan muncul di invoice Anda" 
+              : "Digunakan untuk menerima pembayaran dari pelanggan"
+            }
           </p>
         </div>
 
         {/* Progress */}
         <div className="mb-6">
-          <Progress value={50} className="mb-2" />
-          <p className="text-xs text-muted-foreground text-center">Langkah 1 dari 1</p>
+          <Progress value={step === 1 ? 50 : 100} className="mb-2" />
+          <div className="flex justify-between items-center text-[10px] uppercase tracking-wider font-bold text-muted-foreground/60 px-1">
+            <span className={step === 1 ? "text-primary" : ""}>Profil Bisnis</span>
+            <span className={step === 2 ? "text-primary" : ""}>Informasi Bank</span>
+          </div>
         </div>
 
         {/* Form */}
-        <Card>
+        <Card className="border-border/50 shadow-xl">
           <CardContent className="p-6">
-            <form action={handleSubmit} className="space-y-4">
-              {/* Logo Upload */}
-              <LogoUpload onLogoChange={setLogoFile} />
+            <form onSubmit={handleNextStep} className="space-y-4">
+              {step === 1 ? (
+                <>
+                  {/* Logo Upload */}
+                  <LogoUpload onLogoChange={setLogoFile} currentLogoUrl={profile?.logo_url || undefined} />
 
-              {/* Name */}
-              <div className="space-y-2">
-                <Label htmlFor="name">Nama Lengkap *</Label>
-                <div className="relative">
-                  <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    id="name"
-                    name="name"
-                    placeholder="Masukkan nama Anda"
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
+                  {/* Hidden field for name */}
+                  <input type="hidden" name="name" value={profile?.name || ""} />
 
-              {/* Phone */}
-              <div className="space-y-2">
-                <Label htmlFor="phone">No. Telepon / WhatsApp *</Label>
-                <div className="relative">
-                  <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder="08123456789"
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
+                  {/* Phone */}
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">No. Telepon / WhatsApp *</Label>
+                    <div className="relative">
+                      <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
+                      <Input 
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="08123456789"
+                        className="pl-10"
+                        defaultValue={profile?.phone || ""}
+                        key={`phone-${profile?.phone}`}
+                        required
+                      />
+                    </div>
+                  </div>
 
-              {/* Company (Optional) */}
-              <div className="space-y-2">
-                <Label htmlFor="company_name">Nama Perusahaan (Opsional)</Label>
-                <div className="relative">
-                  <Building size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    id="company_name"
-                    name="company_name"
-                    placeholder="PT Contoh Indonesia"
-                    className="pl-10"
-                  />
-                </div>
-              </div>
+                  {/* Company Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="company_name">Nama Bisnis / Toko (Opsional)</Label>
+                    <div className="relative">
+                      <Building size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
+                      <Input 
+                        id="company_name"
+                        name="company_name"
+                        placeholder="Contoh: Toko Berkah"
+                        className="pl-10"
+                        defaultValue={profile?.company_name || ""}
+                      />
+                    </div>
+                  </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="company_address">Alamat Bisnis (Opsional)</Label>
-                <Input 
-                  id="company_address"
-                  name="company_address"
-                  placeholder="Jl. Contoh No. 123, Jakarta"
-                />
-              </div>
+                  {/* Business Address */}
+                  <div className="space-y-2">
+                    <Label htmlFor="company_address">Alamat Bisnis (Opsional)</Label>
+                    <Input 
+                      id="company_address"
+                      name="company_address"
+                      placeholder="Contoh: Jl. Merdeka No. 45, Jakarta"
+                      defaultValue={profile?.company_address || ""}
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Step 2: Bank Info */}
+                  {/* Hidden fields from Step 1 required by schema */}
+                  <input type="hidden" name="name" value={profile?.name || ""} />
+                  <input type="hidden" name="phone" value={profile?.phone || ""} />
+                  <input type="hidden" name="company_name" value={profile?.company_name || ""} />
+                  <input type="hidden" name="company_address" value={profile?.company_address || ""} />
+                  <input type="hidden" name="logo_url" value={profile?.logo_url || ""} />
+
+                  {/* Bank Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="bank_name">Nama Bank *</Label>
+                    <BankCombobox 
+                      value={selectedBank} 
+                      onValueChange={setSelectedBank}
+                      placeholder="Pilih atau cari bank..."
+                    />
+                  </div>
+
+                  {/* Account Number */}
+                  <div className="space-y-2">
+                    <Label htmlFor="bank_account_number">Nomor Rekening *</Label>
+                    <div className="relative">
+                      <CreditCard size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
+                      <Input 
+                        id="bank_account_number"
+                        name="bank_account_number"
+                        placeholder="Contoh: 1234567890"
+                        className="pl-10"
+                        defaultValue={profile?.bank_account_number || ""}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Account Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="bank_account_name">Nama Pemilik Rekening *</Label>
+                    <div className="relative">
+                      <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60" />
+                      <Input 
+                        id="bank_account_name"
+                        name="bank_account_name"
+                        placeholder="Sesuai nama di buku tabungan"
+                        className="pl-10"
+                        defaultValue={profile?.bank_account_name || ""}
+                        required
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
 
               {/* Error */}
-              {state?.error && (
-                <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-lg text-center">
-                  {state.error}
+              {error && (
+                <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-lg text-center flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top-1">
+                  <AlertCircle size={16} />
+                  {error}
                 </div>
               )}
 
-              {/* Submit */}
-              <SubmitButton isUploading={isUploading} />
+              {/* Buttons */}
+              <div className="flex gap-3 pt-2">
+                {step === 2 && (
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="flex-1" 
+                    onClick={() => setStep(1)}
+                    disabled={isSubmitting}
+                  >
+                    <ArrowLeft size={18} className="mr-2" />
+                    Kembali
+                  </Button>
+                )}
+                <Button type="submit" className="flex-[2]" isLoading={isSubmitting}>
+                  {step === 1 ? "Selanjutnya" : "Selesaikan"}
+                  {!isSubmitting && (
+                    step === 1 
+                      ? <ArrowRight size={18} className="ml-2" /> 
+                      : <CheckCircle2 size={18} className="ml-2" />
+                  )}
+                </Button>
+              </div>
             </form>
           </CardContent>
         </Card>
 
-        <p className="text-xs text-muted-foreground text-center mt-4">
-          Data Anda aman dan hanya digunakan untuk keperluan invoice
+        <p className="text-[10px] text-muted-foreground text-center mt-6 uppercase tracking-widest font-medium opacity-50">
+          Langkah {step} dari 2 • PeyGo Secure Onboarding
         </p>
       </div>
     </div>

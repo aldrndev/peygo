@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { 
   Globe, 
@@ -46,34 +46,31 @@ export default function AdminSettingsClient({ settings }: AdminSettingsClientPro
 
   const { register, handleSubmit, control, setValue } = useForm({
     defaultValues: {
-      // General
       platform_name: getSettingValue(settings, "platform_name", "PeyGo"),
+
       support_email: getSettingValue(settings, "support_email", "support@peygo.id"),
       whatsapp_center: getSettingValue(settings, "whatsapp_center", "+6281234567890"),
-      // Financial
       platform_fee: getSettingValue(settings, "platform_fee", "2.5"),
       mdr_fee: getSettingValue(settings, "mdr_fee", "1.5"),
       ppn_rate: getSettingValue(settings, "ppn_rate", "11"),
-      // SMTP
       smtp_host: getSettingValue(settings, "smtp_host", "smtp.gmail.com"),
       smtp_port: getSettingValue(settings, "smtp_port", "587"),
       smtp_user: getSettingValue(settings, "smtp_user", "noreply@peygo.id"),
-      // Toggles
       email_transaction: getSettingBool(settings, "email_transaction", true),
       alert_registration: getSettingBool(settings, "alert_registration", true),
       wa_reminder: getSettingBool(settings, "wa_reminder", false),
       require_2fa: getSettingBool(settings, "require_2fa", false),
-      auto_logout: getSettingBool(settings, "auto_logout_mins") ? true : true,
+      auto_logout: getSettingValue(settings, "auto_logout_mins") !== "0",
     },
   });
   
-  // Use useWatch for reactive form values
   const watchedValues = useWatch({ control });
 
   const onSubmit = handleSubmit((data) => {
     startTransition(async () => {
       const updates = [
         { key: "platform_name", value: data.platform_name },
+
         { key: "support_email", value: data.support_email },
         { key: "whatsapp_center", value: data.whatsapp_center },
         { key: "platform_fee", value: data.platform_fee },
@@ -86,6 +83,7 @@ export default function AdminSettingsClient({ settings }: AdminSettingsClientPro
         { key: "alert_registration", value: String(data.alert_registration) },
         { key: "wa_reminder", value: String(data.wa_reminder) },
         { key: "require_2fa", value: String(data.require_2fa) },
+        { key: "auto_logout_mins", value: data.auto_logout ? "30" : "0" },
       ];
 
       const result = await updateSettings(updates);
@@ -128,15 +126,18 @@ export default function AdminSettingsClient({ settings }: AdminSettingsClientPro
                 {...register("platform_name")}
                 placeholder="Identitas sistem" 
               />
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <StandardInput 
                   label="Email Support" 
                   {...register("support_email")}
+                  placeholder="support@peygo.id"
                   icon={<Mail className="w-4 h-4 text-muted-foreground" />}
                 />
                 <StandardInput 
                   label="WhatsApp Center" 
                   {...register("whatsapp_center")}
+                  placeholder="+62..."
                   icon={<Smartphone className="w-4 h-4 text-muted-foreground" />}
                 />
               </div>
@@ -177,7 +178,7 @@ export default function AdminSettingsClient({ settings }: AdminSettingsClientPro
                 <Info size={18} />
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                Perubahan pada parameter biaya akan berdampak langsung pada seluruh kalkulasi invoice baru. Pastikan telah melalui sinkronisasi dengan tim finansial sebelum menyimpan.
+                 Perubahan pada parameter biaya akan berdampak langsung pada seluruh kalkulasi invoice baru. Pastikan telah melalui sinkronisasi dengan tim finansial sebelum menyimpan.
               </p>
             </div>
           </SettingsSection>
@@ -191,10 +192,10 @@ export default function AdminSettingsClient({ settings }: AdminSettingsClientPro
           >
             <div className="grid grid-cols-1 gap-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <StandardInput label="SMTP Host" {...register("smtp_host")} />
-                <StandardInput label="SMTP Port" {...register("smtp_port")} />
+                <StandardInput label="SMTP Host" {...register("smtp_host")} placeholder="smtp.gmail.com" />
+                <StandardInput label="SMTP Port" {...register("smtp_port")} placeholder="587" />
               </div>
-              <StandardInput label="User Notifikasi" {...register("smtp_user")} />
+              <StandardInput label="User Notifikasi" {...register("smtp_user")} placeholder="noreply@peygo.id" />
               <div className="p-4 rounded-xl bg-muted/50 border border-border">
                 <p className="text-xs text-muted-foreground">
                   <Lock className="w-3 h-3 inline mr-1" />
@@ -219,21 +220,21 @@ export default function AdminSettingsClient({ settings }: AdminSettingsClientPro
                 title="Email Transaksi" 
                 description="Kirim detail ke admin saat ada pembayaran"
                 checked={watchedValues.email_transaction}
-                onCheckedChange={(checked) => setValue("email_transaction", checked)}
+                onCheckedChange={(c) => setValue("email_transaction", c)}
               />
               <Separator />
               <StandardSwitch 
                 title="Alert Pendaftaran" 
                 description="Notifikasi instan untuk verifikasi pengguna"
                 checked={watchedValues.alert_registration}
-                onCheckedChange={(checked) => setValue("alert_registration", checked)}
+                onCheckedChange={(c) => setValue("alert_registration", c)}
               />
               <Separator />
               <StandardSwitch 
                 title="Reminder WhatsApp" 
                 description="Kirim pengingat otomatis H-1 jatuh tempo"
                 checked={watchedValues.wa_reminder}
-                onCheckedChange={(checked) => setValue("wa_reminder", checked)}
+                onCheckedChange={(c) => setValue("wa_reminder", c)}
               />
             </div>
           </SettingsSection>
@@ -250,14 +251,14 @@ export default function AdminSettingsClient({ settings }: AdminSettingsClientPro
                 title="Wajibkan 2FA Admin" 
                 description="Meningkatkan keamanan akses administratif"
                 checked={watchedValues.require_2fa}
-                onCheckedChange={(checked) => setValue("require_2fa", checked)}
+                onCheckedChange={(c) => setValue("require_2fa", c)}
               />
               <Separator />
               <StandardSwitch 
                 title="Auto-Logout Inactivity" 
                 description="Sesi berakhir setelah 30 menit"
                 checked={watchedValues.auto_logout}
-                onCheckedChange={(checked) => setValue("auto_logout", checked)}
+                onCheckedChange={(c) => setValue("auto_logout", c)}
               />
               <div className="mt-8">
                 <Button type="button" variant="outline" className="w-full">
@@ -269,7 +270,7 @@ export default function AdminSettingsClient({ settings }: AdminSettingsClientPro
           </SettingsSection>
 
           {/* Save Action */}
-          <Card className="bg-primary">
+          <Card className="bg-foreground">
             <CardContent className="p-8 text-primary-foreground relative">
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl -z-0" />
               <h3 className="text-xl font-semibold mb-2 relative z-10">Simpan Konfigurasi</h3>
@@ -346,29 +347,33 @@ interface StandardInputProps extends React.InputHTMLAttributes<HTMLInputElement>
   suffix?: string;
 }
 
-function StandardInput({ label, icon, suffix, ...props }: StandardInputProps) {
-  return (
-    <div className="space-y-2">
-      <Label className="text-xs font-medium uppercase tracking-wide">{label}</Label>
-      <div className="relative">
-        {icon && (
-          <div className="absolute left-3 top-1/2 -translate-y-1/2">
-            {icon}
-          </div>
-        )}
-        <Input
-          className={cn(icon && "pl-10", suffix && "pr-10")}
-          {...props}
-        />
-        {suffix && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-xs">
-            {suffix}
-          </span>
-        )}
+const StandardInput = React.forwardRef<HTMLInputElement, StandardInputProps>(
+  ({ label, icon, suffix, className, ...props }, ref) => {
+    return (
+      <div className="space-y-2">
+        <Label className="text-xs font-medium uppercase tracking-wide">{label}</Label>
+        <div className="relative">
+          {icon && (
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              {icon}
+            </div>
+          )}
+          <Input
+            ref={ref}
+            className={cn(icon && "pl-10", suffix && "pr-10", className)}
+            {...props}
+          />
+          {suffix && (
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-xs">
+              {suffix}
+            </span>
+          )}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+);
+StandardInput.displayName = "StandardInput";
 
 function StandardSwitch({ title, description, checked, onCheckedChange }: { title: string, description: string, checked?: boolean, onCheckedChange?: (checked: boolean) => void }) {
   return (

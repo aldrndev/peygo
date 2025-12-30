@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Upload, X, ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -68,6 +68,13 @@ export default function LogoUpload({ currentLogoUrl, onLogoChange }: LogoUploadP
   const [isDragging, setIsDragging] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Sync preview when currentLogoUrl changes (useful when profile loads asynchronously)
+  useEffect(() => {
+    if (currentLogoUrl) {
+      setPreview(currentLogoUrl);
+    }
+  }, [currentLogoUrl]);
 
   const handleFileSelect = async (file: File | null) => {
     if (file) {

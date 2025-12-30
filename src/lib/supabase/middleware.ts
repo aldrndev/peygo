@@ -89,11 +89,11 @@ export async function updateSession(request: NextRequest) {
     if (!profileCompleteCookie || !userRoleCookie) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("name, phone, role")
+        .select("name, phone, role, is_onboarding_complete")
         .eq("id", user.id)
         .single();
 
-      isProfileComplete = !!(profile?.name && profile?.phone);
+      isProfileComplete = !!profile?.is_onboarding_complete;
       userRole = profile?.role || "user";
       
       if (isProfileComplete) {
