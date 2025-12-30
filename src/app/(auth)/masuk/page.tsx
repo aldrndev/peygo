@@ -59,7 +59,7 @@ export default function LoginPage() {
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center lg:text-left">
-        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wide mb-4">
+        <div className="inline-flex items-center gap-2 bg-primary/20 text-foreground px-4 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-4 shadow-sm">
           <span>Selamat Datang Kembali</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2 tracking-tight">
