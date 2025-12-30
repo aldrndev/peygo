@@ -9,6 +9,7 @@ import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FAQSection, faqs } from "@/components/landing/FAQSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { LandingFooter } from "@/components/landing/LandingFooter";
+import WhatsAppFloatingButton from "@/components/ui/WhatsAppFloatingButton";
 
 // Force static generation for fastest TTFB
 export const dynamic = "force-static";
@@ -19,10 +20,6 @@ const TrustBadges = dynamicImport(() => import("@/components/landing/TrustBadges
 const ComparisonTable = dynamicImport(() => import("@/components/landing/ComparisonTable"));
 const PaymentPartners = dynamicImport(() => import("@/components/landing/PaymentPartners"));
 const TargetAudience = dynamicImport(() => import("@/components/landing/TargetAudience"));
-const WhatsAppFloatingButton = dynamicImport(
-  () => import("@/components/ui/WhatsAppFloatingButton"),
-  { ssr: false }
-);
 
 export default function LandingPage() {
   return (
