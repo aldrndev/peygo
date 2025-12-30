@@ -33,7 +33,7 @@ export function FAQSection() {
     <section id="faq" className="py-24 md:py-32 relative z-10">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-muted text-muted-foreground px-5 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6">
+          <div className="inline-flex items-center gap-2 bg-primary/20 text-foreground px-5 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6">
             <span>Support</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-semibold text-foreground mb-6 tracking-tighter">

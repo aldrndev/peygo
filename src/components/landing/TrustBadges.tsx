@@ -30,10 +30,10 @@ const badges = [
 ];
 
 const colorMap: Record<string, { bg: string; text: string; border: string }> = {
-  emerald: { bg: "bg-success/10", text: "text-success", border: "border-success/20" },
-  blue: { bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-100" },
-  orange: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20" },
-  slate: { bg: "bg-muted", text: "text-muted-foreground", border: "border-border" }
+  emerald: { bg: "bg-emerald-100 group-hover:bg-emerald-600", text: "text-emerald-600 group-hover:text-white", border: "border-emerald-200" },
+  blue: { bg: "bg-blue-100 group-hover:bg-blue-600", text: "text-blue-600 group-hover:text-white", border: "border-blue-200" },
+  orange: { bg: "bg-orange-100 group-hover:bg-orange-600", text: "text-orange-600 group-hover:text-white", border: "border-orange-200" },
+  slate: { bg: "bg-gray-100 group-hover:bg-gray-600", text: "text-gray-600 group-hover:text-white", border: "border-gray-200" }
 };
 
 export default function TrustBadges() {
@@ -41,7 +41,7 @@ export default function TrustBadges() {
     <section className="py-16 relative z-10">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-success/10 text-success px-5 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6">
+          <div className="inline-flex items-center gap-2 bg-success/20 text-foreground px-5 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6">
             <Shield className="w-4 h-4" />
             <span>Keamanan & Kepercayaan</span>
           </div>
@@ -58,7 +58,7 @@ export default function TrustBadges() {
             return (
               <div
                 key={badge.title}
-                className="bg-card/80 backdrop-blur-xl border border-border rounded-2xl p-6 text-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                className="group bg-card/80 backdrop-blur-xl border border-border rounded-2xl p-6 text-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className={`w-14 h-14 mx-auto mb-4 rounded-2xl ${colors.bg} ${colors.text} flex items-center justify-center border ${colors.border}`}>
                   <Icon className="w-7 h-7" />

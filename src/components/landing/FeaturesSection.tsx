@@ -42,11 +42,11 @@ const features = [
 ];
 
 const colorClasses = {
-  primary: "bg-primary/10 text-primary",
-  secondary: "bg-blue-500/10 text-blue-500",
-  success: "bg-success/10 text-success",
-  warning: "bg-warning/10 text-warning",
-  danger: "bg-destructive/10 text-destructive",
+  primary: "bg-orange-100 text-orange-600 group-hover:bg-orange-600 group-hover:text-white",
+  secondary: "bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white",
+  success: "bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white",
+  warning: "bg-amber-100 text-amber-600 group-hover:bg-amber-600 group-hover:text-white",
+  danger: "bg-rose-100 text-rose-600 group-hover:bg-rose-600 group-hover:text-white",
 };
 
 export function FeaturesSection() {
@@ -54,7 +54,7 @@ export function FeaturesSection() {
     <section id="fitur" className="py-24 md:py-32 relative z-10">
       <div className="container mx-auto px-6">
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-5 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6">
+          <div className="inline-flex items-center gap-2 bg-blue-500/20 text-foreground px-5 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6">
             <span>Powerful Capabilities</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-semibold text-foreground mb-6 tracking-tighter">

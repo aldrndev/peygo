@@ -31,10 +31,10 @@ const audiences = [
 ];
 
 const colorClasses = {
-  orange: "bg-primary/10 text-primary group-hover:bg-primary",
-  blue: "bg-blue-500/10 text-blue-500 group-hover:bg-blue-500",
-  emerald: "bg-success/10 text-success group-hover:bg-success",
-  violet: "bg-violet-500/10 text-violet-500 group-hover:bg-violet-500",
+  orange: "bg-orange-100 text-orange-600 group-hover:bg-orange-600 group-hover:text-white",
+  blue: "bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white",
+  emerald: "bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white",
+  violet: "bg-violet-100 text-violet-600 group-hover:bg-violet-600 group-hover:text-white",
 };
 
 export default function TargetAudience() {

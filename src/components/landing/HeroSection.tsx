@@ -11,7 +11,7 @@ export function HeroSection() {
           {/* Left content */}
           <div className="lg:col-span-7 text-center lg:text-left">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-card border border-border text-primary px-4 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6 sm:mb-10 shadow-lg">
+            <div className="inline-flex items-center gap-2 bg-primary/20 text-foreground px-4 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6 sm:mb-10 shadow-lg">
               <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>Platform Invoice untuk UMKM</span>
             </div>

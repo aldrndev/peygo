@@ -3,7 +3,7 @@ export function HowItWorksSection() {
     <section className="py-24 md:py-32 relative z-10">
       <div className="container mx-auto px-6">
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-2 bg-success/10 text-success px-5 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6">
+          <div className="inline-flex items-center gap-2 bg-success/20 text-foreground px-5 py-2 rounded-2xl text-xs font-medium uppercase tracking-wide mb-6">
             <span>Alur Kerja Mudah</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-semibold text-foreground mb-6 tracking-tighter">
