@@ -31,13 +31,6 @@ export default function AuthLayoutClient({ children }: AuthLayoutClientProps) {
   
   return (
     <div className="min-h-screen flex bg-background relative">
-      {/* Subtle Background Pattern */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-[120px]" />
-        <div className="absolute top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-secondary/20 blur-[120px]" />
-        <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] rounded-full bg-success/5 blur-[120px]" />
-      </div>
-
       {/* Left Side - Branding (Desktop only) */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden z-10">
         <div className="relative z-10 flex flex-col justify-start p-16 w-full">
