@@ -87,7 +87,7 @@ export function TestimonialsSection() {
                 </div>
               </div>
 
-              <div className="flex justify-center gap-3 mt-16" role="tablist" aria-label="Testimonial navigation">
+              <div className="flex justify-center gap-2 mt-16" role="tablist" aria-label="Testimonial navigation">
                 {testimonials.map((testimonial, index) => (
                   <button
                     key={index}
@@ -97,12 +97,16 @@ export function TestimonialsSection() {
                     aria-label={`Go to testimonial from ${testimonial.name}`}
                     type="button"
                     className={cn(
-                      "transition-all duration-200 rounded-full focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-foreground",
-                      index === currentTestimonial 
-                        ? "bg-primary w-12 h-2" 
-                        : "bg-background/30 w-2 h-2 hover:bg-background/50"
+                      "min-w-11 min-h-11 flex items-center justify-center transition-all duration-200 rounded-full focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-foreground",
                     )}
-                  />
+                  >
+                    <span className={cn(
+                      "rounded-full transition-all duration-200",
+                      index === currentTestimonial 
+                        ? "bg-primary w-8 h-2" 
+                        : "bg-background/30 w-2 h-2 hover:bg-background/50"
+                    )} />
+                  </button>
                 ))}
               </div>
             </CardContent>

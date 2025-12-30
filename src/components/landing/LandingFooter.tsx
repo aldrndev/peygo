@@ -34,7 +34,7 @@ export function LandingFooter() {
           </div>
 
           <div className="md:col-span-2">
-            <h4 className="font-semibold text-foreground text-xs uppercase tracking-wide mb-8">Produk</h4>
+            <h3 className="font-semibold text-foreground text-xs uppercase tracking-wide mb-8">Produk</h3>
             <ul className="space-y-4">
               <li><Link href="#fitur" className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm">Penjualan Invoice</Link></li>
               <li><Link href="#fitur" className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm">Pembayaran Invoice</Link></li>
@@ -43,7 +43,7 @@ export function LandingFooter() {
           </div>
 
           <div className="md:col-span-2">
-            <h4 className="font-semibold text-foreground text-xs uppercase tracking-wide mb-8">Bantuan</h4>
+            <h3 className="font-semibold text-foreground text-xs uppercase tracking-wide mb-8">Bantuan</h3>
             <ul className="space-y-4">
               <li><Link href="#faq" className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm">FAQ</Link></li>
               <li><Link href="/blog" className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm">Blog</Link></li>
@@ -62,7 +62,7 @@ export function LandingFooter() {
           </div>
 
           <div className="md:col-span-2">
-            <h4 className="font-semibold text-foreground text-xs uppercase tracking-wide mb-8">Perusahaan</h4>
+            <h3 className="font-semibold text-foreground text-xs uppercase tracking-wide mb-8">Perusahaan</h3>
             <ul className="space-y-4 text-muted-foreground font-medium text-sm">
               <li>Jakarta, Indonesia</li>
               <li><a href={`mailto:${settings.support_email}`} className="hover:text-primary transition-colors">{settings.support_email}</a></li>

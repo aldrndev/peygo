@@ -35,17 +35,19 @@ export default function LandingPage() {
         </div>
 
         <LandingHeader />
-        <HeroSection />
-        <PaymentPartners />
-        <StatsSection />
-        <TrustBadges />
-        <FeaturesSection />
-        <ComparisonTable />
-        <TargetAudience />
-        <HowItWorksSection />
-        <TestimonialsSection />
-        <FAQSection />
-        <CTASection />
+        <main id="main-content">
+          <HeroSection />
+          <PaymentPartners />
+          <StatsSection />
+          <TrustBadges />
+          <FeaturesSection />
+          <ComparisonTable />
+          <TargetAudience />
+          <HowItWorksSection />
+          <TestimonialsSection />
+          <FAQSection />
+          <CTASection />
+        </main>
         <LandingFooter />
         
         <WhatsAppFloatingButton />

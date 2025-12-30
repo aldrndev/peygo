@@ -24,9 +24,9 @@ export default function PaymentPartners() {
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
             Metode Pembayaran
           </p>
-          <h3 className="text-xl md:text-2xl font-semibold text-foreground tracking-tight">
+          <h2 className="text-xl md:text-2xl font-semibold text-foreground tracking-tight">
             Didukung Berbagai Bank & E-Wallet Terpercaya
-          </h3>
+          </h2>
         </div>
 
         <div className="bg-card/80 backdrop-blur-xl border border-border rounded-3xl p-8 shadow-xl">

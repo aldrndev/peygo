@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Compiler optimizations
+  compiler: {
+    // Remove console.log in production
+    removeConsole: process.env.NODE_ENV === "production",
+  },
   experimental: {
     optimizePackageImports: [
       'lucide-react',
@@ -24,6 +29,37 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      // Static assets - long cache (1 year)
+      {
+        source: "/_next/static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      // Images - long cache
+      {
+        source: "/images/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      // Favicon and icons
+      {
+        source: "/:path(favicon.ico|icon.png|apple-icon.png)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      // Security headers for all routes
       {
         source: "/:path*",
         headers: [
@@ -54,4 +90,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-

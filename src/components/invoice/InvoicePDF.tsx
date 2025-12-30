@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 4,
     maxWidth: '50%',
+    alignItems: 'flex-start',
   },
   companyName: {
     fontSize: 14,
@@ -261,11 +262,11 @@ export const InvoicePDF = ({ invoice, qrCodeDataUrl, logoDataUrl, isBilling }: I
         <View style={styles.header}>
           <View style={styles.companyInfo}>
             {/* Logo Area */}
-            <View style={{marginBottom: 8}}>
+            <View style={{marginBottom: 8, alignItems: 'flex-start'}}>
               {logoDataUrl ? (
                 <Image 
                   src={logoDataUrl} 
-                  style={{height: 40, objectFit: 'contain'}} 
+                  style={{height: 40}} 
                 />
               ) : (
                 <Text style={{fontSize: 24, fontWeight: 'bold', letterSpacing: -1}}>
