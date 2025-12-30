@@ -114,7 +114,7 @@ function HeroMockup() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Total Pendapatan</p>
-              <h4 className="text-3xl font-bold text-foreground tracking-tighter">Rp 128.5M</h4>
+              <div className="text-3xl font-bold text-foreground tracking-tighter">Rp 128.5M</div>
             </div>
             <div className="w-8 h-8 rounded-full bg-success/10 flex items-center justify-center text-success">
               <ArrowUpRight size={16} />

@@ -52,10 +52,10 @@ export default function ComparisonTable() {
             <div className="font-semibold text-xs uppercase tracking-wide text-muted-foreground">
               Aktivitas
             </div>
-            <div className="text-center font-bold text-xs uppercase tracking-wide text-destructive">
+            <div className="text-center font-bold text-xs uppercase tracking-wide text-red-700 dark:text-red-400">
               Tanpa PeyGo
             </div>
-            <div className="text-center font-bold text-xs uppercase tracking-wide text-emerald-600 dark:text-emerald-500">
+            <div className="text-center font-bold text-xs uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
               Dengan PeyGo
             </div>
           </div>
@@ -65,16 +65,16 @@ export default function ComparisonTable() {
             {comparisons.map((item) => (
               <div
                 key={item.task}
-                className="grid grid-cols-3 p-6 hover:bg-accent/50 transition-colors"
+                className="grid grid-cols-3 p-6 hover:bg-muted/30 transition-colors"
               >
                 <div className="font-semibold text-foreground text-sm tracking-tight">
                   {item.task}
                 </div>
-                <div className="text-center flex items-center justify-center gap-2 text-destructive">
+                <div className="text-center flex items-center justify-center gap-2 text-red-700 dark:text-red-400">
                   <X className="w-4 h-4" />
                   <span className="text-sm font-medium">{item.without}</span>
                 </div>
-                <div className="text-center flex items-center justify-center gap-2 text-success">
+                <div className="text-center flex items-center justify-center gap-2 text-emerald-700 dark:text-emerald-400">
                   <Check className="w-4 h-4" />
                   <span className="text-sm font-medium">{item.with}</span>
                 </div>
