@@ -48,14 +48,14 @@ export default function ComparisonTable() {
 
         <div className="max-w-4xl mx-auto bg-card/80 backdrop-blur-xl border border-border rounded-3xl overflow-hidden shadow-xl">
           {/* Header */}
-          <div className="grid grid-cols-3 bg-foreground text-background p-6">
-            <div className="font-medium text-xs uppercase tracking-wide opacity-60">
+          <div className="grid grid-cols-3 bg-muted/50 p-6 border-b border-border">
+            <div className="font-semibold text-xs uppercase tracking-wide text-muted-foreground">
               Aktivitas
             </div>
-            <div className="text-center font-medium text-xs uppercase tracking-wide text-destructive">
+            <div className="text-center font-bold text-xs uppercase tracking-wide text-destructive">
               Tanpa PeyGo
             </div>
-            <div className="text-center font-medium text-xs uppercase tracking-wide text-success">
+            <div className="text-center font-bold text-xs uppercase tracking-wide text-emerald-600 dark:text-emerald-500">
               Dengan PeyGo
             </div>
           </div>

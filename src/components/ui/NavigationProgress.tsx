@@ -1,16 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 function NavigationProgressInner() {
   const pathname = usePathname();
+  const searchParams = useSearchParams(); // Add searchParams detection
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const isNavigatingRef = useRef(false);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const prevPathnameRef = useRef(pathname);
+  const prevSearchParamsRef = useRef(searchParams?.toString());
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeoutRef = useRef<NodeJS.Timeout | null>(null); // New ref for start delay
   const startTimeRef = useRef<number>(0);
 
   const completeProgress = useCallback(() => {
@@ -18,6 +21,12 @@ function NavigationProgressInner() {
     if (progressIntervalRef.current) {
       clearInterval(progressIntervalRef.current);
       progressIntervalRef.current = null;
+    }
+    
+    // Clear start timeout to prevent overwriting 100% with 30%
+    if (startTimeoutRef.current) {
+      clearTimeout(startTimeoutRef.current);
+      startTimeoutRef.current = null;
     }
     
     isNavigatingRef.current = false;
@@ -31,14 +40,14 @@ function NavigationProgressInner() {
 
   // Handle route change complete
   useEffect(() => {
-    if (prevPathnameRef.current !== pathname) {
+    const searchParamsString = searchParams?.toString();
+    if (prevPathnameRef.current !== pathname || prevSearchParamsRef.current !== searchParamsString) {
       // Route actually changed
       if (isNavigatingRef.current) {
-        queueMicrotask(() => {
-          completeProgress();
-        });
+         completeProgress();
       }
       prevPathnameRef.current = pathname;
+      prevSearchParamsRef.current = searchParamsString;
     }
     
     return () => {
@@ -46,16 +55,14 @@ function NavigationProgressInner() {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [pathname, completeProgress]);
+  }, [pathname, searchParams, completeProgress]);
 
   // Timeout fallback - if navigation takes too long, complete after 3s
   useEffect(() => {
     if (isNavigatingRef.current && startTimeRef.current > 0) {
       const fallbackTimeout = setTimeout(() => {
         if (isNavigatingRef.current) {
-          queueMicrotask(() => {
-            completeProgress();
-          });
+           completeProgress();
         }
       }, 3000);
       
@@ -69,7 +76,8 @@ function NavigationProgressInner() {
     const targetPath = targetHref.split("?")[0].split("#")[0];
     
     if (currentPath === targetPath) {
-      // Same page - don't show progress
+      // Same page - but check if we have query params that differ? 
+      // Simplified: Just return for now to match original logic
       return;
     }
     
@@ -85,8 +93,13 @@ function NavigationProgressInner() {
     setIsVisible(true);
     setProgress(0);
     
+    // Clear any existing start timeout
+    if (startTimeoutRef.current) {
+      clearTimeout(startTimeoutRef.current);
+    }
+
     // Small delay then start progress
-    setTimeout(() => {
+    startTimeoutRef.current = setTimeout(() => {
       setProgress(30);
     }, 50);
     
@@ -129,6 +142,9 @@ function NavigationProgressInner() {
       document.removeEventListener("click", handleClick, true);
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
+      }
+      if (startTimeoutRef.current) {
+        clearTimeout(startTimeoutRef.current);
       }
     };
   }, [handleStart]);
