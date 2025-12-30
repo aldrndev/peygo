@@ -69,7 +69,7 @@ export function UserMenu({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className={cn(
-          "rounded-full",
+          "rounded-full focus:outline-none",
           variant === "sidebar" && "w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors text-left",
           variant === "header" && "ring-2 ring-transparent hover:ring-primary/20 transition-all"
         )}>

@@ -7,10 +7,9 @@ import type { NavItem } from "./sidebar-nav";
 interface MobileNavProps {
   items: NavItem[];
   pathname: string;
-  profileIcon: React.ReactNode;
 }
 
-export function MobileNav({ items, pathname, profileIcon }: MobileNavProps) {
+export function MobileNav({ items, pathname }: MobileNavProps) {
   const isActive = (href: string, exact?: boolean) => {
     if (exact) return pathname === href;
     return pathname === href || pathname.startsWith(href + "/");
@@ -18,35 +17,12 @@ export function MobileNav({ items, pathname, profileIcon }: MobileNavProps) {
 
   return (
     <nav 
-      className="md:hidden fixed inset-x-6 z-50 bg-foreground/95 backdrop-blur-sm border border-border shadow-xl rounded-2xl" 
-      style={{ bottom: "calc(1.5rem + var(--safe-area-inset-bottom, 0px))" }}
+      className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-foreground/95 backdrop-blur-xl border-t border-border/20 shadow-lg" 
+      style={{ paddingBottom: "var(--safe-area-inset-bottom, 0px)" }}
       aria-label="Mobile navigation"
     >
-      <div className="flex items-center justify-between h-16 w-full px-6">
-        {/* Left items */}
-        {items.slice(0, 2).map((item) => (
-          <MobileTabItem 
-            key={item.href}
-            href={item.href}
-            icon={item.icon}
-            label={item.label}
-            active={isActive(item.href, item.exact)}
-          />
-        ))}
-
-        {/* Center Profile Button */}
-        <Link 
-          href="/dashboard/profil"
-          className="relative -mt-8"
-          aria-label="Go to profile"
-        >
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl bg-primary ring-4 ring-foreground">
-            {profileIcon}
-          </div>
-        </Link>
-
-        {/* Right items */}
-        {items.slice(2, 4).map((item) => (
+      <div className="flex items-stretch h-16 px-1">
+        {items.map((item) => (
           <MobileTabItem 
             key={item.href}
             href={item.href}
@@ -75,17 +51,24 @@ function MobileTabItem({
     <Link 
       href={href}
       aria-current={active ? "page" : undefined}
-      className="flex flex-col items-center justify-center min-w-[56px] py-1"
+      className="flex-1 flex flex-col items-center justify-center py-2 relative group"
     >
+      {/* Active indicator */}
+      {active && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-b-full" />
+      )}
+      
       <div className={cn(
-        "p-1.5 rounded-lg transition-colors",
-        active ? "text-primary bg-primary/10" : "text-background/60"
+        "p-1.5 rounded-xl transition-all duration-200",
+        active 
+          ? "text-primary bg-primary/20 scale-105" 
+          : "text-background/70 group-active:scale-95"
       )}>
         {icon}
       </div>
       <span className={cn(
-        "text-xs mt-0.5 font-medium",
-        active ? "text-primary" : "text-background/60"
+        "text-[10px] font-medium mt-0.5 transition-colors",
+        active ? "text-primary" : "text-background/70"
       )}>
         {label}
       </span>

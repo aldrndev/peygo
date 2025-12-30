@@ -109,7 +109,7 @@ export default function DashboardLayout({
   ];
 
   const navItems = userRole === "admin" ? adminNavItems : userNavItems;
-  const mobileNavItems = userRole === "admin" ? navItems.slice(0, 4) : userNavItems.slice(0, 4);
+  const mobileNavItems = navItems;
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -205,7 +205,6 @@ export default function DashboardLayout({
       <MobileNav 
         items={mobileNavItems} 
         pathname={pathname} 
-        profileIcon={<User size={28} className="text-primary-foreground" />} 
       />
     </div>
   );

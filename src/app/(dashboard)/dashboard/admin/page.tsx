@@ -1,12 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
+import { notFound } from "next/navigation";
 import AdminDashboardClient from "@/components/dashboard/AdminDashboardClient";
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Middleware handles auth - return null as safety fallback
-  if (!user) return null;
+  // Middleware handles auth - notFound as safety fallback
+  if (!user) notFound();
 
   // Check if admin
   const { data: profile } = await supabase
@@ -15,8 +16,8 @@ export default async function AdminDashboardPage() {
     .eq("id", user.id)
     .single();
 
-  // Middleware handles role check - return null as safety fallback
-  if (profile?.role !== "admin") return null;
+  // Middleware handles role check - notFound as safety fallback
+  if (profile?.role !== "admin") notFound();
 
   // Parallel data fetching - much faster than sequential
   const [usersResult, invoicesResult] = await Promise.all([

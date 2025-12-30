@@ -6,7 +6,7 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) return null;
+  if (!user) notFound();
 
   // Check if admin
   const { data: currentProfile } = await supabase
@@ -15,7 +15,7 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
     .eq("id", user.id)
     .single();
 
-  if (currentProfile?.role !== "admin") return null;
+  if (currentProfile?.role !== "admin") notFound();
 
   const { id } = await params;
 

@@ -286,9 +286,22 @@ p {
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-:focus-visible {
+/* Focus visible only for form elements (more targeted) */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[type="button"]:focus-visible,
+[type="submit"]:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--ring);
+}
+
+/* Explicitly remove focus ring from dropdown triggers and content */
+[data-radix-popper-content-wrapper]:focus-visible,
+[data-radix-popper-content-wrapper] *:focus-visible,
+button[data-state]:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 input:-webkit-autofill,

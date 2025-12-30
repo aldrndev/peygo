@@ -50,7 +50,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Public routes (no auth required)
-  const publicRoutes = ["/", "/masuk", "/daftar", "/auth", "/blog"];
+  const publicRoutes = ["/", "/masuk", "/daftar", "/auth", "/blog", "/pay"];
   const isPublicRoute = publicRoutes.some(route => 
     pathname === route || pathname.startsWith(route + "/")
   );
@@ -120,10 +120,39 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Protect admin routes
-    if (pathname.startsWith("/dashboard/admin") && userRole !== "admin") {
+    // Protect admin routes - ALWAYS verify role from DB for admin routes (bypass cookie cache)
+    if (pathname.startsWith("/dashboard/admin")) {
+      // Fresh check from DB for admin routes security
+      const { data: freshProfile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      
+      const actualRole = freshProfile?.role || "user";
+      
+      if (actualRole !== "admin") {
+        const url = request.nextUrl.clone();
+        url.pathname = "/dashboard";
+        return NextResponse.redirect(url);
+      }
+    }
+
+    // User-only routes - admin should not access these
+    const userOnlyRoutes = [
+      "/dashboard/penjualan",
+      "/dashboard/pembayaran", 
+      "/dashboard/supplier",
+      "/dashboard/invoice",
+    ];
+    
+    const isUserOnlyRoute = userOnlyRoutes.some(route => 
+      pathname === route || pathname.startsWith(route + "/")
+    );
+    
+    if (isUserOnlyRoute && userRole === "admin") {
       const url = request.nextUrl.clone();
-      url.pathname = "/dashboard";
+      url.pathname = "/dashboard/admin";
       return NextResponse.redirect(url);
     }
 

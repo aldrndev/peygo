@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { sendInvoice, archiveInvoice } from "@/app/(dashboard)/dashboard/invoice/actions";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Invoice, InvoiceItem, Profile, Supplier } from "@/types/database";
 import ClientQRCode from "@/components/invoice/ClientQRCode";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,8 @@ const statusConfig: Record<string, { color: string; bg: string; label: string; i
 export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }) {
   const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
+  const [isLoadingPdf, setIsLoadingPdf] = useState(false);
+  const invoiceRef = useRef<HTMLDivElement>(null);
   const profile = invoice.profile;
   const supplier = invoice.supplier;
   const isBilling = invoice.type === 'BILLING';
@@ -82,6 +84,48 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
       router.push("/dashboard/invoice");
     } else {
       alert("Gagal mengarsipkan: " + res.error);
+    }
+  };
+
+  const handlePrintPDF = async () => {
+    if (!invoiceRef.current) return;
+    setIsLoadingPdf(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const { jsPDF } = await import("jspdf");
+      
+      const canvas = await html2canvas(invoiceRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+      });
+      
+      const imgData = canvas.toDataURL("image/jpeg", 0.9);
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+        compress: true,
+      });
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      // Handle multi-page if content is taller than one page
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      if (pdfHeight > pageHeight) {
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+      } else {
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+      }
+      
+      pdf.save(`invoice-${invoice.invoice_number}.pdf`);
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      alert("Gagal membuat PDF. Coba lagi.");
+    } finally {
+      setIsLoadingPdf(false);
     }
   };
 
@@ -134,9 +178,9 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => window.print()}>
+              <DropdownMenuItem onClick={handlePrintPDF} disabled={isLoadingPdf}>
                 <Printer size={14} className="mr-2" />
-                Cetak PDF
+                {isLoadingPdf ? "Mengunduh..." : "Download PDF"}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Share2 size={14} className="mr-2" />
@@ -156,8 +200,8 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
       </div>
 
       {/* Invoice Document */}
-      <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden print:shadow-none print:border-none print:rounded-none">
-        <div className="p-8 md:p-12 print:p-0">
+      <div ref={invoiceRef} className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden print:shadow-none print:border-none print:rounded-none">
+        <div className="p-6 md:p-12 print:p-0">
           
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between gap-8 mb-12">
@@ -247,9 +291,10 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
             )}
           </div>
 
-          {/* Items Table */}
+          {/* Items Table - Desktop & Print */}
           <div className="mb-10">
-            <table className="w-full text-sm">
+            {/* Desktop/Print Table */}
+            <table className="w-full text-sm hidden md:table print:table">
               <thead>
                 <tr className="border-b-2 border-foreground print:border-black">
                   <th className="py-3 text-left font-semibold text-foreground print:text-black uppercase text-xs tracking-wider">Deskripsi</th>
@@ -272,6 +317,25 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
                 ))}
               </tbody>
             </table>
+
+            {/* Mobile Cards */}
+            <div className="md:hidden print:hidden space-y-3">
+              <div className="border-b-2 border-foreground pb-2">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Item</p>
+              </div>
+              {invoice.items.map((item, i) => (
+                <div key={i} className="bg-muted/30 rounded-lg p-3 space-y-2">
+                  <div className="flex justify-between items-start">
+                    <p className="font-medium text-foreground text-sm flex-1 pr-2">{item.description}</p>
+                    <p className="font-semibold text-foreground tabular-nums text-sm">{formatCurrency(item.quantity * item.unit_price)}</p>
+                  </div>
+                  <div className="flex gap-4 text-xs text-muted-foreground">
+                    <span>{item.quantity} x {formatCurrency(item.unit_price)}</span>
+                  </div>
+                  {item.notes && <p className="text-xs text-muted-foreground">{item.notes}</p>}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Summary & Payment */}

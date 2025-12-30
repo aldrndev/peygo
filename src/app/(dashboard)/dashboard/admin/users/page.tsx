@@ -1,11 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
+import { notFound } from "next/navigation";
 import AdminUsersClient from "@/components/dashboard/AdminUsersClient";
 
 export default async function AdminUsersPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) return null;
+  if (!user) notFound();
 
   // Check if admin
   const { data: currentProfile } = await supabase
@@ -14,7 +15,7 @@ export default async function AdminUsersPage() {
     .eq("id", user.id)
     .single();
 
-  if (currentProfile?.role !== "admin") return null;
+  if (currentProfile?.role !== "admin") notFound();
 
   // Parallel data fetching
   const [usersResult, invoiceCountsResult] = await Promise.all([
