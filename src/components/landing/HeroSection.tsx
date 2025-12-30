@@ -149,7 +149,7 @@ function HeroMockup() {
             <div className="w-16 h-16 bg-success rounded-full flex items-center justify-center text-success-foreground mb-4 shadow-lg shadow-success/20">
               <Check size={32} strokeWidth={3} />
             </div>
-            <h5 className="text-lg font-bold text-foreground mb-1 tracking-tight">Pembayaran Berhasil!</h5>
+            <div className="text-lg font-bold text-foreground mb-1 tracking-tight">Pembayaran Berhasil!</div>
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-4">Invoice #PEY-2891</p>
             
             <div className="w-full bg-muted rounded-2xl p-4 flex justify-between items-center mb-4">
