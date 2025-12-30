@@ -77,8 +77,8 @@
   --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(222 47% 11%);
   
-  /* Primary (Orange - Brand) - Darkened for better contrast */
-  --primary: hsl(24 95% 45%);
+  /* Primary (Orange - Brand) - Darkened for WCAG AA on light backgrounds */
+  --primary: hsl(24 95% 38%);
   --primary-foreground: hsl(0 0% 100%);
   
   /* Secondary (Neutral) */
@@ -87,18 +87,18 @@
   
   /* Muted (Subtle backgrounds) - Darkened foreground for better contrast */
   --muted: hsl(210 40% 96%);
-  --muted-foreground: hsl(215 20% 35%);
+  --muted-foreground: hsl(215 25% 30%);
   
   /* Accent (Interactive highlights) */
   --accent: hsl(210 40% 96%);
   --accent-foreground: hsl(222 47% 11%);
   
   /* Destructive (Errors) */
-  --destructive: hsl(0 84% 60%);
+  --destructive: hsl(0 84% 50%);
   --destructive-foreground: hsl(0 0% 100%);
   
-  /* Success - Darkened for better contrast */
-  --success: hsl(142 76% 28%);
+  /* Success - Darkened for WCAG AA on light backgrounds */
+  --success: hsl(142 76% 22%);
   --success-foreground: hsl(0 0% 100%);
   
   /* Warning - Darkened for better contrast */
