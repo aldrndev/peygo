@@ -74,6 +74,17 @@ export const metadata: Metadata = {
   verification: {
     google: "your-google-verification-code",
   },
+  appleWebApp: {
+    title: "PeyGo",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport = {
+  themeColor: "#ffffff",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 import { ScrollToTop } from "@/components/ui/ScrollToTop";

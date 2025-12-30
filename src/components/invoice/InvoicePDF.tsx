@@ -265,7 +265,7 @@ export const InvoicePDF = ({ invoice, qrCodeDataUrl, logoDataUrl, isBilling }: I
               {logoDataUrl ? (
                 <Image 
                   src={logoDataUrl} 
-                  style={{height: 40, objectFit: 'contain', width: 140}} 
+                  style={{height: 40, objectFit: 'contain'}} 
                 />
               ) : (
                 <Text style={{fontSize: 24, fontWeight: 'bold', letterSpacing: -1}}>
@@ -427,9 +427,18 @@ export const InvoicePDF = ({ invoice, qrCodeDataUrl, logoDataUrl, isBilling }: I
         </View>
 
         {/* Footer Bottom */}
-        <View style={{position: 'absolute', bottom: 30, left: 40, right: 40, borderTopWidth: 1, borderTopColor: '#E2E8F0', paddingTop: 10}}>
-          <Text style={{fontSize: 8, color: '#94A3B8', textAlign: 'center'}}>
-            Invoice ini dibuat secara digital dan sah tanpa tanda tangan. Dibuat dengan PeyGo.
+        <View style={{
+          marginTop: 40,
+          borderTopWidth: 1, 
+          borderTopColor: '#E2E8F0', 
+          paddingTop: 20,
+          alignItems: 'center'
+        }}>
+          <Text style={{fontSize: 8, color: '#94A3B8', marginBottom: 4}}>
+            Invoice ini dibuat secara digital dan sah tanpa tanda tangan.
+          </Text>
+          <Text style={{fontSize: 8, color: '#94A3B8'}}>
+            Dibuat dengan <Text style={{color: '#F97316', fontWeight: 'bold'}}>PeyGo</Text> • peygo.id
           </Text>
         </View>
 

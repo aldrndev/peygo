@@ -130,9 +130,15 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
       // 2. Fetch Logo Data URL if exists
       let logoDataUrl: string | null = null;
       if (profile?.logo_url) {
-        // Add cache buster or handle CORS if needed, but often direct fetch works if Supabase configured correctly
-        // We use a small helper to ensure we have a base64 string for react-pdf
-        logoDataUrl = await urlToDataUrl(profile.logo_url);
+        // Strategy 1: Use custom proxy to bypass CORS and get raw image (avoids WebP issue from next/image)
+        const proxiedUrl = `/api/proxy-image?url=${encodeURIComponent(profile.logo_url)}`;
+        logoDataUrl = await urlToDataUrl(proxiedUrl);
+        
+        // Strategy 2: Fallback to direct fetch if proxy fails
+        if (!logoDataUrl) {
+          console.warn("Proxy logo fetch failed, trying direct...");
+          logoDataUrl = await urlToDataUrl(profile.logo_url);
+        }
       }
 
       // 3. Generate PDF Blob

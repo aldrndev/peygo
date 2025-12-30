@@ -38,7 +38,7 @@ export function LandingFooter() {
             <ul className="space-y-4">
               <li><Link href="#fitur" className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm">Penjualan Invoice</Link></li>
               <li><Link href="#fitur" className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm">Pembayaran Invoice</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm">Laporan Keuangan</Link></li>
+              <li><Link href="/dashboard" className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm">Laporan Keuangan</Link></li>
             </ul>
           </div>
 
@@ -47,7 +47,17 @@ export function LandingFooter() {
             <ul className="space-y-4">
               <li><Link href="#faq" className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm">FAQ</Link></li>
               <li><Link href="/blog" className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm">Blog</Link></li>
-              <li><Link href={`https://wa.me/${waNumber}`} className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm">Hubungi Kami</Link></li>
+              <li>
+                <a 
+                  href={`https://wa.me/${waNumber}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-muted-foreground hover:text-primary transition-colors font-medium text-sm"
+                  aria-label="Hubungi kami via WhatsApp"
+                >
+                  Hubungi Kami
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -55,8 +65,7 @@ export function LandingFooter() {
             <h4 className="font-semibold text-foreground text-xs uppercase tracking-wide mb-8">Perusahaan</h4>
             <ul className="space-y-4 text-muted-foreground font-medium text-sm">
               <li>Jakarta, Indonesia</li>
-              <li><Link href={`mailto:${settings.support_email}`} className="hover:text-primary transition-colors">{settings.support_email}</Link></li>
-              <li><Link href="#" className="hover:text-primary transition-colors">Karir (Lowongan!)</Link></li>
+              <li><a href={`mailto:${settings.support_email}`} className="hover:text-primary transition-colors">{settings.support_email}</a></li>
             </ul>
           </div>
         </div>
@@ -66,15 +75,21 @@ export function LandingFooter() {
             © {new Date().getFullYear()} {settings.platform_name}. Dibuat dengan <span className="text-primary">🔥</span> untuk Indonesia.
           </p>
           <div className="flex items-center gap-8">
-            <Link href="#" className="text-muted-foreground hover:text-foreground text-xs font-medium uppercase tracking-wide transition-colors">
+            <Link href="/kebijakan-privasi" className="text-muted-foreground hover:text-foreground text-xs font-medium uppercase tracking-wide transition-colors">
               Kebijakan Privasi
             </Link>
-            <Link href="#" className="text-muted-foreground hover:text-foreground text-xs font-medium uppercase tracking-wide transition-colors">
+            <Link href="/syarat-ketentuan" className="text-muted-foreground hover:text-foreground text-xs font-medium uppercase tracking-wide transition-colors">
               Syarat & Ketentuan
             </Link>
-            <Link href={`https://wa.me/${waNumber}`} className="text-success hover:text-success/80 text-xs font-medium uppercase tracking-wide transition-colors flex items-center gap-2">
+            <a 
+              href={`https://wa.me/${waNumber}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-success hover:text-success/80 text-xs font-medium uppercase tracking-wide transition-colors flex items-center gap-2"
+              aria-label="Chat WhatsApp"
+            >
               <div className="w-2 h-2 bg-success rounded-full" /> WhatsApp
-            </Link>
+            </a>
           </div>
         </div>
       </div>

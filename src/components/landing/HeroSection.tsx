@@ -36,10 +36,15 @@ export function HeroSection() {
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild className="w-full sm:w-auto">
-                <Link href="https://wa.me/628123456789">
+                <a 
+                  href="https://wa.me/628123456789" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label="Hubungi Sales via WhatsApp"
+                >
                   <MessageCircle className="w-5 h-5 mr-2" />
                   Hubungi Sales
-                </Link>
+                </a>
               </Button>
             </div>
 

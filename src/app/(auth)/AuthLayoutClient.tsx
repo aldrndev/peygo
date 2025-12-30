@@ -9,8 +9,25 @@ interface AuthLayoutClientProps {
   children: React.ReactNode;
 }
 
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useSession } from "@/hooks/useSession";
+
 export default function AuthLayoutClient({ children }: AuthLayoutClientProps) {
   const settings = useSettings();
+  const { user, isLoading } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, isLoading, router]);
+
+  // Prevent flash of login content if user is authenticated
+  if (!isLoading && user) {
+    return null; // or a loading spinner
+  }
   
   return (
     <div className="min-h-screen flex bg-background relative">
