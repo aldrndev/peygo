@@ -60,7 +60,7 @@ export function HeroSection() {
                     width={40}
                     height={40}
                     className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-card shadow-md object-cover"
-                    loading={i < 2 ? "eager" : "lazy"}
+                    loading="lazy"
                   />
                 ))}
               </div>
@@ -82,8 +82,8 @@ export function HeroSection() {
               </div>
               <div className="h-6 w-px bg-border hidden md:block" />
               <div className="flex items-center gap-3 sm:gap-4">
-                <Image src="/logos/regulatory/ojk.png" alt="Mitra berizin OJK" width={60} height={24} className="h-5 sm:h-6 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity" loading="eager" />
-                <Image src="/logos/regulatory/bi.png" alt="Mitra terdaftar BI" width={50} height={20} className="h-4 sm:h-5 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity" style={{ width: 'auto', height: 'auto' }} loading="eager" />
+                <Image src="/logos/regulatory/ojk.png" alt="Mitra berizin OJK" width={60} height={24} className="h-5 sm:h-6 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity" />
+                <Image src="/logos/regulatory/bi.png" alt="Mitra terdaftar BI" width={50} height={20} className="h-4 sm:h-5 w-auto object-contain opacity-60 hover:opacity-100 transition-opacity" style={{ width: 'auto', height: 'auto' }} />
               </div>
             </div>
           </div>

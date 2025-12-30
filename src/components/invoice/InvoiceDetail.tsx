@@ -87,40 +87,74 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
     }
   };
 
+  // Helper to convert image URL to Data URL
+  const urlToDataUrl = async (url: string): Promise<string> => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (e) {
+      console.error("Failed to load image", e);
+      return "";
+    }
+  };
+
   const handlePrintPDF = async () => {
-    if (!invoiceRef.current) return;
     setIsLoadingPdf(true);
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const { jsPDF } = await import("jspdf");
+      // Dynamic imports
+      const { pdf } = await import("@react-pdf/renderer");
+      const { InvoicePDF } = await import("./InvoicePDF");
+      const QRCode = (await import("qrcode")).default;
       
-      const canvas = await html2canvas(invoiceRef.current, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: "#ffffff",
-      });
-      
-      const imgData = canvas.toDataURL("image/jpeg", 0.9);
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-        compress: true,
-      });
-      
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      // Handle multi-page if content is taller than one page
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      if (pdfHeight > pageHeight) {
-        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
-      } else {
-        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+      // 1. Generate QR Code Data URL if needed
+      let qrCodeDataUrl: string | null = null;
+      if (isBilling) {
+        try {
+          qrCodeDataUrl = await QRCode.toDataURL(`${window.location.origin}/pay/${invoice.id}`, {
+            errorCorrectionLevel: 'M',
+            margin: 0,
+            width: 200,
+            color: { dark: '#000000', light: '#ffffff' }
+          });
+        } catch (e) {
+          console.error("QR Gen failed", e);
+        }
       }
+
+      // 2. Fetch Logo Data URL if exists
+      let logoDataUrl: string | null = null;
+      if (profile?.logo_url) {
+        // Add cache buster or handle CORS if needed, but often direct fetch works if Supabase configured correctly
+        // We use a small helper to ensure we have a base64 string for react-pdf
+        logoDataUrl = await urlToDataUrl(profile.logo_url);
+      }
+
+      // 3. Generate PDF Blob
+      const blob = await pdf(
+        <InvoicePDF 
+          invoice={invoice} 
+          qrCodeDataUrl={qrCodeDataUrl}
+          logoDataUrl={logoDataUrl}
+          isBilling={isBilling} 
+        />
+      ).toBlob();
       
-      pdf.save(`invoice-${invoice.invoice_number}.pdf`);
+      // Save file
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `invoice-${invoice.invoice_number}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
     } catch (err) {
       console.error("PDF generation failed:", err);
       alert("Gagal membuat PDF. Coba lagi.");

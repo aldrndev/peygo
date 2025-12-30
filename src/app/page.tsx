@@ -27,11 +27,11 @@ export default function LandingPage() {
     <>
       <JsonLd faqs={faqs} />
       <div className="min-h-screen bg-background overflow-x-hidden relative">
-        {/* Aurora Background Elements */}
-        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px]" />
-          <div className="absolute top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-blue-300/10 blur-[120px]" />
-          <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] rounded-full bg-success/10 blur-[120px]" />
+        {/* Aurora Background Elements - Optimized for Mobile */}
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden transform-gpu">
+          <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[60px] md:blur-[120px] opacity-50 md:opacity-100 will-change-transform" />
+          <div className="absolute top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-blue-300/10 blur-[60px] md:blur-[120px] opacity-40 md:opacity-100 will-change-transform" />
+          <div className="absolute -bottom-[10%] left-[20%] w-[50%] h-[50%] rounded-full bg-success/10 blur-[60px] md:blur-[120px] opacity-40 md:opacity-100 will-change-transform" />
         </div>
 
         <LandingHeader />
