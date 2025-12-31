@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, 
   ScrollText, 
@@ -48,6 +48,7 @@ export default function Sidebar({
   onToggle
 }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const loadingOverlay = useLoadingOverlay();
   const platformName = useSetting("platform_name");
 
@@ -112,6 +113,8 @@ export default function Sidebar({
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch
+                onMouseEnter={() => router.prefetch(item.href)}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors",
                   active 

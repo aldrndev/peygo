@@ -43,6 +43,9 @@ export const metadata = {
   description: "Artikel, tips, dan panduan seputar invoice, pembayaran digital, dan pengelolaan keuangan untuk UMKM Indonesia.",
 };
 
+export const dynamic = 'force-static';
+export const revalidate = 86400; // Revalidate once per day
+
 export default function BlogPage() {
   return (
     <div className="min-h-screen bg-background">
