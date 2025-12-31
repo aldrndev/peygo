@@ -1,6 +1,9 @@
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { createQueryClient } from "@/lib/query-client";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import AdminUsersClient from "@/components/dashboard/AdminUsersClient";
+import { ADMIN_USERS_KEY } from "@/hooks/queries/use-admin";
+import AdminUsersHydrated from "./admin-users-hydrated";
 
 export default async function AdminUsersPage() {
   const supabase = await createClient();
@@ -17,24 +20,33 @@ export default async function AdminUsersPage() {
 
   if (currentProfile?.role !== "admin") notFound();
 
-  // Parallel data fetching
-  const [usersResult, invoiceCountsResult] = await Promise.all([
-    supabase.from("profiles").select("id, name, phone, role, created_at").order("created_at", { ascending: false }),
-    supabase.from("invoices").select("user_id"),
-  ]);
+  // Create QueryClient for SSR
+  const queryClient = createQueryClient();
 
-  const users = usersResult.data;
-  const invoiceCounts = invoiceCountsResult.data;
+  // Prefetch admin users data
+  await queryClient.prefetchQuery({
+    queryKey: ADMIN_USERS_KEY,
+    queryFn: async () => {
+      const [usersResult, invoiceCountsResult] = await Promise.all([
+        supabase.from("profiles").select("id, name, phone, role, created_at").order("created_at", { ascending: false }),
+        supabase.from("invoices").select("user_id"),
+      ]);
 
-  const userInvoiceCounts: Record<string, number> = {};
-  invoiceCounts?.forEach(inv => {
-    userInvoiceCounts[inv.user_id] = (userInvoiceCounts[inv.user_id] || 0) + 1;
+      const users = usersResult.data || [];
+      const invoiceCounts = invoiceCountsResult.data || [];
+
+      const userInvoiceCounts: Record<string, number> = {};
+      invoiceCounts.forEach(inv => {
+        userInvoiceCounts[inv.user_id] = (userInvoiceCounts[inv.user_id] || 0) + 1;
+      });
+
+      return { users, userInvoiceCounts };
+    },
   });
 
   return (
-    <AdminUsersClient 
-      users={users || []} 
-      userInvoiceCounts={userInvoiceCounts} 
-    />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <AdminUsersHydrated />
+    </HydrationBoundary>
   );
 }

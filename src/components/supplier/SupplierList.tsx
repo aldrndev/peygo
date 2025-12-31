@@ -6,7 +6,7 @@ import { Supplier } from "@/types/database";
 import { useForm, useWatch } from "react-hook-form";
 import { Edit2, Trash2, Plus, Search, Phone, Mail } from "lucide-react";
 import SupplierForm from "./SupplierForm";
-import { deleteSupplier } from "@/app/(dashboard)/dashboard/supplier/actions";
+import { useDeleteSupplier } from "@/hooks/mutations/use-supplier-mutations";
 import EmptyState from "@/components/ui/EmptyState";
 import FloatingActionButton from "@/components/ui/FloatingActionButton";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,9 @@ export default function SupplierList({ suppliers, pagination }: SupplierListProp
   const [isOpen, setIsOpen] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
   
+  // Use React Query mutation for delete with auto cache invalidation
+  const deleteSupplierMutation = useDeleteSupplier();
+  
   const { register, control } = useForm({
     defaultValues: {
       search: "",
@@ -52,7 +55,7 @@ export default function SupplierList({ suppliers, pagination }: SupplierListProp
 
   const handleDelete = async (id: string, name: string) => {
     if (confirm(`Yakin ingin menghapus supplier ${name}?`)) {
-      await deleteSupplier(id);
+      deleteSupplierMutation.mutate(id);
     }
   };
 

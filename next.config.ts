@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === "production",
   },
   experimental: {
+    // NOTE: staleTimes only affects RSC payload caching (page shell)
+    // - Data freshness is handled by React Query
+    // - Do NOT rely on staleTimes for auth or mutations
+    staleTimes: {
+      dynamic: 30, // Cache dynamic pages for 30 seconds
+      static: 180, // Cache static pages for 3 minutes
+    },
     optimizePackageImports: [
       'lucide-react',
       '@radix-ui/react-accordion',
@@ -81,7 +88,8 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
+            // NOTE: preload removed intentionally (irreversible, requires 100% HTTPS subdomain compliance)
+            value: "max-age=63072000; includeSubDomains",
           },
         ],
       },

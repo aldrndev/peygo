@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, startTransition, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Building2, Package, Send } from "lucide-react";
 import Link from "next/link";
 import { useForm, useFieldArray, useWatch, type Path, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { createInvoice } from "@/app/(dashboard)/dashboard/invoice/actions";
+import { useCreateInvoice } from "@/hooks/mutations/use-invoice-mutations";
 import { invoiceSchema } from "@/app/(dashboard)/dashboard/invoice/schema";
 import { getSuppliers } from "@/app/(dashboard)/dashboard/supplier/actions";
 import { Supplier } from "@/types/database";
@@ -29,7 +30,8 @@ const STEPS = [
 ];
 
 export default function CreatePembayaranPage() {
-  const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
+  const createInvoiceMutation = useCreateInvoice();
   const [serverError, setServerError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -119,25 +121,44 @@ export default function CreatePembayaranPage() {
   }, [totalAmount, setValue]);
 
   const onSubmit = async (data: InvoiceSchema) => {
-    // This is called manually by the submit button, not by form event
-    setIsPending(true);
     setServerError(null);
 
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "items") {
-        formData.append(key, JSON.stringify(value));
-      } else if (value !== undefined && value !== null && value !== "") {
-        formData.append(key, String(value));
-      }
-    });
+    // Prepare data for mutation
+    const mutationData = {
+      type: data.type as "BILLING" | "PAYMENT_REQUEST",
+      recipient_name: data.recipient_name,
+      recipient_email: data.recipient_email || "",
+      recipient_phone: data.recipient_phone || "",
+      recipient_address: data.recipient_address || "",
+      recipient_bank_name: data.recipient_bank_name || null,
+      recipient_bank_account_number: data.recipient_bank_account_number || null,
+      recipient_bank_account_name: data.recipient_bank_account_name || null,
+      supplier_id: data.supplier_id || null,
+      description: data.description,
+      amount: totalAmount,
+      items: data.items.map(item => ({
+        description: item.description,
+        quantity: Number(item.quantity),
+        unit_price: Number(item.unit_price),
+      })),
+      discount_type: data.discount_type || "",
+      discount_value: Number(data.discount_value) || 0,
+      tax_enabled: data.tax_enabled || false,
+      tax_rate: Number(data.tax_rate) || 11,
+      due_date: data.due_date,
+    };
 
-    startTransition(async () => {
-      const result = await createInvoice(null, formData);
-      if (result?.error) {
-        setServerError(result.error);
-        setIsPending(false);
-      }
+    createInvoiceMutation.mutate(mutationData, {
+      onSuccess: (result) => {
+        if (result.success && result.data) {
+          router.push(`/dashboard/invoice/${result.data.id}`);
+        } else {
+          setServerError(result.error || "Gagal membuat invoice");
+        }
+      },
+      onError: () => {
+        setServerError("Terjadi kesalahan. Silakan coba lagi.");
+      },
     });
   };
 
@@ -289,7 +310,7 @@ export default function CreatePembayaranPage() {
             <InvoiceFormActionsDesktop
               currentStep={currentStep}
               maxSteps={3}
-              isPending={isPending}
+              isPending={createInvoiceMutation.isPending}
               onPrevStep={prevStep}
               onNextStep={nextStep}
               onSubmit={handleSubmit(onSubmit)}
@@ -317,7 +338,7 @@ export default function CreatePembayaranPage() {
         <MobileActionBar
           currentStep={currentStep}
           maxSteps={3}
-          isPending={isPending}
+          isPending={createInvoiceMutation.isPending}
           totalAmount={totalAmount}
           formatCurrency={formatCurrency}
           onPrevStep={prevStep}

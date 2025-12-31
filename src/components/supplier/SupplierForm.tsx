@@ -1,10 +1,10 @@
 "use client";
 
-import { startTransition, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { createSupplier, updateSupplier } from "@/app/(dashboard)/dashboard/supplier/actions";
+import { useCreateSupplier, useUpdateSupplier } from "@/hooks/mutations/use-supplier-mutations";
 import { supplierSchema } from "@/app/(dashboard)/dashboard/supplier/schema";
 import { Supplier } from "@/types/database";
 import { User, Mail, Phone, MapPin, Building2, CreditCard, Landmark, Save, AlertCircle } from "lucide-react";
@@ -31,7 +31,12 @@ type SupplierSchema = z.infer<typeof supplierSchema>;
 
 export default function SupplierForm({ isOpen, onOpenChange, supplier }: SupplierFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
-  const [isPending, setIsPending] = useState(false);
+
+  // Use React Query mutations with auto cache invalidation
+  const createMutation = useCreateSupplier();
+  const updateMutation = useUpdateSupplier();
+  
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   const {
     register,
@@ -68,31 +73,34 @@ export default function SupplierForm({ isOpen, onOpenChange, supplier }: Supplie
   }, [isOpen, supplier, reset]);
 
   const onSubmit = async (data: SupplierSchema) => {
-    setIsPending(true);
     setServerError(null);
 
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        formData.append(key, value as string);
-      }
-    });
-
-    startTransition(async () => {
-      const action = supplier 
-        ? updateSupplier.bind(null, supplier.id) 
-        : createSupplier;
-      
-      const result = await action(null, formData);
-      
-      if (result?.success) {
-        onOpenChange();
-        setIsPending(false);
-      } else if (result?.error) {
-        setServerError(result.error);
-        setIsPending(false);
-      }
-    });
+    if (supplier) {
+      // Update existing supplier
+      updateMutation.mutate(
+        { id: supplier.id, data },
+        {
+          onSuccess: (result) => {
+            if (result.success) {
+              onOpenChange();
+            } else {
+              setServerError(result.error || "Gagal mengupdate supplier");
+            }
+          },
+        }
+      );
+    } else {
+      // Create new supplier
+      createMutation.mutate(data, {
+        onSuccess: (result) => {
+          if (result.success) {
+            onOpenChange();
+          } else {
+            setServerError(result.error || "Gagal menyimpan supplier");
+          }
+        },
+      });
+    }
   };
 
   const title = supplier ? "Edit Supplier" : "Supplier Baru";

@@ -1,14 +1,19 @@
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/server";
+import { getQueryClient } from "@/lib/query-client";
 import { notFound } from "next/navigation";
-import AdminUserDetailClient from "@/components/dashboard/AdminUserDetailClient";
+import AdminUserDetailHydrated from "./admin-user-detail-hydrated";
+import { ADMIN_USER_DETAIL_KEY } from "@/hooks/queries/use-admin-user-detail";
 
 export default async function AdminUserDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const supabase = await createClient();
+  const queryClient = getQueryClient();
+  
   const { data: { user } } = await supabase.auth.getUser();
-
   if (!user) notFound();
 
-  // Check if admin
+  // Check admin
   const { data: currentProfile } = await supabase
     .from("profiles")
     .select("role")
@@ -17,28 +22,34 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
 
   if (currentProfile?.role !== "admin") notFound();
 
-  const { id } = await params;
-
-  // Get targeted user profile
+  // Get target user
   const { data: targetProfile } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", id)
     .single();
 
-  if (!targetProfile) return notFound();
+  if (!targetProfile) notFound();
 
-  // Get all invoices for this user
+  // Get invoices
   const { data: invoices } = await supabase
     .from("invoices")
     .select("*")
     .eq("user_id", id)
     .order("created_at", { ascending: false });
 
+  // Prefetch query
+  await queryClient.prefetchQuery({
+    queryKey: [...ADMIN_USER_DETAIL_KEY, id],
+    queryFn: async () => ({
+      profile: targetProfile,
+      invoices: invoices || [],
+    }),
+  });
+
   return (
-    <AdminUserDetailClient 
-      profile={targetProfile} 
-      invoices={invoices || []} 
-    />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <AdminUserDetailHydrated userId={id} />
+    </HydrationBoundary>
   );
 }

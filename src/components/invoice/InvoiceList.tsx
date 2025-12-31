@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus, Search, FileText, ChevronRight, CreditCard, Clock, Check, AlertCircle, FileStack, type LucideIcon } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
-import { Invoice } from "@/types/database";
 import EmptyState from "@/components/ui/EmptyState";
 import FloatingActionButton from "@/components/ui/FloatingActionButton";
 import StatCard from "@/components/ui/StatCard";
@@ -13,6 +12,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SimplePagination } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
+
+// Minimal invoice interface for list display
+interface InvoiceListItem {
+  id: string;
+  type: string;
+  status: string;
+  total_amount: number;
+  created_at: string;
+  recipient_name?: string | null;
+  invoice_number?: string | null;
+}
 
 interface PaginationInfo {
   currentPage: number;
@@ -22,7 +32,7 @@ interface PaginationInfo {
 }
 
 interface InvoiceListProps {
-  invoices: Invoice[];
+  invoices: InvoiceListItem[];
   type: "BILLING" | "PAYMENT_REQUEST";
   pagination?: PaginationInfo;
 }
@@ -219,7 +229,7 @@ export default function InvoiceList({ invoices, type, pagination }: InvoiceListP
   );
 }
 
-function InvoiceItem({ invoice }: { invoice: Invoice }) {
+function InvoiceItem({ invoice }: { invoice: InvoiceListItem }) {
   const statusStyle = statusConfig[invoice.status] || statusConfig.DRAFT;
   const StatusIcon = statusStyle.icon;
 

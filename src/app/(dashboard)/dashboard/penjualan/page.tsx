@@ -1,5 +1,8 @@
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { createQueryClient } from "@/lib/query-client";
 import { createClient } from "@/lib/supabase/server";
-import InvoiceList from "@/components/invoice/InvoiceList";
+import { BILLING_INVOICES_KEY } from "@/hooks/queries/use-invoices";
+import PenjualanClient from "./penjualan-client";
 
 const PAGE_SIZE = 20;
 
@@ -12,41 +15,45 @@ export default async function PenjualanPage({ searchParams }: PageProps) {
   const params = await searchParams;
   
   const { data: { user } } = await supabase.auth.getUser();
-  
-  // Middleware handles auth - return null as safety fallback
   if (!user) return null;
 
   const currentPage = Math.max(1, parseInt(params.page || "1"));
   const offset = (currentPage - 1) * PAGE_SIZE;
 
-  // Get total count
-  const { count } = await supabase
-    .from("invoices")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id)
-    .eq("type", "BILLING");
+  // Create QueryClient for SSR
+  const queryClient = createQueryClient();
 
-  // Get paginated data
-  const { data: invoices } = await supabase
-    .from("invoices")
-    .select("*")
-    .eq("user_id", user.id)
-    .eq("type", "BILLING")
-    .order("created_at", { ascending: false })
-    .range(offset, offset + PAGE_SIZE - 1);
+  // Prefetch invoices into cache
+  await queryClient.prefetchQuery({
+    queryKey: [...BILLING_INVOICES_KEY, currentPage],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("invoices")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("type", "BILLING");
 
-  const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
+      const { data: invoices } = await supabase
+        .from("invoices")
+        .select("id, type, status, total_amount, created_at, recipient_name, invoice_number")
+        .eq("user_id", user.id)
+        .eq("type", "BILLING")
+        .order("created_at", { ascending: false })
+        .range(offset, offset + PAGE_SIZE - 1);
+
+      return {
+        invoices: invoices || [],
+        totalCount: count || 0,
+        totalPages: Math.ceil((count || 0) / PAGE_SIZE),
+        currentPage,
+        pageSize: PAGE_SIZE,
+      };
+    },
+  });
 
   return (
-    <InvoiceList 
-      invoices={invoices || []} 
-      type="BILLING" 
-      pagination={{
-        currentPage,
-        totalPages,
-        totalCount: count || 0,
-        pageSize: PAGE_SIZE,
-      }}
-    />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PenjualanClient currentPage={currentPage} />
+    </HydrationBoundary>
   );
 }

@@ -1,6 +1,9 @@
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { createQueryClient } from "@/lib/query-client";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import AdminInvoicesClient from "@/components/dashboard/AdminInvoicesClient";
+import { ADMIN_INVOICES_KEY } from "@/hooks/queries/use-admin";
+import AdminInvoicesHydrated from "./admin-invoices-hydrated";
 
 export default async function AdminInvoicesPage() {
   const supabase = await createClient();
@@ -17,26 +20,36 @@ export default async function AdminInvoicesPage() {
 
   if (currentProfile?.role !== "admin") notFound();
 
-  // Get all invoices
-  const { data: rawInvoices } = await supabase
-    .from("invoices")
-    .select("id, invoice_number, type, status, total_amount, created_at, user_id")
-    .order("created_at", { ascending: false });
+  // Create QueryClient for SSR
+  const queryClient = createQueryClient();
 
-  // Get user names
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("id, name");
+  // Prefetch admin invoices data
+  await queryClient.prefetchQuery({
+    queryKey: ADMIN_INVOICES_KEY,
+    queryFn: async () => {
+      const [invoicesResult, profilesResult] = await Promise.all([
+        supabase.from("invoices").select("id, invoice_number, type, status, total_amount, created_at, user_id").order("created_at", { ascending: false }),
+        supabase.from("profiles").select("id, name"),
+      ]);
 
-  const userNames: Record<string, string> = {};
-  profiles?.forEach(p => {
-    userNames[p.id] = p.name || "-";
+      const rawInvoices = invoicesResult.data || [];
+      const profiles = profilesResult.data || [];
+
+      const userNames: Record<string, string> = {};
+      profiles.forEach(p => {
+        userNames[p.id] = p.name || "-";
+      });
+
+      return rawInvoices.map(inv => ({
+        ...inv,
+        userName: userNames[inv.user_id] || "-"
+      }));
+    },
   });
 
-  const invoices = (rawInvoices || []).map(inv => ({
-    ...inv,
-    userName: userNames[inv.user_id] || "-"
-  }));
-
-  return <AdminInvoicesClient invoices={invoices} />;
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <AdminInvoicesHydrated />
+    </HydrationBoundary>
+  );
 }

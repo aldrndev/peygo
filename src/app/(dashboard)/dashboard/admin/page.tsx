@@ -1,12 +1,14 @@
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { createQueryClient } from "@/lib/query-client";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import AdminDashboardClient from "@/components/dashboard/AdminDashboardClient";
+import { ADMIN_DASHBOARD_KEY } from "@/hooks/queries/use-admin";
+import AdminDashboardHydrated from "./admin-dashboard-hydrated";
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Middleware handles auth - notFound as safety fallback
   if (!user) notFound();
 
   // Check if admin
@@ -16,59 +18,65 @@ export default async function AdminDashboardPage() {
     .eq("id", user.id)
     .single();
 
-  // Middleware handles role check - notFound as safety fallback
   if (profile?.role !== "admin") notFound();
 
-  // Parallel data fetching - much faster than sequential
-  const [usersResult, invoicesResult] = await Promise.all([
-    supabase.from("profiles").select("id, name, role, created_at"),
-    supabase.from("invoices").select("id, type, status, total_amount, platform_fee, created_at, user_id"),
-  ]);
+  // Create QueryClient for SSR
+  const queryClient = createQueryClient();
 
-  const allUsers = usersResult.data;
-  const allInvoices = invoicesResult.data;
+  // Prefetch admin dashboard data
+  await queryClient.prefetchQuery({
+    queryKey: ADMIN_DASHBOARD_KEY,
+    queryFn: async () => {
+      const [usersResult, invoicesResult] = await Promise.all([
+        supabase.from("profiles").select("id, name, role, created_at"),
+        supabase.from("invoices").select("id, type, status, total_amount, platform_fee, created_at, user_id"),
+      ]);
 
-  const now = new Date();
-  const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const allUsers = usersResult.data || [];
+      const allInvoices = invoicesResult.data || [];
 
-  const thisMonthInvoices = allInvoices?.filter(i => new Date(i.created_at) >= thisMonth) || [];
-  const lastMonthInvoices = allInvoices?.filter(i => 
-    new Date(i.created_at) >= lastMonth && new Date(i.created_at) < thisMonth
-  ) || [];
+      const now = new Date();
+      const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-  const stats = {
-    totalUsers: allUsers?.length || 0,
-    newUsersThisMonth: allUsers?.filter(u => new Date(u.created_at) >= thisMonth).length || 0,
-    totalInvoices: allInvoices?.length || 0,
-    invoicesThisMonth: thisMonthInvoices.length,
-    totalRevenue: allInvoices?.reduce((acc, i) => acc + (i.total_amount || 0), 0) || 0,
-    revenueThisMonth: thisMonthInvoices.reduce((acc, i) => acc + (i.total_amount || 0), 0),
-    revenueLastMonth: lastMonthInvoices.reduce((acc, i) => acc + (i.total_amount || 0), 0),
-    platformFees: allInvoices?.reduce((acc, i) => acc + (i.platform_fee || 0), 0) || 0,
-    feesThisMonth: thisMonthInvoices.reduce((acc, i) => acc + (i.platform_fee || 0), 0),
-    paidInvoices: allInvoices?.filter(i => i.status === "PAID" || i.status === "DISBURSED").length || 0,
-    pendingInvoices: allInvoices?.filter(i => i.status === "SENT" || i.status === "DRAFT").length || 0,
-    billingCount: allInvoices?.filter(i => i.type === "BILLING").length || 0,
-    paymentCount: allInvoices?.filter(i => i.type === "PAYMENT_REQUEST").length || 0,
-    userCount: allUsers?.filter(u => u.role === "user").length || 0,
-    adminCount: allUsers?.filter(u => u.role === "admin").length || 0,
-  };
+      const thisMonthInvoices = allInvoices.filter(i => new Date(i.created_at) >= thisMonth);
+      const lastMonthInvoices = allInvoices.filter(i => 
+        new Date(i.created_at) >= lastMonth && new Date(i.created_at) < thisMonth
+      );
 
-  const revenueGrowth = stats.revenueLastMonth > 0 
-    ? ((stats.revenueThisMonth - stats.revenueLastMonth) / stats.revenueLastMonth) * 100 
-    : 0;
+      const stats = {
+        totalUsers: allUsers.length,
+        newUsersThisMonth: allUsers.filter(u => new Date(u.created_at) >= thisMonth).length,
+        totalInvoices: allInvoices.length,
+        invoicesThisMonth: thisMonthInvoices.length,
+        totalRevenue: allInvoices.reduce((acc, i) => acc + (i.total_amount || 0), 0),
+        revenueThisMonth: thisMonthInvoices.reduce((acc, i) => acc + (i.total_amount || 0), 0),
+        revenueLastMonth: lastMonthInvoices.reduce((acc, i) => acc + (i.total_amount || 0), 0),
+        platformFees: allInvoices.reduce((acc, i) => acc + (i.platform_fee || 0), 0),
+        feesThisMonth: thisMonthInvoices.reduce((acc, i) => acc + (i.platform_fee || 0), 0),
+        paidInvoices: allInvoices.filter(i => i.status === "PAID" || i.status === "DISBURSED").length,
+        pendingInvoices: allInvoices.filter(i => i.status === "SENT" || i.status === "DRAFT").length,
+        billingCount: allInvoices.filter(i => i.type === "BILLING").length,
+        paymentCount: allInvoices.filter(i => i.type === "PAYMENT_REQUEST").length,
+        userCount: allUsers.filter(u => u.role === "user").length,
+        adminCount: allUsers.filter(u => u.role === "admin").length,
+      };
 
-  // Recent activity
-  const recentInvoices = allInvoices
-    ?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 10) || [];
+      const revenueGrowth = stats.revenueLastMonth > 0 
+        ? ((stats.revenueThisMonth - stats.revenueLastMonth) / stats.revenueLastMonth) * 100 
+        : 0;
+
+      const recentInvoices = allInvoices
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 10);
+
+      return { stats, recentInvoices, revenueGrowth };
+    },
+  });
 
   return (
-    <AdminDashboardClient
-      stats={stats}
-      recentInvoices={recentInvoices}
-      revenueGrowth={revenueGrowth}
-    />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <AdminDashboardHydrated />
+    </HydrationBoundary>
   );
 }

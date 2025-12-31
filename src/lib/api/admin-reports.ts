@@ -1,17 +1,34 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/server";
-import { getQueryClient } from "@/lib/query-client";
-import { notFound } from "next/navigation";
-import AdminReportsHydrated from "./admin-reports-hydrated";
-import { ADMIN_REPORTS_KEY } from "@/hooks/queries/use-admin-extended";
-import type { AdminReportsData } from "@/lib/api/admin-reports";
+import { createClient } from "@/lib/supabase/client";
 
-export default async function AdminReportsPage() {
-  const supabase = await createClient();
-  const queryClient = getQueryClient();
-  
+export interface AdminReportsData {
+  totalRevenue: number;
+  totalFees: number;
+  totalInvoices: number;
+  totalUsers: number;
+  revenueGrowth: number;
+  invoiceGrowth: number;
+  userGrowth: number;
+  monthlyData: {
+    month: string;
+    year: number;
+    invoices: number;
+    revenue: number;
+    fees: number;
+    users: number;
+  }[];
+  billingCount: number;
+  paymentCount: number;
+  statusCounts: Record<string, number>;
+}
+
+/**
+ * Fetch admin reports data
+ */
+export async function fetchAdminReports(): Promise<AdminReportsData | null> {
+  const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) notFound();
+
+  if (!user) return null;
 
   // Check admin
   const { data: profile } = await supabase
@@ -20,9 +37,8 @@ export default async function AdminReportsPage() {
     .eq("id", user.id)
     .single();
 
-  if (profile?.role !== "admin") notFound();
+  if (profile?.role !== "admin") return null;
 
-  // Fetch data
   const [invoicesResult, usersResult] = await Promise.all([
     supabase.from("invoices").select("*").order("created_at", { ascending: false }),
     supabase.from("profiles").select("id, created_at"),
@@ -61,6 +77,16 @@ export default async function AdminReportsPage() {
   const currentMonth = monthlyData[monthlyData.length - 1];
   const lastMonth = monthlyData[monthlyData.length - 2];
 
+  const revenueGrowth = lastMonth?.revenue 
+    ? ((currentMonth.revenue - lastMonth.revenue) / lastMonth.revenue) * 100 
+    : 0;
+  const invoiceGrowth = lastMonth?.invoices 
+    ? ((currentMonth.invoices - lastMonth.invoices) / lastMonth.invoices) * 100 
+    : 0;
+  const userGrowth = lastMonth?.users 
+    ? ((currentMonth.users - lastMonth.users) / lastMonth.users) * 100 
+    : 0;
+
   const totalRevenue = invoices.reduce((acc, i) => acc + (i.total_amount || 0), 0);
   const totalFees = invoices.reduce((acc, i) => acc + (i.platform_fee || 0), 0);
 
@@ -69,29 +95,17 @@ export default async function AdminReportsPage() {
     statusCounts[inv.status] = (statusCounts[inv.status] || 0) + 1;
   });
 
-  const reportsData: AdminReportsData = {
+  return {
     totalRevenue,
     totalFees,
     totalInvoices: invoices.length,
     totalUsers: users.length,
-    revenueGrowth: lastMonth?.revenue ? ((currentMonth.revenue - lastMonth.revenue) / lastMonth.revenue) * 100 : 0,
-    invoiceGrowth: lastMonth?.invoices ? ((currentMonth.invoices - lastMonth.invoices) / lastMonth.invoices) * 100 : 0,
-    userGrowth: lastMonth?.users ? ((currentMonth.users - lastMonth.users) / lastMonth.users) * 100 : 0,
+    revenueGrowth,
+    invoiceGrowth,
+    userGrowth,
     monthlyData,
     billingCount: invoices.filter(i => i.type === "BILLING").length,
     paymentCount: invoices.filter(i => i.type === "PAYMENT_REQUEST").length,
     statusCounts,
   };
-
-  // Prefetch query
-  await queryClient.prefetchQuery({
-    queryKey: ADMIN_REPORTS_KEY,
-    queryFn: async () => reportsData,
-  });
-
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <AdminReportsHydrated />
-    </HydrationBoundary>
-  );
 }
