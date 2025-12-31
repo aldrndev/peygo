@@ -84,7 +84,16 @@ function NavigationProgressInner() {
     
     // Skip progress bar for dashboard routes (they have skeleton loading)
     // and auth routes (they may trigger hard redirects that don't complete)
-    if (targetPath.startsWith("/dashboard") || targetPath === "/masuk" || targetPath === "/daftar") {
+    const skipRoutes = [
+      "/dashboard",
+      "/masuk",
+      "/daftar",
+      "/lupa-password",
+      "/reset-password",
+      "/kirim-ulang-konfirmasi",
+    ];
+    
+    if (skipRoutes.some(route => targetPath.startsWith(route))) {
       return;
     }
     
