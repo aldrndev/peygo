@@ -83,7 +83,8 @@ function NavigationProgressInner() {
     }
     
     // Skip progress bar for dashboard routes (they have skeleton loading)
-    if (targetPath.startsWith("/dashboard")) {
+    // and auth routes (they may trigger hard redirects that don't complete)
+    if (targetPath.startsWith("/dashboard") || targetPath === "/masuk" || targetPath === "/daftar") {
       return;
     }
     
@@ -137,10 +138,19 @@ function NavigationProgressInner() {
       }
     };
 
+    // Reset progress bar on hard navigation (window.location.replace, etc.)
+    const handleBeforeUnload = () => {
+      if (isNavigatingRef.current) {
+        completeProgress();
+      }
+    };
+
     document.addEventListener("click", handleClick, true);
+    window.addEventListener("beforeunload", handleBeforeUnload);
     
     return () => {
       document.removeEventListener("click", handleClick, true);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
       }
@@ -148,7 +158,7 @@ function NavigationProgressInner() {
         clearTimeout(startTimeoutRef.current);
       }
     };
-  }, [handleStart]);
+  }, [handleStart, completeProgress]);
 
   if (!isVisible && progress === 0) return null;
 

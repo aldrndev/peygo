@@ -9,24 +9,29 @@ interface AuthLayoutClientProps {
   children: React.ReactNode;
 }
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useSession } from "@/hooks/useSession";
+import { useLoadingOverlay } from "@/components/ui/LoadingOverlay";
+import { useEffect } from "react";
 
 export default function AuthLayoutClient({ children }: AuthLayoutClientProps) {
   const settings = useSettings();
   const { user, isLoading } = useSession();
-  const router = useRouter();
+  const loadingOverlay = useLoadingOverlay();
 
+  // Hard redirect to dashboard if already authenticated
   useEffect(() => {
     if (!isLoading && user) {
-      router.replace("/dashboard");
+      loadingOverlay.show("Mengalihkan...");
+      // Small delay to show loading state before redirect
+      setTimeout(() => {
+        window.location.replace("/dashboard");
+      }, 100);
     }
-  }, [user, isLoading, router]);
+  }, [isLoading, user, loadingOverlay]);
 
-  // Prevent flash of login content if user is authenticated
-  if (!isLoading && user) {
-    return null; // or a loading spinner
+  // Show nothing while checking or redirecting
+  if (isLoading || user) {
+    return null;
   }
   
   return (
