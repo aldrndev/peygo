@@ -99,7 +99,7 @@ export default function LoginPage() {
               />
               <div className="flex justify-end">
                 <Link 
-                  href="#" 
+                  href="/lupa-password" 
                   className="text-primary text-sm font-medium hover:text-primary/80 transition-colors"
                 >
                   Lupa Password?
@@ -109,11 +109,21 @@ export default function LoginPage() {
             
             {serverError && (
               <div 
-                className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium text-center flex items-center justify-center gap-2"
+                className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium text-center"
                 role="alert"
               >
-                <AlertCircle className="w-4 h-4" aria-hidden="true" />
-                {serverError}
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <AlertCircle className="w-4 h-4" aria-hidden="true" />
+                  {serverError}
+                </div>
+                {serverError.includes("dikonfirmasi") && (
+                  <Link 
+                    href="/kirim-ulang-konfirmasi" 
+                    className="text-primary underline underline-offset-2 hover:text-primary/80"
+                  >
+                    Kirim ulang email konfirmasi
+                  </Link>
+                )}
               </div>
             )}
 

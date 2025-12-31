@@ -9,6 +9,10 @@ const authSchema = z.object({
   password: z.string().min(6, "Password minimal 6 karakter"),
 });
 
+const passwordSchema = z.object({
+  password: z.string().min(6, "Password minimal 6 karakter"),
+});
+
 export async function login(_prevState: { error: string; success?: boolean } | null, formData: FormData) {
   const supabase = await createClient();
 
@@ -42,9 +46,8 @@ export async function login(_prevState: { error: string; success?: boolean } | n
   return { error: "", success: true };
 }
 
-export async function signup(_prevState: { error: string; success?: boolean } | null, formData: FormData) {
+export async function signup(_prevState: { error: string; success?: boolean; emailSent?: boolean } | null, formData: FormData) {
   const supabase = await createClient();
-
 
   const data = {
     email: formData.get("email") as string,
@@ -68,7 +71,8 @@ export async function signup(_prevState: { error: string; success?: boolean } | 
     options: {
         data: {
             name: data.name,
-        }
+        },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
     }
   });
 
@@ -81,13 +85,62 @@ export async function signup(_prevState: { error: string; success?: boolean } | 
       "Database error saving new user": "Terjadi kesalahan database. Silakan coba lagi.",
       "Signup requires a valid password": "Password wajib diisi",
     };
-    // eslint-disable-next-line no-console
-    console.error("[SIGNUP ERROR]", error.message, error);
     return { error: errorMap[error.message] || "Gagal mendaftar. Silakan coba lagi." };
   }
 
+  // Return emailSent flag - user must verify email before login
+  return { error: "", emailSent: true };
+}
+
+/**
+ * Request password reset email
+ * SECURITY: Always return generic success to prevent user enumeration
+ */
+export async function forgotPassword(_prevState: { error: string; emailSent?: boolean } | null, formData: FormData) {
+  const supabase = await createClient();
+  const email = formData.get("email") as string;
+
+  // Basic validation
+  const emailSchema = z.email("Format email tidak valid");
+  const validated = emailSchema.safeParse(email);
+  
+  if (!validated.success) {
+    return { error: "Format email tidak valid" };
+  }
+
+  // SECURITY: Always succeed regardless of whether email exists
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?type=recovery`,
+  });
+
+  // Always return success to prevent user enumeration
+  return { error: "", emailSent: true };
+}
+
+/**
+ * Update password (called from reset password page after recovery)
+ */
+export async function updatePassword(_prevState: { error: string; success?: boolean } | null, formData: FormData) {
+  const supabase = await createClient();
+  const password = formData.get("password") as string;
+
+  const validated = passwordSchema.safeParse({ password });
+  
+  if (!validated.success) {
+    return { error: validated.error.issues[0].message };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    // Handle expired/invalid recovery link
+    if (error.message.includes("expired") || error.message.includes("invalid")) {
+      return { error: "Link sudah kadaluarsa. Silakan request ulang." };
+    }
+    return { error: "Gagal mengubah password. Silakan coba lagi." };
+  }
+
   revalidatePath("/", "layout");
-  // Return success flag - let client handle redirect after cookies are set
   return { error: "", success: true };
 }
 
@@ -97,4 +150,33 @@ export async function logout() {
     revalidatePath("/", "layout");
     // Return success - let client handle redirect with loading animation
     return { success: true };
+}
+
+/**
+ * Resend confirmation email
+ * SECURITY: Always return generic success to prevent user enumeration
+ */
+export async function resendConfirmation(_prevState: { error: string; emailSent?: boolean } | null, formData: FormData) {
+  const supabase = await createClient();
+  const email = formData.get("email") as string;
+
+  // Basic validation
+  const emailSchema = z.email("Format email tidak valid");
+  const validated = emailSchema.safeParse(email);
+  
+  if (!validated.success) {
+    return { error: "Format email tidak valid" };
+  }
+
+  // SECURITY: Always succeed regardless of whether email exists
+  await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+    },
+  });
+
+  // Always return success to prevent user enumeration
+  return { error: "", emailSent: true };
 }
