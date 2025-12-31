@@ -1,40 +1,20 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-
-export const dynamic = "force-dynamic";
-
 /**
- * Public health check endpoint
+ * Public health check endpoint (Edge Runtime)
  * URL: /api/health
  */
+export const runtime = "edge";
+
 export async function GET() {
-  try {
-    const supabase = await createClient();
-    
-    // Simple query to check database connection
-    const { error } = await supabase
-      .from("profiles")
-      .select("id")
-      .limit(1);
-
-    if (error) {
-      return NextResponse.json({ 
-        status: "error", 
-        database: "disconnected",
-        timestamp: new Date().toISOString()
-      }, { status: 500 });
+  return new Response(
+    JSON.stringify({
+      status: "ok",
+      timestamp: new Date().toISOString(),
+    }),
+    {
+      headers: {
+        "content-type": "application/json",
+        "cache-control": "no-store",
+      },
     }
-
-    return NextResponse.json({ 
-      status: "ok", 
-      database: "connected",
-      timestamp: new Date().toISOString()
-    });
-  } catch {
-    return NextResponse.json({ 
-      status: "error", 
-      database: "error",
-      timestamp: new Date().toISOString()
-    }, { status: 500 });
-  }
+  );
 }

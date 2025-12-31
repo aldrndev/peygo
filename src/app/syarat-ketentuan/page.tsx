@@ -3,6 +3,9 @@ import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { ScrollText, AlertTriangle, CreditCard, Scale, ShieldAlert } from 'lucide-react';
 
+export const dynamic = 'force-static';
+export const revalidate = 86400; // Revalidate once per day
+
 export const metadata: Metadata = {
   title: 'Syarat & Ketentuan | PeyGo',
   description: 'Syarat dan Ketentuan penggunaan layanan PeyGo. Harap baca dengan seksama sebelum menggunakan platform kami.',

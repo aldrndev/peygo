@@ -4,6 +4,9 @@ import { LandingFooter } from "@/components/landing/LandingFooter";
 import Link from 'next/link';
 import { Shield, Lock, Server, Check } from 'lucide-react';
 
+export const dynamic = 'force-static';
+export const revalidate = 86400; // Revalidate once per day
+
 export const metadata: Metadata = {
   title: 'Kebijakan Privasi | PeyGo',
   description: 'Kebijakan Privasi PeyGo menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda sesuai standar keamanan enterprise.',
