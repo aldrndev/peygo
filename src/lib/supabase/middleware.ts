@@ -50,7 +50,17 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Public routes (no auth required)
-  const publicRoutes = ["/", "/masuk", "/daftar", "/auth", "/blog", "/pay"];
+  const publicRoutes = [
+    "/", 
+    "/masuk", 
+    "/daftar", 
+    "/lupa-password",
+    "/reset-password",
+    "/kirim-ulang-konfirmasi",
+    "/auth", 
+    "/blog", 
+    "/pay"
+  ];
   const isPublicRoute = publicRoutes.some(route => 
     pathname === route || pathname.startsWith(route + "/")
   );
