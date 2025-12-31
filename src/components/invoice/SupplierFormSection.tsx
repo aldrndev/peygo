@@ -104,78 +104,62 @@ export function SupplierFormSection({
 
             <Separator />
 
-            <div className="grid md:grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <Label htmlFor="recipient_name">Nama Penerima *</Label>
+            <div className="space-y-2">
+              <Label htmlFor="due_date">Tanggal Pembayaran *</Label>
+              <div className="relative">
+                <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input 
-                  {...register("recipient_name")}
-                  id="recipient_name"
-                  placeholder="Nama supplier/vendor"
-                  className={cn(errors.recipient_name && "border-destructive")}
+                  {...register("due_date")}
+                  id="due_date"
+                  type="date" 
+                  min={new Date().toISOString().split("T")[0]}
+                  className={cn("pl-10", errors.due_date && "border-destructive")}
                 />
-                {errors.recipient_name && <p className="text-xs text-destructive">{errors.recipient_name.message}</p>}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="due_date">Tanggal Pembayaran *</Label>
-                <div className="relative">
-                  <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input 
-                    {...register("due_date")}
-                    id="due_date"
-                    type="date" 
-                    min={new Date().toISOString().split("T")[0]}
-                    className={cn("pl-10", errors.due_date && "border-destructive")}
-                  />
-                </div>
-                {errors.due_date && <p className="text-xs text-destructive">{errors.due_date.message}</p>}
-              </div>
+              {errors.due_date && <p className="text-xs text-destructive">{errors.due_date.message}</p>}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent className="p-6 md:p-8">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-foreground">
-              <CreditCard size={20} />
-            </div>
-            <div>
-              <h3 className="font-semibold text-lg text-foreground">Rekening Tujuan</h3>
-              <p className="text-sm text-muted-foreground">Info rekening untuk transfer pembayaran</p>
-            </div>
-          </div>
-          
-          <div className="grid gap-5">
-            <div className="grid md:grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <Label htmlFor="recipient_bank_name">Nama Bank</Label>
-                <Input 
-                  {...register("recipient_bank_name")}
-                  id="recipient_bank_name"
-                  placeholder="Contoh: BCA, Mandiri, BNI"
-                />
+      {selectedSupplier && (
+        <Card>
+          <CardContent className="p-6 md:p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-foreground">
+                <CreditCard size={20} />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="recipient_bank_account_number">Nomor Rekening</Label>
-                <Input 
-                  {...register("recipient_bank_account_number")}
-                  id="recipient_bank_account_number"
-                  placeholder="1234567890"
-                />
+              <div>
+                <h3 className="font-semibold text-lg text-foreground">Rekening Tujuan</h3>
+                <p className="text-sm text-muted-foreground">Rekening dari supplier yang dipilih</p>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="recipient_bank_account_name">Nama Pemilik Rekening</Label>
-              <Input 
-                {...register("recipient_bank_account_name")}
-                id="recipient_bank_account_name"
-                placeholder="Sesuai buku tabungan"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            
+            {selectedSupplier.bank_name ? (
+              <div className="p-4 rounded-xl bg-muted/50 border border-border">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Bank</p>
+                    <p className="font-medium text-foreground">{selectedSupplier.bank_name}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Nomor Rekening</p>
+                    <p className="font-mono font-semibold text-primary">{selectedSupplier.bank_account_number}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Atas Nama</p>
+                    <p className="font-medium text-foreground">{selectedSupplier.bank_account_name}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 rounded-xl bg-warning/10 border border-warning/20 text-warning text-sm">
+                ⚠️ Supplier ini belum memiliki data rekening. <Link href={`/dashboard/supplier`} className="underline">Lengkapi data supplier</Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent className="p-6 md:p-8">

@@ -15,11 +15,11 @@ export const invoiceSchema = z.object({
     .regex(phoneRegex, "Nomor telepon harus 8-15 digit angka"),
   recipient_address: z.string().optional().or(z.literal("")),
   
-  // Payment Request specific
-  recipient_bank_name: z.string().optional().or(z.literal("")),
-  recipient_bank_account_number: z.string().optional().or(z.literal("")),
-  recipient_bank_account_name: z.string().optional().or(z.literal("")),
-  supplier_id: z.string().optional().nullable().or(z.literal("")),
+  // Payment Request specific - truly optional for BILLING type
+  recipient_bank_name: z.string().optional().nullable(),
+  recipient_bank_account_number: z.string().optional().nullable(),
+  recipient_bank_account_name: z.string().optional().nullable(),
+  supplier_id: z.string().optional().nullable(),
 
   description: z.string().min(1, "Deskripsi wajib diisi"),
   

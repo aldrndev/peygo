@@ -89,10 +89,9 @@ export default function CreatePenjualanPage() {
   }, [totalAmount, setValue]);
 
   const onSubmit = async (data: InvoiceSchema) => {
-    // GUARD: Only submit if user is on step 3 (confirmation)
-    if (currentStep !== 3) {
-      return;
-    }
+    // This is called manually by the submit button, not by form event
+    console.log("=== SUBMIT TRIGGERED ===");
+    console.log("Form data:", data);
     
     setIsPending(true);
     setServerError(null);
@@ -106,9 +105,16 @@ export default function CreatePenjualanPage() {
       }
     });
 
+    // Log FormData contents
+    console.log("FormData entries:");
+    for (const [key, value] of formData.entries()) {
+      console.log(`  ${key}:`, value);
+    }
+
     startTransition(async () => {
       const result = await createInvoice(null, formData);
       if (result?.error) {
+        console.error("Server error:", result.error);
         setServerError(result.error);
         setIsPending(false);
       }
@@ -116,16 +122,19 @@ export default function CreatePenjualanPage() {
   };
 
   const nextStep = async () => {
+    alert("NEXT STEP CALLED - currentStep: " + currentStep);
     setServerError(null);
     
     if (currentStep === 1) {
       // Step 1: Validate recipient & basic info
       const fieldsToValidate: Path<InvoiceSchema>[] = ["recipient_name", "recipient_phone", "due_date", "description"];
       const isValid = await trigger(fieldsToValidate);
+      console.log("Step 1 validation:", isValid);
       if (isValid) setCurrentStep(2);
     } else if (currentStep === 2) {
       // Step 2: Validate items with stricter rules
       const itemsValid = await trigger("items");
+      console.log("Step 2 items validation:", itemsValid);
       
       if (itemsValid) {
         // Additional validation: check each item has valid price
@@ -144,6 +153,7 @@ export default function CreatePenjualanPage() {
           return;
         }
         
+        console.log("Moving to step 3 (preview only, no submit)");
         setCurrentStep(3);
       }
     }
@@ -184,16 +194,18 @@ export default function CreatePenjualanPage() {
       <InvoiceFormSteps steps={STEPS} currentStep={currentStep} />
 
       <form 
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={(e) => e.preventDefault()}
         onKeyDown={(e) => {
-          // Prevent Enter key from submitting the form (except on submit button)
-          if (e.key === "Enter" && e.target instanceof HTMLElement && e.target.tagName !== "BUTTON") {
+          // Prevent Enter key from submitting the form
+          if (e.key === "Enter") {
             e.preventDefault();
           }
         }}
       >
         <input type="hidden" {...register("type")} />
         <input type="hidden" {...register("amount")} />
+        <input type="hidden" {...register("tax_rate")} />
+        <input type="hidden" {...register("tax_enabled")} />
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
@@ -251,7 +263,8 @@ export default function CreatePenjualanPage() {
               isPending={isPending}
               onPrevStep={prevStep}
               onNextStep={nextStep}
-              submitLabel="Kirim Invoice"
+              onSubmit={handleSubmit(onSubmit)}
+              submitLabel="Simpan Invoice"
             />
           </div>
 
@@ -280,6 +293,7 @@ export default function CreatePenjualanPage() {
           formatCurrency={formatCurrency}
           onPrevStep={prevStep}
           onNextStep={nextStep}
+          onSubmit={handleSubmit(onSubmit)}
           label="Total Tagihan"
         />
       </form>

@@ -119,11 +119,7 @@ export default function CreatePembayaranPage() {
   }, [totalAmount, setValue]);
 
   const onSubmit = async (data: InvoiceSchema) => {
-    // GUARD: Only submit if user is on step 3 (confirmation)
-    if (currentStep !== 3) {
-      return;
-    }
-    
+    // This is called manually by the submit button, not by form event
     setIsPending(true);
     setServerError(null);
 
@@ -219,16 +215,18 @@ export default function CreatePembayaranPage() {
       <InvoiceFormSteps steps={STEPS} currentStep={currentStep} />
 
       <form 
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={(e) => e.preventDefault()}
         onKeyDown={(e) => {
-          // Prevent Enter key from submitting the form (except on submit button)
-          if (e.key === "Enter" && e.target instanceof HTMLElement && e.target.tagName !== "BUTTON") {
+          // Prevent Enter key from submitting the form
+          if (e.key === "Enter") {
             e.preventDefault();
           }
         }}
       >
         <input type="hidden" {...register("type")} />
         <input type="hidden" {...register("amount")} />
+        <input type="hidden" {...register("tax_rate")} />
+        <input type="hidden" {...register("tax_enabled")} />
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
@@ -294,6 +292,7 @@ export default function CreatePembayaranPage() {
               isPending={isPending}
               onPrevStep={prevStep}
               onNextStep={nextStep}
+              onSubmit={handleSubmit(onSubmit)}
               submitLabel="Catat Pembayaran"
             />
           </div>
@@ -323,6 +322,7 @@ export default function CreatePembayaranPage() {
           formatCurrency={formatCurrency}
           onPrevStep={prevStep}
           onNextStep={nextStep}
+          onSubmit={handleSubmit(onSubmit)}
           label="Total Pembayaran"
         />
       </form>

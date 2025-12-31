@@ -55,7 +55,10 @@ export async function createInvoice(prevState: { error: string } | null, formDat
   const validated = invoiceSchema.safeParse(rawData);
 
   if (!validated.success) {
-    const errorMessage = validated.error.issues ? validated.error.issues[0].message : "Validation error";
+    // Show detailed validation errors for debugging
+    const errors = validated.error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`);
+    console.error("Invoice validation errors:", errors);
+    const errorMessage = validated.error.issues[0]?.message || "Data tidak valid";
     return { error: errorMessage };
   }
 

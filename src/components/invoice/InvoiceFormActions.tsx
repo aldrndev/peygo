@@ -9,6 +9,7 @@ interface InvoiceFormActionsProps {
   isPending: boolean;
   onPrevStep: () => void;
   onNextStep: () => void;
+  onSubmit?: () => void;
   submitLabel?: string;
 }
 
@@ -18,7 +19,8 @@ export function InvoiceFormActionsDesktop({
   isPending,
   onPrevStep,
   onNextStep,
-  submitLabel = "Kirim Invoice"
+  onSubmit,
+  submitLabel = "Simpan Invoice"
 }: InvoiceFormActionsProps) {
   return (
     <div className="hidden md:flex justify-between items-center pt-6 border-t border-border">
@@ -33,12 +35,12 @@ export function InvoiceFormActionsDesktop({
       </Button>
       
       {currentStep < maxSteps ? (
-        <Button type="button" onClick={onNextStep}>
+        <Button key="btn-next" type="button" onClick={onNextStep}>
           Lanjutkan
           <ChevronRight size={16} className="ml-2" />
         </Button>
       ) : (
-        <Button type="submit" isLoading={isPending}>
+        <Button key="btn-submit" type="button" onClick={onSubmit} isLoading={isPending}>
           <Send size={16} className="mr-2" />
           {submitLabel}
         </Button>
@@ -55,6 +57,7 @@ interface MobileActionBarProps {
   formatCurrency: (val: number) => string;
   onPrevStep: () => void;
   onNextStep: () => void;
+  onSubmit?: () => void;
   label?: string;
 }
 
@@ -66,6 +69,7 @@ export function MobileActionBar({
   formatCurrency,
   onPrevStep,
   onNextStep,
+  onSubmit,
   label = "Total Tagihan"
 }: MobileActionBarProps) {
   return (
@@ -82,12 +86,12 @@ export function MobileActionBar({
             </Button>
           )}
           {currentStep < maxSteps ? (
-            <Button type="button" onClick={onNextStep} size="default">
+            <Button key="mobile-btn-next" type="button" onClick={onNextStep} size="default">
               Lanjut
               <ChevronRight size={16} className="ml-1" />
             </Button>
           ) : (
-            <Button type="submit" isLoading={isPending} size="default">
+            <Button key="mobile-btn-submit" type="button" onClick={onSubmit} isLoading={isPending} size="default">
               Kirim
             </Button>
           )}
