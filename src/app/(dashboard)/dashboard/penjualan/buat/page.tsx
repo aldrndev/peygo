@@ -130,20 +130,19 @@ export default function CreatePenjualanPage() {
   };
 
   const nextStep = async () => {
-    alert("NEXT STEP CALLED - currentStep: " + currentStep);
     setServerError(null);
     
     if (currentStep === 1) {
       // Step 1: Validate recipient & basic info
-      const fieldsToValidate: Path<InvoiceSchema>[] = ["recipient_name", "recipient_phone", "due_date", "description"];
+      const fieldsToValidate: Path<InvoiceSchema>[] = ["recipient_name", "recipient_email", "recipient_phone", "due_date", "description"];
       const isValid = await trigger(fieldsToValidate);
-      console.log("Step 1 validation:", isValid);
-      if (isValid) setCurrentStep(2);
+      if (isValid) {
+        setCurrentStep(2);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     } else if (currentStep === 2) {
       // Step 2: Validate items with stricter rules
       const itemsValid = await trigger("items");
-      console.log("Step 2 items validation:", itemsValid);
-      
       if (itemsValid) {
         // Additional validation: check each item has valid price
         const hasInvalidItems = watchedItems.some(
@@ -161,13 +160,18 @@ export default function CreatePenjualanPage() {
           return;
         }
         
-        console.log("Moving to step 3 (preview only, no submit)");
         setCurrentStep(3);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
   };
 
-  const prevStep = () => currentStep > 1 && setCurrentStep((s) => (s - 1) as Step);
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep((s) => (s - 1) as Step);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   const formatCurrency = (val: number) => 
     new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(val);

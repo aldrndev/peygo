@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
+import { createAuditLog, AuditAction } from "@/lib/audit";
 
 const authSchema = z.object({
   email: z.email("Format email tidak valid"),
@@ -27,9 +28,16 @@ export async function login(_prevState: { error: string; success?: boolean } | n
     return { error: validated.error.issues[0].message };
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data);
+  const { error, data: authData } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
+    // Audit failed login (NO PII in metadata)
+    await createAuditLog({
+      action: AuditAction.LOGIN_FAILED,
+      userId: null, // Unauthenticated
+      metadata: { reason: "invalid_credentials" }, // Generic only
+    });
+    
     // Map common Supabase error messages to Indonesian
     // SECURITY: Use generic message for "User not found" and "Invalid login credentials" to prevent enumeration
     const errorMap: Record<string, string> = {
@@ -40,6 +48,12 @@ export async function login(_prevState: { error: string; success?: boolean } | n
     // Default generic error for auth failures
     return { error: errorMap[error.message] || "Email atau password salah." };
   }
+
+  // Audit successful login
+  await createAuditLog({
+    action: AuditAction.LOGIN,
+    userId: authData.user?.id,
+  });
 
   revalidatePath("/", "layout");
   // Return success flag - let client handle redirect after cookies are set
@@ -113,6 +127,12 @@ export async function forgotPassword(_prevState: { error: string; emailSent?: bo
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?type=recovery`,
   });
 
+  // Audit password reset request (NO PII - don't log email)
+  await createAuditLog({
+    action: AuditAction.PASSWORD_RESET_REQUEST,
+    userId: null, // Unauthenticated
+  });
+
   // Always return success to prevent user enumeration
   return { error: "", emailSent: true };
 }
@@ -130,7 +150,7 @@ export async function updatePassword(_prevState: { error: string; success?: bool
     return { error: validated.error.issues[0].message };
   }
 
-  const { error } = await supabase.auth.updateUser({ password });
+  const { error, data } = await supabase.auth.updateUser({ password });
 
   if (error) {
     // Handle expired/invalid recovery link
@@ -139,6 +159,12 @@ export async function updatePassword(_prevState: { error: string; success?: bool
     }
     return { error: "Gagal mengubah password. Silakan coba lagi." };
   }
+
+  // Audit successful password reset
+  await createAuditLog({
+    action: AuditAction.PASSWORD_RESET_COMPLETE,
+    userId: data.user?.id,
+  });
 
   revalidatePath("/", "layout");
   return { error: "", success: true };

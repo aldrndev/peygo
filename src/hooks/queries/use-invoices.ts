@@ -1,11 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { 
   fetchUserInvoices, 
   fetchInvoicesByType, 
   calculateInvoiceStats, 
   type Invoice, 
   type InvoiceStats,
-  type PaginatedInvoices 
 } from "@/lib/api/invoices";
 
 export const INVOICES_QUERY_KEY = ["invoices"] as const;
@@ -25,22 +24,22 @@ export function useInvoices() {
 /**
  * Hook to fetch paginated billing invoices (Penjualan)
  */
-export function usePenjualanInvoices(page = 1) {
+export const usePenjualanInvoices = (page = 1) => {
   return useQuery({
     queryKey: [...BILLING_INVOICES_KEY, page],
     queryFn: () => fetchInvoicesByType("BILLING", page),
   });
-}
+};
 
 /**
  * Hook to fetch paginated payment invoices (Pembayaran)
  */
-export function usePembayaranInvoices(page = 1) {
+export const usePembayaranInvoices = (page = 1) => {
   return useQuery({
     queryKey: [...PAYMENT_INVOICES_KEY, page],
     queryFn: () => fetchInvoicesByType("PAYMENT_REQUEST", page),
   });
-}
+};
 
 /**
  * Hook to get invoice stats derived from invoices

@@ -4,7 +4,7 @@ import { z } from "zod";
 // Validation schema - matches the form schema
 export const supplierSchema = z.object({
   name: z.string().min(1, "Nama supplier wajib diisi"),
-  email: z.string().optional().or(z.literal("")),
+  email: z.email({ message: "Format email tidak valid" }),
   phone: z.string().optional().or(z.literal("")),
   address: z.string().optional().or(z.literal("")),
   bank_name: z.string().min(2, "Nama bank wajib diisi"),
@@ -46,6 +46,8 @@ export async function createSupplierMutation(data: SupplierInput): Promise<Mutat
     return { success: false, error: "Gagal menyimpan supplier" };
   }
 
+  // Note: Audit handled by server-side mutation
+
   return { success: true };
 }
 
@@ -78,6 +80,8 @@ export async function updateSupplierMutation(id: string, data: SupplierInput): P
     return { success: false, error: "Gagal mengupdate supplier" };
   }
 
+  // Note: Audit handled by server-side mutation
+
   return { success: true };
 }
 
@@ -101,6 +105,8 @@ export async function deleteSupplierMutation(id: string): Promise<MutationResult
   if (error) {
     return { success: false, error: error.message };
   }
+
+  // Note: Audit handled by server-side mutation
 
   return { success: true };
 }

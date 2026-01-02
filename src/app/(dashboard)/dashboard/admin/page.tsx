@@ -3,6 +3,7 @@ import { createQueryClient } from "@/lib/query-client";
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { ADMIN_DASHBOARD_KEY } from "@/hooks/queries/use-admin";
+import { createAuditLog, AuditAction } from "@/lib/audit";
 import AdminDashboardHydrated from "./admin-dashboard-hydrated";
 
 export default async function AdminDashboardPage() {
@@ -19,6 +20,12 @@ export default async function AdminDashboardPage() {
     .single();
 
   if (profile?.role !== "admin") notFound();
+
+  // Audit: Admin accessed dashboard
+  await createAuditLog({
+    action: AuditAction.ADMIN_ACCESS_DASHBOARD,
+    userId: user.id,
+  });
 
   // Create QueryClient for SSR
   const queryClient = createQueryClient();

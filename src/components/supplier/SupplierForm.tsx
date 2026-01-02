@@ -20,6 +20,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { BankCombobox } from "@/components/ui/BankCombobox";
 
 interface SupplierFormProps {
   isOpen: boolean;
@@ -42,6 +43,8 @@ export default function SupplierForm({ isOpen, onOpenChange, supplier }: Supplie
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<SupplierSchema>({
     resolver: zodResolver(supplierSchema),
@@ -108,7 +111,7 @@ export default function SupplierForm({ isOpen, onOpenChange, supplier }: Supplie
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-full h-full max-h-full md:max-w-2xl md:max-h-[90vh] md:h-auto overflow-y-auto p-4 md:p-6 gap-4">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{labelSuffix}</DialogDescription>
@@ -141,7 +144,7 @@ export default function SupplierForm({ isOpen, onOpenChange, supplier }: Supplie
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Alamat Email</Label>
+                <Label htmlFor="email">Alamat Email *</Label>
                 <div className="relative">
                   <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -196,11 +199,10 @@ export default function SupplierForm({ isOpen, onOpenChange, supplier }: Supplie
 
             <div className="space-y-2">
               <Label htmlFor="bank_name">Lembaga Perbankan *</Label>
-              <Input
-                {...register("bank_name")}
-                id="bank_name"
-                placeholder="BCA / Mandiri / BRI"
-                className={cn(errors.bank_name && "border-destructive")}
+              <BankCombobox
+                value={watch("bank_name") || ""}
+                onValueChange={(value) => setValue("bank_name", value, { shouldValidate: true })}
+                placeholder="Pilih Bank..."
               />
               {errors.bank_name && <p className="text-xs text-destructive">{errors.bank_name.message}</p>}
             </div>

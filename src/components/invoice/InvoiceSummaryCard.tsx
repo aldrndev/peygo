@@ -88,7 +88,7 @@ export function InvoiceSummaryCard({
           <Check size={16} className="text-success" />
           <span>
             {type === "penjualan" 
-              ? "Invoice akan dikirim via email & WhatsApp" 
+              ? "Invoice akan dikirim via email" 
               : "Pembayaran akan dicatat ke sistem"
             }
           </span>

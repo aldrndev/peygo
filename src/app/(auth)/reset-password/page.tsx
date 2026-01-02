@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useState, useEffect } from "react";
+import { startTransition, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -28,16 +28,12 @@ export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
-  const [isExpired, setIsExpired] = useState(false);
 
-  // Check if this is a valid recovery session
-  useEffect(() => {
+  // Compute isExpired from searchParams (no effect needed)
+  const isExpired = useMemo(() => {
     const error = searchParams.get("error");
     const errorDescription = searchParams.get("error_description");
-    
-    if (error || errorDescription?.includes("expired")) {
-      setIsExpired(true);
-    }
+    return !!(error || errorDescription?.includes("expired"));
   }, [searchParams]);
 
   const {

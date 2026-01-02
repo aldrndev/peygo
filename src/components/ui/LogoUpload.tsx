@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Upload, X, ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -64,26 +64,27 @@ async function compressImage(file: File, maxSize = 200, quality = 0.8): Promise<
 }
 
 export default function LogoUpload({ currentLogoUrl, onLogoChange }: LogoUploadProps) {
+  // Initialize preview directly from prop - parent should remount component if currentLogoUrl changes fundamentally
   const [preview, setPreview] = useState<string | null>(currentLogoUrl || null);
   const [isDragging, setIsDragging] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Sync preview when currentLogoUrl changes (useful when profile loads asynchronously)
-  useEffect(() => {
-    if (currentLogoUrl) {
-      setPreview(currentLogoUrl);
-    }
-  }, [currentLogoUrl]);
+  // Clear error after 3 seconds
+  const showError = (message: string) => {
+    setError(message);
+    setTimeout(() => setError(null), 3000);
+  };
 
   const handleFileSelect = async (file: File | null) => {
     if (file) {
       if (!file.type.startsWith("image/")) {
-        alert("File harus berupa gambar");
+        showError("File harus berupa gambar");
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
-        alert("Ukuran file maksimal 5MB");
+        showError("Ukuran file maksimal 5MB");
         return;
       }
 
@@ -133,7 +134,14 @@ export default function LogoUpload({ currentLogoUrl, onLogoChange }: LogoUploadP
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-2">
+      {/* Error Message */}
+      {error && (
+        <div className="p-2 rounded-lg bg-destructive/10 text-destructive text-xs flex items-center gap-2">
+          <span>⚠️</span>
+          <span>{error}</span>
+        </div>
+      )}
       <div
         className={`relative group border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all overflow-hidden ${
           isDragging 

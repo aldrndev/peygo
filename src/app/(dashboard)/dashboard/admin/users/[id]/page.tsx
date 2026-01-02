@@ -2,6 +2,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/server";
 import { getQueryClient } from "@/lib/query-client";
 import { notFound } from "next/navigation";
+import { createAuditLog, AuditAction } from "@/lib/audit";
 import AdminUserDetailHydrated from "./admin-user-detail-hydrated";
 import { ADMIN_USER_DETAIL_KEY } from "@/hooks/queries/use-admin-user-detail";
 
@@ -30,6 +31,14 @@ export default async function AdminUserDetailPage({ params }: { params: Promise<
     .single();
 
   if (!targetProfile) notFound();
+
+  // Audit: Admin viewed user detail
+  await createAuditLog({
+    action: AuditAction.ADMIN_VIEW_USER_DETAIL,
+    userId: user.id,
+    entity: "profiles",
+    entityId: id,
+  });
 
   // Get invoices
   const { data: invoices } = await supabase

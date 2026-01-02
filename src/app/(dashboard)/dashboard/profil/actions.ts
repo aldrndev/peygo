@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 const PROFILE_COMPLETE_COOKIE = "peygo_profile_complete";
 
 import { profileSchema } from "./schema";
+import { createAuditLog, AuditAction } from "@/lib/audit";
 
 export async function updateProfile(
   prevState: { error: string; success?: boolean } | null, 
@@ -37,7 +38,7 @@ export async function updateProfile(
     return { error: parsed.error.issues[0].message };
   }
 
-  const upsertData: any = {
+  const upsertData: Record<string, string | boolean | null> = {
     id: user.id,
     ...parsed.data,
     updated_at: new Date().toISOString(),
@@ -66,6 +67,14 @@ export async function updateProfile(
     });
   }
 
+  // Audit profile update
+  await createAuditLog({
+    action: AuditAction.UPDATE_PROFILE,
+    userId: user.id,
+    entity: "profiles",
+    entityId: user.id,
+  });
+
   revalidatePath("/dashboard");
   return { error: "", success: true };
 }
@@ -79,3 +88,69 @@ export async function completeOnboarding(
   return result;
 }
 
+/**
+ * Change password for authenticated user
+ * SECURITY:
+ * - Requires old password verification (prevents session hijacking attacks)
+ * - Uses getUser() which verifies JWT server-side (not client-trusted)
+ * - User can only change their own password (enforced by Supabase Auth)
+ */
+export async function changePassword(
+  _prevState: { error: string; success?: boolean } | null,
+  formData: FormData
+) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user || !user.email) {
+    return { error: "Unauthorized" };
+  }
+
+  const oldPassword = formData.get("old_password") as string;
+  const newPassword = formData.get("new_password") as string;
+  const confirmPassword = formData.get("confirm_password") as string;
+
+  // Validate inputs
+  if (!oldPassword) {
+    return { error: "Password lama wajib diisi" };
+  }
+
+  if (!newPassword || newPassword.length < 6) {
+    return { error: "Password baru minimal 6 karakter" };
+  }
+
+  if (newPassword !== confirmPassword) {
+    return { error: "Konfirmasi password tidak cocok" };
+  }
+
+  // SECURITY: Verify old password by attempting sign in
+  // This prevents password change if session was hijacked
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: oldPassword,
+  });
+
+  if (signInError) {
+    // Generic error to prevent password enumeration/brute force info
+    return { error: "Password lama salah" };
+  }
+
+  // Update to new password
+  const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+
+  if (updateError) {
+    if (updateError.message.includes("same as")) {
+      return { error: "Password baru tidak boleh sama dengan password lama" };
+    }
+    return { error: "Gagal mengubah password. Silakan coba lagi." };
+  }
+
+  // Audit password change
+  await createAuditLog({
+    action: AuditAction.CHANGE_PASSWORD,
+    userId: user.id,
+  });
+
+  revalidatePath("/dashboard/profil");
+  return { error: "", success: true };
+}

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, startTransition } from "react";
-import { User, Mail, Phone, Building, Save, CheckCircle2, AlertCircle, MapPin, CreditCard } from "lucide-react";
+import Image from "next/image";
+import { User, Mail, Phone, Building, Save, CheckCircle2, AlertCircle, MapPin, CreditCard, Lock, Eye, EyeOff } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { updateProfile } from "@/app/(dashboard)/dashboard/profil/actions";
+import { updateProfile, changePassword } from "@/app/(dashboard)/dashboard/profil/actions";
 import { profileSchema } from "@/app/(dashboard)/dashboard/profil/schema";
 import LogoUpload from "@/components/ui/LogoUpload";
 import { createClient } from "@/lib/supabase/client";
@@ -41,6 +42,18 @@ export default function ProfilePage({ user, profile: initialProfile }: ProfilePa
   const [isPending, setIsPending] = useState(false);
   const [selectedBank, setSelectedBank] = useState<string>(initialProfile?.bank_name || "");
   const [profile, setLocalProfile] = useState(initialProfile);
+  
+  // Change password state
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const {
     register,
@@ -108,7 +121,7 @@ export default function ProfilePage({ user, profile: initialProfile }: ProfilePa
           bank_name: selectedBank,
           logo_url: formData.get("logo_url") as string || profile?.logo_url
         };
-        setLocalProfile(updatedData as any);
+        setLocalProfile(updatedData as ProfilePageProps["profile"]);
         setTimeout(() => setSuccess(false), 5000);
       } else if (result?.error) {
         setServerError(result.error);
@@ -122,6 +135,32 @@ export default function ProfilePage({ user, profile: initialProfile }: ProfilePa
     setServerError(null);
     reset(); // Reset form to default values (original data)
     setSelectedBank(profile?.bank_name || "");
+  };
+
+  const handlePasswordChange = async () => {
+    setIsChangingPassword(true);
+    setPasswordError(null);
+    setPasswordSuccess(false);
+
+    const formData = new FormData();
+    formData.append("old_password", oldPassword);
+    formData.append("new_password", newPassword);
+    formData.append("confirm_password", confirmPassword);
+
+    startTransition(async () => {
+      const result = await changePassword(null, formData);
+      if (result?.success) {
+        setPasswordSuccess(true);
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setShowPasswordSection(false);
+        setTimeout(() => setPasswordSuccess(false), 5000);
+      } else if (result?.error) {
+        setPasswordError(result.error);
+      }
+      setIsChangingPassword(false);
+    });
   };
 
   return (
@@ -163,7 +202,7 @@ export default function ProfilePage({ user, profile: initialProfile }: ProfilePa
                 ) : (
                   <div className="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-muted bg-muted flex items-center justify-center">
                     {profile?.logo_url ? (
-                      <img src={profile.logo_url} alt="Logo" className="w-full h-full object-contain p-2" />
+                      <Image src={profile.logo_url} alt="Logo" fill className="object-contain p-2" />
                     ) : (
                       <Building className="w-10 h-10 text-muted-foreground/40" />
                     )}
@@ -349,6 +388,142 @@ export default function ProfilePage({ user, profile: initialProfile }: ProfilePa
                   )}
                 </div>
              </div>
+          </div>
+
+          {/* Change Password Section */}
+          <div className="bg-card border border-border rounded-xl">
+            <div className="p-6 md:p-8">
+              <div className="flex items-center justify-between gap-4 mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-warning/10 text-warning flex items-center justify-center shadow-inner">
+                    <Lock size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-lg text-foreground">Ubah Password</h4>
+                    <p className="text-muted-foreground text-sm">Perbarui password akun Anda</p>
+                  </div>
+                </div>
+                {!showPasswordSection && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowPasswordSection(true)}
+                  >
+                    Ubah Password
+                  </Button>
+                )}
+              </div>
+
+              {showPasswordSection && (
+                <div className="space-y-4">
+                  {/* Old Password - Full Width */}
+                  <div className="space-y-2">
+                    <Label htmlFor="old_password" className="text-xs">Password Lama</Label>
+                    <div className="relative">
+                      <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                      <Input 
+                        id="old_password"
+                        type={showOldPassword ? "text" : "password"}
+                        value={oldPassword}
+                        onChange={(e) => setOldPassword(e.target.value)}
+                        placeholder="Masukkan password saat ini"
+                        className="pl-10 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowOldPassword(!showOldPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      >
+                        {showOldPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* New Password & Confirm - 2 Columns */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="new_password" className="text-xs">Password Baru</Label>
+                      <div className="relative">
+                        <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                        <Input 
+                          id="new_password"
+                          type={showNewPassword ? "text" : "password"}
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Minimal 6 karakter"
+                          className="pl-10 pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          {showNewPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm_password" className="text-xs">Konfirmasi Password</Label>
+                      <div className="relative">
+                        <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                        <Input 
+                          id="confirm_password"
+                          type={showConfirmPassword ? "text" : "password"}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Ulangi password baru"
+                          className="pl-10 pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {passwordError && (
+                    <div className="p-3 bg-destructive/5 text-destructive rounded-lg border border-destructive/20 flex items-center gap-2 text-sm">
+                      <AlertCircle size={14} />
+                      {passwordError}
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={handlePasswordChange}
+                      disabled={isChangingPassword || !oldPassword || !newPassword || !confirmPassword}
+                      size="sm"
+                    >
+                      {isChangingPassword ? "Menyimpan..." : "Simpan Password"}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        setShowPasswordSection(false);
+                        setOldPassword("");
+                        setNewPassword("");
+                        setConfirmPassword("");
+                        setPasswordError(null);
+                      }}
+                    >
+                      Batal
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {passwordSuccess && (
+                <div className="p-3 bg-success/5 text-success rounded-lg border border-success/20 flex items-center gap-2 text-sm">
+                  <CheckCircle2 size={14} />
+                  Password berhasil diubah!
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Messages */}

@@ -8,9 +8,8 @@ export function ScrollToTop() {
   const prevPathname = useRef(pathname);
 
   useEffect(() => {
-    // Only scroll to top if pathname actually changed (not just params)
-    // Skip for dashboard routes to avoid issues
-    if (prevPathname.current !== pathname && !pathname.startsWith("/dashboard")) {
+    // Scroll to top on every route change
+    if (prevPathname.current !== pathname) {
       window.scrollTo({ top: 0, behavior: "instant" });
     }
     prevPathname.current = pathname;

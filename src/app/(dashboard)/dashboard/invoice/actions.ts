@@ -6,6 +6,7 @@ import { Invoice } from "@/types/database";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { invoiceSchema } from "./schema";
+import { createAuditLog, AuditAction } from "@/lib/audit";
 
 // Helper to get service role client
 function getServiceRoleClient() {
@@ -55,9 +56,7 @@ export async function createInvoice(prevState: { error: string } | null, formDat
   const validated = invoiceSchema.safeParse(rawData);
 
   if (!validated.success) {
-    // Show detailed validation errors for debugging
-    const errors = validated.error.issues.map(issue => `${issue.path.join('.')}: ${issue.message}`);
-    console.error("Invoice validation errors:", errors);
+    // Return first validation error
     const errorMessage = validated.error.issues[0]?.message || "Data tidak valid";
     return { error: errorMessage };
   }
@@ -150,13 +149,13 @@ export async function createInvoice(prevState: { error: string } | null, formDat
     return { error: itemsError.message };
   }
   
-  // 3. Audit Log
-  await supabase.from("audit_logs").insert({
-      user_id: user.id,
-      action: "CREATE_INVOICE",
-      entity: "invoices",
-      entity_id: invoice.id,
-      metadata: { type: data.type, amount: finalAmount }
+  // Audit log with IP/User-Agent
+  await createAuditLog({
+    action: AuditAction.CREATE_INVOICE,
+    userId: user.id,
+    entity: "invoices",
+    entityId: invoice.id,
+    metadata: { type: data.type, amount: finalAmount },
   });
 
   revalidatePath("/dashboard/invoice");
@@ -207,7 +206,15 @@ export async function sendInvoice(id: string) {
     if (updateError) {
         return { error: "Failed to update invoice status" };
     }
-    
+
+    // Audit invoice send
+    await createAuditLog({
+      action: AuditAction.SEND_INVOICE,
+      userId: user.id,
+      entity: "invoices",
+      entityId: id,
+    });
+
     revalidatePath(`/dashboard/invoice/${id}`);
     return { success: true };
 }
@@ -224,6 +231,14 @@ export async function archiveInvoice(id: string) {
         .eq("user_id", user.id);
         
     if (error) return { error: error.message };
+    
+    // Audit archive
+    await createAuditLog({
+      action: AuditAction.ARCHIVE_INVOICE,
+      userId: user.id,
+      entity: "invoices",
+      entityId: id,
+    });
     
     revalidatePath("/dashboard/invoice");
     return { success: true };

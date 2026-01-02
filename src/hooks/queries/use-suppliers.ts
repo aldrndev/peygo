@@ -2,8 +2,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { 
   fetchSuppliers, 
   fetchSuppliersPaginated,
-  type Supplier,
-  type PaginatedSuppliers 
 } from "@/lib/api/suppliers";
 
 export const SUPPLIERS_QUERY_KEY = ["suppliers"] as const;

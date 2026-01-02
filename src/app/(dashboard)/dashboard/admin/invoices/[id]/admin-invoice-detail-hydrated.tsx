@@ -7,7 +7,7 @@ interface Props {
   invoiceId: string;
 }
 
-export default function InvoiceDetailHydrated({ invoiceId }: Props) {
+export default function AdminInvoiceDetailHydrated({ invoiceId }: Props) {
   const { data, isLoading } = useInvoiceDetail(invoiceId);
 
   if (isLoading) {
@@ -20,6 +20,5 @@ export default function InvoiceDetailHydrated({ invoiceId }: Props) {
 
   if (!data) return null;
 
-  return <InvoiceDetail invoice={data} />;
+  return <InvoiceDetail invoice={data} isAdmin={true} />;
 }
-

@@ -53,7 +53,7 @@ export function RecipientFormSection({ register, errors }: RecipientFormSectionP
                 {errors.recipient_name && <p className="text-xs text-destructive">{errors.recipient_name.message}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="recipient_email">Email</Label>
+                <Label htmlFor="recipient_email">Email *</Label>
                 <div className="relative">
                   <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input 

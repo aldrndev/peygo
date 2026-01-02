@@ -8,8 +8,7 @@ export const invoiceSchema = z.object({
     message: "Tipe invoice tidak valid"
   }),
   recipient_name: z.string().min(1, "Nama penerima wajib diisi"),
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  recipient_email: z.string().email({ message: "Format email tidak valid" }).optional().or(z.literal("")),
+  recipient_email: z.email({ message: "Format email tidak valid" }),
   recipient_phone: z.string()
     .min(1, "Nomor telepon wajib diisi")
     .regex(phoneRegex, "Nomor telepon harus 8-15 digit angka"),
@@ -42,6 +41,7 @@ export const invoiceSchema = z.object({
 // Schema for step-by-step validation - Step 1 Penjualan (Sales)
 export const step1SchemaSales = z.object({
   recipient_name: z.string().min(1, "Nama penerima wajib diisi"),
+  recipient_email: z.email({ message: "Format email tidak valid" }),
   recipient_phone: z.string()
     .min(1, "Nomor telepon wajib diisi")
     .regex(phoneRegex, "Nomor telepon harus 8-15 digit angka"),

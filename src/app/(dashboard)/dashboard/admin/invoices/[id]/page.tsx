@@ -2,28 +2,34 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/server";
 import { getQueryClient } from "@/lib/query-client";
 import { notFound } from "next/navigation";
-import InvoiceDetailHydrated from "./invoice-detail-hydrated";
+import AdminInvoiceDetailHydrated from "./admin-invoice-detail-hydrated";
 import { INVOICE_DETAIL_KEY } from "@/hooks/queries/use-invoice-detail";
 
-export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AdminInvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
   const queryClient = getQueryClient();
 
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) notFound();
 
-  // Fetch invoice (user can only view own)
+  // Verify admin role
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role !== "admin") notFound();
+
+  // Fetch invoice (admin can view any)
   const { data: invoice } = await supabase
     .from("invoices")
     .select("*")
     .eq("id", id)
-    .eq("user_id", user.id)
     .single();
 
-  if (!invoice) {
-    notFound();
-  }
+  if (!invoice) notFound();
 
   // Fetch items
   const { data: items } = await supabase
@@ -31,9 +37,29 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
     .select("*")
     .eq("invoice_id", id);
 
+  // Fetch invoice owner profile
+  const { data: ownerProfile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", invoice.user_id)
+    .single();
+
+  // Fetch supplier if exists
+  let supplier = null;
+  if (invoice.supplier_id) {
+    const { data: supplierData } = await supabase
+      .from("suppliers")
+      .select("*")
+      .eq("id", invoice.supplier_id)
+      .single();
+    supplier = supplierData;
+  }
+
   const invoiceWithItems = {
     ...invoice,
     items: items || [],
+    profile: ownerProfile,
+    supplier,
   };
 
   // Prefetch query
@@ -44,7 +70,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <InvoiceDetailHydrated invoiceId={id} />
+      <AdminInvoiceDetailHydrated invoiceId={id} />
     </HydrationBoundary>
   );
 }

@@ -37,6 +37,29 @@ export interface AdminInvoice {
   userName?: string;
 }
 
+export interface AuditLog {
+  id: string;
+  user_id: string | null;
+  action: string;
+  entity: string | null;
+  entity_id: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+  userName?: string | null;
+}
+
+export interface AuditLogFilters {
+  search?: string;
+  action?: string;
+  userId?: string;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  pageSize?: number;
+}
+
 /**
  * Fetch admin dashboard data
  */
@@ -134,4 +157,120 @@ export async function fetchAdminInvoices(): Promise<AdminInvoice[]> {
     ...inv,
     userName: userNames[inv.user_id] || "-"
   }));
+}
+
+/**
+ * Fetch audit logs with server-side filtering
+ * CRITICAL: All filtering done server-side for security & performance
+ */
+export async function fetchAuditLogs(filters: AuditLogFilters = {}): Promise<{ logs: AuditLog[]; total: number }> {
+  const supabase = createClient();
+  
+  const {
+    search = "",
+    action,
+    userId,
+    startDate,
+    endDate,
+    page = 1,
+    pageSize = 50,
+  } = filters;
+
+  // Build query with server-side filters
+  let query = supabase
+    .from("audit_logs")
+    .select("*", { count: "exact" });
+
+  // Filter by action type
+  if (action && action !== "all") {
+    query = query.eq("action", action);
+  }
+
+  // Filter by user
+  if (userId) {
+    query = query.eq("user_id", userId);
+  }
+
+  // Filter by date range
+  if (startDate) {
+    query = query.gte("created_at", startDate);
+  }
+  if (endDate) {
+    query = query.lte("created_at", endDate);
+  }
+
+  // Search across action, entity, IP (server-side)
+  if (search) {
+    query = query.or(`action.ilike.%${search}%,entity.ilike.%${search}%,ip_address.ilike.%${search}%`);
+  }
+
+  // Pagination
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  
+  query = query
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  const { data, count, error } = await query;
+
+  if (error) {
+    return { logs: [], total: 0 };
+  }
+
+  // Fetch user names for display
+  const logs = data || [];
+  const userIds = [...new Set(logs.map(log => log.user_id).filter(Boolean))] as string[];
+  
+  const userNames: Record<string, string> = {};
+  if (userIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, name")
+      .in("id", userIds);
+    
+    if (profiles) {
+      profiles.forEach(p => {
+        userNames[p.id] = p.name || "Unknown";
+      });
+    }
+  }
+
+  const enrichedLogs = logs.map(log => ({
+    ...log,
+    userName: log.user_id ? (userNames[log.user_id] || "Unknown") : null,
+  }));
+
+  return { logs: enrichedLogs, total: count || 0 };
+}
+
+/**
+ * Export audit logs to CSV format
+ * Returns CSV string ready for download
+ */
+export function exportAuditLogsToCSV(logs: AuditLog[]): string {
+  const headers = ["Timestamp", "User", "Action", "Entity", "IP Address", "User Agent", "Metadata"];
+  const rows = logs.map(log => [
+    new Date(log.created_at).toLocaleString(),
+    log.userName || log.user_id || "System",
+    log.action,
+    log.entity || "-",
+    log.ip_address || "-",
+    log.user_agent || "-",
+    log.metadata ? JSON.stringify(log.metadata) : "-",
+  ]);
+
+  const csvContent = [
+    headers.join(","),
+    ...rows.map(row => 
+      row.map(cell => 
+        // Escape quotes and wrap in quotes if contains comma
+        typeof cell === "string" && (cell.includes(",") || cell.includes('"'))
+          ? `"${cell.replace(/"/g, '""')}"`
+          : cell
+      ).join(",")
+    ),
+  ].join("\n");
+
+  return csvContent;
 }

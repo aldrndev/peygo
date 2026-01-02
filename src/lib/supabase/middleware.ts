@@ -95,6 +95,36 @@ export async function updateSession(request: NextRequest) {
     let isProfileComplete = profileCompleteCookie === "true";
     let userRole = userRoleCookie || "user";
 
+    // For admin routes, ALWAYS do fresh DB check first (before onboarding redirect)
+    if (pathname.startsWith("/dashboard/admin")) {
+      const { data: freshProfile } = await supabase
+        .from("profiles")
+        .select("role, is_onboarding_complete")
+        .eq("id", user.id)
+        .single();
+      
+      userRole = freshProfile?.role || "user";
+      isProfileComplete = !!freshProfile?.is_onboarding_complete;
+      
+      // Update cookies with fresh values
+      supabaseResponse.cookies.set(USER_ROLE_COOKIE, userRole, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 30,
+      });
+      
+      // Admin must have admin role
+      if (userRole !== "admin") {
+        const url = request.nextUrl.clone();
+        url.pathname = "/dashboard";
+        return NextResponse.redirect(url);
+      }
+      
+      // Admin skips onboarding - go directly to admin dashboard
+      return supabaseResponse;
+    }
+
     // If no profile cookie or no role cookie, query DB
     if (!profileCompleteCookie || !userRoleCookie) {
       const { data: profile } = await supabase
@@ -123,30 +153,14 @@ export async function updateSession(request: NextRequest) {
       });
     }
 
-    // Redirect to onboarding if profile incomplete
-    if (!isProfileComplete) {
+    // Redirect to onboarding if profile incomplete (only for regular users)
+    if (!isProfileComplete && userRole !== "admin") {
       const url = request.nextUrl.clone();
       url.pathname = "/dashboard/onboarding";
       return NextResponse.redirect(url);
     }
 
-    // Protect admin routes - ALWAYS verify role from DB for admin routes (bypass cookie cache)
-    if (pathname.startsWith("/dashboard/admin")) {
-      // Fresh check from DB for admin routes security
-      const { data: freshProfile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-      
-      const actualRole = freshProfile?.role || "user";
-      
-      if (actualRole !== "admin") {
-        const url = request.nextUrl.clone();
-        url.pathname = "/dashboard";
-        return NextResponse.redirect(url);
-      }
-    }
+    // NOTE: Admin route check is now handled earlier (before onboarding redirect)
 
     // User-only routes - admin should not access these
     const userOnlyRoutes = [

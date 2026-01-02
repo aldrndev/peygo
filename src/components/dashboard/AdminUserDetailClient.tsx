@@ -10,15 +10,30 @@ import {
   CreditCard,
   ShieldCheck,
   Calendar,
-  Clock
+  Clock,
+  Shield,
+  Trash2,
+  AlertTriangle
 } from "lucide-react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { changeUserRole, deleteUser } from "@/app/(dashboard)/dashboard/admin/users/actions";
 
 interface Invoice {
   id: string;
@@ -46,6 +61,11 @@ interface AdminUserDetailClientProps {
 
 export default function AdminUserDetailClient({ profile, invoices }: AdminUserDetailClientProps) {
   const router = useRouter();
+  const [showRoleDialog, setShowRoleDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteConfirmName, setDeleteConfirmName] = useState("");
+  const [isChangingRole, setIsChangingRole] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -54,6 +74,40 @@ export default function AdminUserDetailClient({ profile, invoices }: AdminUserDe
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const handleRoleChange = async () => {
+    setIsChangingRole(true);
+    try {
+      const newRole = profile.role === "admin" ? "user" : "admin";
+      const result = await changeUserRole(profile.id, newRole);
+      if (result.success) {
+        router.refresh();
+        setShowRoleDialog(false);
+      } else {
+        alert(result.error || "Failed to change role");
+      }
+    } finally {
+      setIsChangingRole(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (deleteConfirmName !== profile.name) {
+      return;
+    }
+    
+    setIsDeleting(true);
+    try {
+      const result = await deleteUser(profile.id);
+      if (result.success) {
+        router.push("/dashboard/admin/users");
+      } else {
+        alert(result.error || "Failed to delete user");
+      }
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const totalTransactionalValue = invoices.reduce((acc, inv) => acc + (inv.total_amount || 0), 0);
@@ -97,6 +151,132 @@ export default function AdminUserDetailClient({ profile, invoices }: AdminUserDe
           </div>
         </div>
       </div>
+
+      {/* Admin Controls */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Role Management */}
+        <Card className="border-blue-200 bg-blue-50/50">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-500 text-white flex items-center justify-center shrink-0">
+                <Shield size={18} />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1">Role Management</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Current role: <span className="font-medium">{profile.role}</span>
+                </p>
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowRoleDialog(true)}
+                  className="border-blue-500 text-blue-600 hover:bg-blue-50"
+                >
+                  Change to {profile.role === "admin" ? "User" : "Admin"}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Danger Zone */}
+        <Card className="border-red-200 bg-red-50/50">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-red-500 text-white flex items-center justify-center shrink-0">
+                <AlertTriangle size={18} />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-1">Danger Zone</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Permanently delete this user account
+                </p>
+                <Button 
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete User
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Role Change Dialog */}
+      <Dialog open={showRoleDialog} onOpenChange={setShowRoleDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change User Role</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to change {profile.name}&apos;s role from <strong>{profile.role}</strong> to <strong>{profile.role === "admin" ? "user" : "admin"}</strong>?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">
+              {profile.role === "admin" 
+                ? "⚠️ This will revoke admin privileges and restrict access to admin features."
+                : "⚠️ This will grant full admin access including user management and system settings."
+              }
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRoleDialog(false)} disabled={isChangingRole}>
+              Cancel
+            </Button>
+            <Button onClick={handleRoleChange} disabled={isChangingRole}>
+              {isChangingRole ? "Changing..." : "Confirm Change"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-red-600">Delete User Account</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete the user account and all associated data.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-800 font-medium">
+                ⚠️ WARNING: This will soft-delete the user but preserve audit trails and invoice history.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmName">
+                Type <strong>{profile.name}</strong> to confirm
+              </Label>
+              <Input
+                id="confirmName"
+                value={deleteConfirmName}
+                onChange={(e) => setDeleteConfirmName(e.target.value)}
+                placeholder="Enter user name"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowDeleteDialog(false);
+              setDeleteConfirmName("");
+            }} disabled={isDeleting}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleDelete} 
+              disabled={deleteConfirmName !== profile.name || isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete User"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
         {/* Left Column: Personal Info */}

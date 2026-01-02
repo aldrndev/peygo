@@ -169,7 +169,10 @@ export default function CreatePembayaranPage() {
       // Step 1: Validate supplier & basic info
       const fieldsToValidate: Path<InvoiceSchema>[] = ["recipient_name", "due_date", "description"];
       const isValid = await trigger(fieldsToValidate);
-      if (isValid) setCurrentStep(2);
+      if (isValid) {
+        setCurrentStep(2);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     } else if (currentStep === 2) {
       // Step 2: Validate items with stricter rules
       const itemsValid = await trigger("items");
@@ -192,11 +195,17 @@ export default function CreatePembayaranPage() {
         }
         
         setCurrentStep(3);
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
   };
 
-  const prevStep = () => currentStep > 1 && setCurrentStep((s) => (s - 1) as Step);
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep((s) => (s - 1) as Step);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   const formatCurrency = (val: number) => 
     new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(val);

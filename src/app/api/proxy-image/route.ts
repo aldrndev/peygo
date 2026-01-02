@@ -19,8 +19,7 @@ export async function GET(request: NextRequest) {
     headers.set("Cache-Control", "public, max-age=3600");
 
     return new NextResponse(blob, { headers });
-  } catch (error) {
-    console.error("Proxy error:", error);
+  } catch {
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

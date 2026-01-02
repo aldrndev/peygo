@@ -4,7 +4,6 @@ import {
   sendInvoiceMutation, 
   deleteInvoiceMutation,
   type InvoiceInput,
-  type CreatedInvoice,
 } from "@/lib/api/mutations/invoices";
 import { INVOICES_QUERY_KEY, BILLING_INVOICES_KEY, PAYMENT_INVOICES_KEY } from "@/hooks/queries/use-invoices";
 import { ADMIN_INVOICES_KEY, ADMIN_DASHBOARD_KEY } from "@/hooks/queries/use-admin";

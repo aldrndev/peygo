@@ -2,11 +2,27 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/server";
 import { getQueryClient } from "@/lib/query-client";
 import { notFound } from "next/navigation";
+import { createAuditLog, AuditAction } from "@/lib/audit";
 import AdminReportsHydrated from "./admin-reports-hydrated";
-import { ADMIN_REPORTS_KEY } from "@/hooks/queries/use-admin-extended";
-import type { AdminReportsData } from "@/lib/api/admin-reports";
+import { parseReportFilters, type ReportFilters } from "@/lib/api/admin-reports-schema";
+import { 
+  fetchReportSummary, 
+  fetchInvoiceList, 
+  fetchUserActivity,
+  fetchMonthlyBreakdown 
+} from "@/lib/api/admin-reports-filtered";
 
-export default async function AdminReportsPage() {
+// Query keys for React Query
+export const REPORTS_SUMMARY_KEY = ["admin", "reports", "summary"];
+export const REPORTS_INVOICES_KEY = ["admin", "reports", "invoices"];
+export const REPORTS_USERS_KEY = ["admin", "reports", "users"];
+export const REPORTS_MONTHLY_KEY = ["admin", "reports", "monthly"];
+
+interface PageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+export default async function AdminReportsPage({ searchParams }: PageProps) {
   const supabase = await createClient();
   const queryClient = getQueryClient();
   
@@ -22,76 +38,61 @@ export default async function AdminReportsPage() {
 
   if (profile?.role !== "admin") notFound();
 
-  // Fetch data
-  const [invoicesResult, usersResult] = await Promise.all([
-    supabase.from("invoices").select("*").order("created_at", { ascending: false }),
-    supabase.from("profiles").select("id, created_at"),
+  // Parse and validate filters from URL
+  const rawParams = await searchParams;
+  const filters = parseReportFilters(rawParams);
+
+  // Audit: Admin viewed reports
+  await createAuditLog({
+    action: AuditAction.ADMIN_VIEW_REPORTS,
+    userId: user.id,
+    metadata: {
+      filters: {
+        period: filters.period,
+        invoiceType: filters.invoiceType,
+        status: filters.status,
+        tab: filters.tab,
+      },
+    },
+  });
+
+  // Fetch all data in parallel (server-side filtered)
+  const [summary, invoiceList, userActivity, monthlyData] = await Promise.all([
+    fetchReportSummary(filters),
+    fetchInvoiceList(filters),
+    fetchUserActivity(filters),
+    fetchMonthlyBreakdown(filters, 12),
   ]);
 
-  const invoices = invoicesResult.data || [];
-  const users = usersResult.data || [];
-
-  const now = new Date();
-  
-  const monthlyData = [];
-  for (let i = 5; i >= 0; i--) {
-    const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
-    
-    const monthInvoices = invoices.filter(inv => {
-      const date = new Date(inv.created_at);
-      return date >= monthStart && date <= monthEnd;
-    });
-
-    const monthUsers = users.filter(u => {
-      const date = new Date(u.created_at);
-      return date >= monthStart && date <= monthEnd;
-    });
-
-    monthlyData.push({
-      month: monthStart.toLocaleDateString("id-ID", { month: "short" }),
-      year: monthStart.getFullYear(),
-      invoices: monthInvoices.length,
-      revenue: monthInvoices.reduce((acc, i) => acc + (i.total_amount || 0), 0),
-      fees: monthInvoices.reduce((acc, i) => acc + (i.platform_fee || 0), 0),
-      users: monthUsers.length,
-    });
-  }
-
-  const currentMonth = monthlyData[monthlyData.length - 1];
-  const lastMonth = monthlyData[monthlyData.length - 2];
-
-  const totalRevenue = invoices.reduce((acc, i) => acc + (i.total_amount || 0), 0);
-  const totalFees = invoices.reduce((acc, i) => acc + (i.platform_fee || 0), 0);
-
-  const statusCounts: Record<string, number> = {};
-  invoices.forEach(inv => {
-    statusCounts[inv.status] = (statusCounts[inv.status] || 0) + 1;
-  });
-
-  const reportsData: AdminReportsData = {
-    totalRevenue,
-    totalFees,
-    totalInvoices: invoices.length,
-    totalUsers: users.length,
-    revenueGrowth: lastMonth?.revenue ? ((currentMonth.revenue - lastMonth.revenue) / lastMonth.revenue) * 100 : 0,
-    invoiceGrowth: lastMonth?.invoices ? ((currentMonth.invoices - lastMonth.invoices) / lastMonth.invoices) * 100 : 0,
-    userGrowth: lastMonth?.users ? ((currentMonth.users - lastMonth.users) / lastMonth.users) * 100 : 0,
-    monthlyData,
-    billingCount: invoices.filter(i => i.type === "BILLING").length,
-    paymentCount: invoices.filter(i => i.type === "PAYMENT_REQUEST").length,
-    statusCounts,
-  };
-
-  // Prefetch query
-  await queryClient.prefetchQuery({
-    queryKey: ADMIN_REPORTS_KEY,
-    queryFn: async () => reportsData,
-  });
+  // Prefetch queries for hydration
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: [...REPORTS_SUMMARY_KEY, filters],
+      queryFn: async () => summary,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: [...REPORTS_INVOICES_KEY, filters],
+      queryFn: async () => invoiceList,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: [...REPORTS_USERS_KEY, filters],
+      queryFn: async () => userActivity,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: [...REPORTS_MONTHLY_KEY, filters],
+      queryFn: async () => monthlyData,
+    }),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <AdminReportsHydrated />
+      <AdminReportsHydrated 
+        initialFilters={filters}
+        initialSummary={summary}
+        initialInvoices={invoiceList}
+        initialUsers={userActivity}
+        initialMonthly={monthlyData}
+      />
     </HydrationBoundary>
   );
 }

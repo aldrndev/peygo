@@ -362,39 +362,32 @@ export const InvoicePDF = ({ invoice, qrCodeDataUrl, logoDataUrl, isBilling }: I
 
         {/* Footer */}
         <View style={styles.footer}>
-          {/* Payment Details */}
-          <View style={styles.paymentInfo}>
-             <Text style={styles.label}>{isBilling ? "PEMBAYARAN KE" : "TRANSFER KE"}</Text>
-             <View style={styles.bankBox}>
+          {/* Payment Details - Only for Payment Requests */}
+          {!isBilling && (
+            <View style={styles.paymentInfo}>
+              <Text style={styles.label}>TRANSFER KE</Text>
+              <View style={styles.bankBox}>
                 <View style={styles.bankDetails}>
                   <Text style={{fontWeight: 'bold', fontSize: 10}}>
-                    {isBilling 
-                      ? (profile?.bank_name || "-") 
-                      : (invoice.recipient_bank_name || supplier?.bank_name || "-")
-                    }
+                    {invoice.recipient_bank_name || supplier?.bank_name || "-"}
                   </Text>
                   <Text style={{fontFamily: 'Helvetica-Bold', fontSize: 12, color: '#F97316', marginVertical: 2}}>
-                    {isBilling 
-                      ? (profile?.bank_account_number || "-")
-                      : (invoice.recipient_bank_account_number || supplier?.bank_account_number || "-")
-                    }
+                    {invoice.recipient_bank_account_number || supplier?.bank_account_number || "-"}
                   </Text>
                   <Text style={{fontSize: 10, color: '#475569'}}>
-                    a.n. {isBilling 
-                      ? (profile?.bank_account_name || profile?.name || "-")
-                      : (invoice.recipient_bank_account_name || supplier?.bank_account_name || "-")
-                    }
+                    a.n. {invoice.recipient_bank_account_name || supplier?.bank_account_name || "-"}
                   </Text>
                 </View>
-             </View>
+              </View>
 
-             {invoice.description && (
-               <View style={styles.notes}>
-                 <Text style={styles.label}>CATATAN</Text>
-                 <Text style={styles.value}>{invoice.description}</Text>
-               </View>
-             )}
-          </View>
+              {invoice.description && (
+                <View style={styles.notes}>
+                  <Text style={styles.label}>CATATAN</Text>
+                  <Text style={styles.value}>{invoice.description}</Text>
+                </View>
+              )}
+            </View>
+          )}
 
           {/* Totals */}
           <View style={styles.totalsInfo}>

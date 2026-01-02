@@ -45,6 +45,7 @@
     "react-hook-form": "^7.69.0",
     "react-qr-code": "^2.0.18",
     "react-remove-scroll-bar": "^2.3.8",
+    "recharts": "^3.6.0",
     "resend": "^6.6.0",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.2.1",

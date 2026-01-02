@@ -5,7 +5,7 @@ import { z } from "zod";
 export const invoiceSchema = z.object({
   type: z.enum(["BILLING", "PAYMENT_REQUEST"]),
   recipient_name: z.string().min(1, "Nama penerima wajib diisi"),
-  recipient_email: z.string().optional().or(z.literal("")),
+  recipient_email: z.email({ message: "Format email tidak valid" }),
   recipient_phone: z.string().min(1, "Nomor telepon wajib diisi"),
   recipient_address: z.string().optional().or(z.literal("")),
   recipient_bank_name: z.string().optional().nullable(),
@@ -131,14 +131,7 @@ export async function createInvoiceMutation(input: InvoiceInput): Promise<Mutati
     return { success: false, error: itemsError.message };
   }
 
-  // Audit log
-  await supabase.from("audit_logs").insert({
-    user_id: user.id,
-    action: "CREATE_INVOICE",
-    entity: "invoices",
-    entity_id: invoice.id,
-    metadata: { type: data.type, amount: finalAmount },
-  });
+  // Note: Audit logging handled by server action version in dashboard/invoice/actions.ts
 
   return { 
     success: true, 

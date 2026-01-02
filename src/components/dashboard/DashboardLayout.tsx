@@ -17,7 +17,8 @@ import {
   BarChart3,
   Bell,
   Search,
-  ChevronRight
+  ChevronRight,
+  Shield
 } from "lucide-react";
 import { UserRole } from "@/types/database";
 
@@ -47,6 +48,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard/admin/users": "Pengguna",
   "/dashboard/admin/invoices": "Semua Invoice",
   "/dashboard/admin/reports": "Laporan",
+  "/dashboard/admin/audit-logs": "Audit Logs",
   "/dashboard/admin/settings": "Pengaturan",
 };
 
@@ -105,6 +107,7 @@ export default function DashboardLayout({
     { href: "/dashboard/admin/users", icon: <Users size={20} />, label: "Pengguna" },
     { href: "/dashboard/admin/invoices", icon: <FileText size={20} />, label: "Semua Invoice" },
     { href: "/dashboard/admin/reports", icon: <BarChart3 size={20} />, label: "Laporan" },
+    { href: "/dashboard/admin/audit-logs", icon: <Shield size={20} />, label: "Audit Logs" },
     { href: "/dashboard/admin/settings", icon: <Settings size={20} />, label: "Pengaturan" },
   ];
 

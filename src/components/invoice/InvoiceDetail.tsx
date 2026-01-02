@@ -49,15 +49,22 @@ const statusConfig: Record<string, { color: string; bg: string; label: string; i
   EXPIRED: { color: "text-muted-foreground", bg: "bg-muted", label: "Kedaluwarsa", icon: AlertCircle },
 };
 
-export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }) {
+export default function InvoiceDetail({ invoice, isAdmin = false }: { invoice: InvoiceWithItems; isAdmin?: boolean }) {
   const router = useRouter();
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   const [isLoadingPdf, setIsLoadingPdf] = useState(false);
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const invoiceRef = useRef<HTMLDivElement>(null);
   const profile = invoice.profile;
   const supplier = invoice.supplier;
   const isBilling = invoice.type === 'BILLING';
   const platformName = useSetting("platform_name");
+
+  // Clear notification after 5 seconds
+  const showNotification = (type: "success" | "error", message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000);
+  };
 
   const handleSendEmail = async () => {
     if (!confirm("Kirim invoice ke email penerima?")) return;
@@ -65,13 +72,13 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
     try {
       const res = await sendInvoice(invoice.id);
       if (res?.error) {
-        alert("Gagal mengirim email: " + res.error);
+        showNotification("error", "Gagal mengirim email: " + res.error);
       } else {
-        alert("Email berhasil dikirim!");
+        showNotification("success", "Email berhasil dikirim!");
         router.refresh();
       }
     } catch {
-      alert("Terjadi kesalahan saat mengirim email");
+      showNotification("error", "Terjadi kesalahan saat mengirim email");
     } finally {
       setIsLoadingEmail(false);
     }
@@ -83,7 +90,7 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
     if (res.success) {
       router.push("/dashboard/invoice");
     } else {
-      alert("Gagal mengarsipkan: " + res.error);
+      showNotification("error", "Gagal mengarsipkan: " + res.error);
     }
   };
 
@@ -98,8 +105,7 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
-    } catch (e) {
-      console.error("Failed to load image", e);
+    } catch {
       return "";
     }
   };
@@ -122,8 +128,8 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
             width: 200,
             color: { dark: '#000000', light: '#ffffff' }
           });
-        } catch (e) {
-          console.error("QR Gen failed", e);
+        } catch {
+          // QR generation failed silently
         }
       }
 
@@ -136,7 +142,6 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
         
         // Strategy 2: Fallback to direct fetch if proxy fails
         if (!logoDataUrl) {
-          console.warn("Proxy logo fetch failed, trying direct...");
           logoDataUrl = await urlToDataUrl(profile.logo_url);
         }
       }
@@ -161,9 +166,8 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-    } catch (err) {
-      console.error("PDF generation failed:", err);
-      alert("Gagal membuat PDF. Coba lagi.");
+    } catch {
+      showNotification("error", "Gagal membuat PDF. Coba lagi.");
     } finally {
       setIsLoadingPdf(false);
     }
@@ -183,6 +187,25 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
 
   return (
     <div className="pb-20">
+      {/* Inline Notification Banner */}
+      {notification && (
+        <div className={cn(
+          "mb-4 p-4 rounded-xl border flex items-center gap-3 animate-in fade-in slide-in-from-top-2",
+          notification.type === "success" 
+            ? "bg-success/5 text-success border-success/20" 
+            : "bg-destructive/5 text-destructive border-destructive/20"
+        )}>
+          {notification.type === "success" ? <Check size={16} /> : <AlertCircle size={16} />}
+          <p className="text-sm">{notification.message}</p>
+          <button 
+            onClick={() => setNotification(null)} 
+            className="ml-auto text-muted-foreground hover:text-foreground"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* Action Bar - Hidden on print */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 no-print">
         <div className="flex items-center gap-3">
@@ -197,46 +220,49 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Button onClick={handleSendEmail} isLoading={isLoadingEmail}>
-            <Send size={14} className="mr-2" />
-            Kirim Email
-          </Button>
-          {invoice.status === 'SENT' && isBilling && (
-            <Button 
-              variant="secondary"
-              onClick={() => window.open(`https://wa.me/${invoice.recipient_phone}?text=Halo, berikut adalah tagihan Anda: ${window.location.origin}/pay/${invoice.id}`, '_blank')}
-            >
+        {/* Action buttons - only for invoice owner, not admin */}
+        {!isAdmin && (
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={handleSendEmail} isLoading={isLoadingEmail}>
               <Send size={14} className="mr-2" />
-              Kirim WA
+              Kirim Email
             </Button>
-          )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
-                <MoreVertical size={16} />
+            {invoice.status === 'SENT' && isBilling && (
+              <Button 
+                variant="secondary"
+                onClick={() => window.open(`https://wa.me/${invoice.recipient_phone}?text=Halo, berikut adalah tagihan Anda: ${window.location.origin}/pay/${invoice.id}`, '_blank')}
+              >
+                <Send size={14} className="mr-2" />
+                Kirim WA
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handlePrintPDF} disabled={isLoadingPdf}>
-                <Printer size={14} className="mr-2" />
-                {isLoadingPdf ? "Mengunduh..." : "Download PDF"}
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Share2 size={14} className="mr-2" />
-                Bagikan Link
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleArchive}>
-                <FileText size={14} className="mr-2" />
-                Arsipkan
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive focus:text-destructive">
-                <Trash size={14} className="mr-2" />
-                Hapus
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <MoreVertical size={16} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handlePrintPDF} disabled={isLoadingPdf}>
+                  <Printer size={14} className="mr-2" />
+                  {isLoadingPdf ? "Mengunduh..." : "Download PDF"}
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Share2 size={14} className="mr-2" />
+                  Bagikan Link
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleArchive}>
+                  <FileText size={14} className="mr-2" />
+                  Arsipkan
+                </DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive focus:text-destructive">
+                  <Trash size={14} className="mr-2" />
+                  Hapus
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
       </div>
 
       {/* Invoice Document */}
@@ -380,23 +406,9 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
 
           {/* Summary & Payment */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Payment Instructions */}
+            {/* Payment Instructions - Only for Payment Requests */}
             <div>
-              {isBilling ? (
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 print:text-gray-500">Pembayaran ke</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-foreground text-background flex items-center justify-center print:bg-black">
-                      <Building2 size={18} />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground print:text-black">{profile?.bank_name || "-"}</p>
-                      <p className="text-primary font-mono font-semibold">{profile?.bank_account_number || "-"}</p>
-                      <p className="text-sm text-muted-foreground print:text-gray-600">a.n. {profile?.bank_account_name || profile?.name || "-"}</p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
+              {!isBilling && (
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 print:text-gray-500">Transfer ke</p>
                   <div className="flex items-center gap-3">
@@ -413,7 +425,7 @@ export default function InvoiceDetail({ invoice }: { invoice: InvoiceWithItems }
               )}
 
               {invoice.description && (
-                <div className="mt-6">
+                <div className={!isBilling ? "mt-6" : ""}>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 print:text-gray-500">Catatan</p>
                   <p className="text-sm text-foreground print:text-black">{invoice.description}</p>
                 </div>

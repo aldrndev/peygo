@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { 
   Search, 
   Clock, 
@@ -129,16 +130,22 @@ export default function AdminInvoicesClient({ invoices }: AdminInvoicesClientPro
               </thead>
               <tbody className="divide-y divide-border">
                 {items.map((inv) => (
-                  <tr key={inv.id} className="hover:bg-accent/50 transition-colors group">
+                  <tr 
+                    key={inv.id} 
+                    className="hover:bg-accent/50 transition-colors group"
+                  >
                     <td className="py-6 px-4 md:px-5">
                       <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-2xl bg-foreground flex items-center justify-center text-background shrink-0">
                            <FileText size={18} />
                         </div>
                         <div>
-                          <p className="font-semibold text-foreground tracking-tight group-hover:text-primary transition-colors">
+                          <Link 
+                            href={`/dashboard/admin/invoices/${inv.id}`}
+                            className="font-semibold text-foreground tracking-tight hover:text-primary transition-colors"
+                          >
                               {inv.invoice_number}
-                          </p>
+                          </Link>
                           <div className="flex items-center gap-1.5 mt-0.5 text-muted-foreground">
                               <span className="text-xs font-medium uppercase tracking-wide">{inv.type.toLowerCase()}</span>
                               <span className="text-xs">•</span>
@@ -174,8 +181,11 @@ export default function AdminInvoicesClient({ invoices }: AdminInvoicesClientPro
                           variant="ghost" 
                           size="icon"
                           className="hover:bg-foreground hover:text-background"
+                          asChild
                       >
+                        <Link href={`/dashboard/admin/invoices/${inv.id}`}>
                           <ChevronRight size={18} />
+                        </Link>
                       </Button>
                     </td>
                   </tr>
